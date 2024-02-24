@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://l7a1a0utyxrb"]
+
+[ext_resource type="PackedScene" uid="uid://c7gyn13lql2m8" path="res://scenes/Environment/game_field.tscn" id="1_rmyqn"]
+[ext_resource type="PackedScene" uid="uid://bo5fxgvg6qw2o" path="res://scenes/Player/test.tscn" id="2_86f2h"]
+
+[node name="GameScene" type="Node2D"]
+metadata/_edit_horizontal_guides_ = [360.0]
+metadata/_edit_vertical_guides_ = [640.0]
+
+[node name="GameField" parent="." instance=ExtResource("1_rmyqn")]
+
+[node name="PlayerBody" parent="." instance=ExtResource("2_86f2h")]

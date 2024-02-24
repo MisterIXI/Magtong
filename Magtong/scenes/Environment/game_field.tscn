@@ -1,0 +1,46 @@
+[gd_scene load_steps=5 format=3 uid="uid://c7gyn13lql2m8"]
+
+[ext_resource type="Texture2D" uid="uid://djiliwe7gmlcb" path="res://assets/Textures/PlayField/PlayFieldTex.png" id="1_qw7fs"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_r56b0"]
+size = Vector2(7, 720)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_17bx5"]
+size = Vector2(534, 7)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_sjui1"]
+size = Vector2(530, 7)
+
+[node name="GameField" type="Node2D"]
+
+[node name="FieldCenter" type="Node2D" parent="."]
+position = Vector2(640, 360)
+
+[node name="PlayFieldTex" type="Sprite2D" parent="FieldCenter"]
+scale = Vector2(0.667, 0.667)
+texture = ExtResource("1_qw7fs")
+
+[node name="BorderCollider" type="StaticBody2D" parent="FieldCenter"]
+
+[node name="RightWallCollider" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
+position = Vector2(263.5, 0)
+shape = SubResource("RectangleShape2D_r56b0")
+
+[node name="LeftWallCollider" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
+position = Vector2(-264, 0)
+shape = SubResource("RectangleShape2D_r56b0")
+
+[node name="TopWallCollider" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
+position = Vector2(0, -356.5)
+shape = SubResource("RectangleShape2D_17bx5")
+
+[node name="BottomWallCollider" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
+position = Vector2(0, 356.5)
+shape = SubResource("RectangleShape2D_17bx5")
+
+[node name="CenterLineCollider" type="StaticBody2D" parent="FieldCenter"]
+collision_layer = 2
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="FieldCenter/CenterLineCollider"]
+shape = SubResource("RectangleShape2D_sjui1")
