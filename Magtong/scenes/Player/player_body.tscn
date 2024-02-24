@@ -1,23 +1,43 @@
-[gd_scene load_steps=5 format=3 uid="uid://do0i7ixg4d7p1"]
+[gd_scene load_steps=8 format=3 uid="uid://do0i7ixg4d7p1"]
 
 [ext_resource type="Script" path="res://scenes/Player/PlayerVisuals.gd" id="1_31gdm"]
 [ext_resource type="Texture2D" uid="uid://ch7xm5r8df8gv" path="res://assets/Textures/PlayerCharacter.png" id="1_d561t"]
 [ext_resource type="Script" path="res://scenes/Player/PlayerBody.gd" id="1_tqoy0"]
+[ext_resource type="Resource" uid="uid://cmntx6lne4hft" path="res://resources/player_settings.tres" id="3_4ulju"]
+[ext_resource type="Script" path="res://scenes/Player/PulseEmitter.gd" id="5_xv2b2"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_smi2p"]
+radius = 15.0333
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_v8i1e"]
+radius = 135.059
 
 [node name="PlayerBody" type="CharacterBody2D"]
+collision_layer = 3
+collision_mask = 3
 script = ExtResource("1_tqoy0")
+settings = ExtResource("3_4ulju")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_smi2p")
 
-[node name="Graphics" type="Node2D" parent="."]
+[node name="Graphics" type="Node2D" parent="." node_paths=PackedStringArray("sprite", "player")]
 script = ExtResource("1_31gdm")
-sprite = null
-idle_speed = null
-spin_change_speed = null
+sprite = NodePath("PlayerCharacter")
+player = NodePath("..")
+settings = ExtResource("3_4ulju")
 
 [node name="PlayerCharacter" type="Sprite2D" parent="Graphics"]
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("1_d561t")
+
+[node name="PulseEmitter" type="Node2D" parent="."]
+script = ExtResource("5_xv2b2")
+
+[node name="Area2D" type="Area2D" parent="PulseEmitter" groups=["pulse_area"]]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PulseEmitter/Area2D"]
+shape = SubResource("CircleShape2D_v8i1e")
+
+[connection signal="polarity_changed" from="." to="Graphics" method="on_polarity_changed"]
+[connection signal="body_entered" from="PulseEmitter/Area2D" to="PulseEmitter" method="_on_area_2d_body_entered"]

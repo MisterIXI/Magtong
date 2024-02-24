@@ -9,7 +9,7 @@ size = Vector2(7, 720)
 size = Vector2(534, 7)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_sjui1"]
-size = Vector2(530, 7)
+size = Vector2(530, 2.45)
 
 [node name="GameField" type="Node2D"]
 

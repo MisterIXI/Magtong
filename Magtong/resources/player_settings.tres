@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="PlayerSettings" load_steps=2 format=3 uid="uid://cmntx6lne4hft"]
+
+[ext_resource type="Script" path="res://scenes/Player/player_settings.gd" id="1_081nq"]
+
+[resource]
+script = ExtResource("1_081nq")
+speed = 500.0
+accell = 6000.0
+viz_idle_speed = 2.0
+viz_acc = 150.0
+viz_max_speed = 40.0
