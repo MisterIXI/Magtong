@@ -8,9 +8,25 @@
 metadata/_edit_horizontal_guides_ = [360.0]
 metadata/_edit_vertical_guides_ = [640.0]
 
-[node name="GameField" parent="." instance=ExtResource("1_rmyqn")]
+[node name="GameField" parent="." node_paths=PackedStringArray("player1", "player2", "puck") instance=ExtResource("1_rmyqn")]
+player1 = NodePath("../Player1Body")
+player2 = NodePath("../Player2Body")
+puck = NodePath("../Puck")
 
-[node name="PlayerBody" parent="." instance=ExtResource("2_s3ej5")]
-position = Vector2(666, 575)
+[node name="Player2Body" parent="." node_paths=PackedStringArray("opponent", "puck", "game_field") instance=ExtResource("2_s3ej5")]
+position = Vector2(641, 63)
+player = 2
+opponent = NodePath("../Player1Body")
+puck = NodePath("../Puck")
+game_field = NodePath("../GameField")
+
+[node name="Player1Body" parent="." node_paths=PackedStringArray("opponent", "puck", "game_field") instance=ExtResource("2_s3ej5")]
+position = Vector2(639, 649)
+player = 1
+opponent = NodePath("../Player2Body")
+puck = NodePath("../Puck")
+game_field = NodePath("../GameField")
 
 [node name="Puck" parent="." instance=ExtResource("3_102ka")]
+position = Vector2(634, 357)
+mass = 0.3

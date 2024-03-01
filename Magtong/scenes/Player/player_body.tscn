@@ -1,43 +1,113 @@
-[gd_scene load_steps=8 format=3 uid="uid://do0i7ixg4d7p1"]
+[gd_scene load_steps=11 format=3 uid="uid://do0i7ixg4d7p1"]
 
 [ext_resource type="Script" path="res://scenes/Player/PlayerVisuals.gd" id="1_31gdm"]
 [ext_resource type="Texture2D" uid="uid://ch7xm5r8df8gv" path="res://assets/Textures/PlayerCharacter.png" id="1_d561t"]
 [ext_resource type="Script" path="res://scenes/Player/PlayerBody.gd" id="1_tqoy0"]
 [ext_resource type="Resource" uid="uid://cmntx6lne4hft" path="res://resources/player_settings.tres" id="3_4ulju"]
-[ext_resource type="Script" path="res://scenes/Player/PulseEmitter.gd" id="5_xv2b2"]
+[ext_resource type="Texture2D" uid="uid://dkusv4cnx2ij0" path="res://assets/Textures/plus_sign.png" id="5_igkf6"]
+[ext_resource type="Texture2D" uid="uid://d20d2kk22uqyt" path="res://assets/Textures/minus_sign.png" id="6_ipbde"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_smi2p"]
 radius = 15.0333
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_v8i1e"]
-radius = 135.059
+[sub_resource type="Curve" id="Curve_ikk82"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.709459, 0.841758), -0.221778, -0.221778, 0, 0, Vector2(0.97973, 0), -3.80947, 0.0, 0, 0]
+point_count = 3
 
-[node name="PlayerBody" type="CharacterBody2D"]
+[sub_resource type="Curve" id="Curve_wwg0b"]
+min_value = -200.0
+max_value = 200.0
+_data = [Vector2(0.00675676, 147.253), 0.0, 0.0, 0, 0, Vector2(1, 0), -436.38, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_a04ll"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.718468, 0.797802), -0.798401, -0.798401, 0, 0, Vector2(1, 0), -3.20139, 0.0, 0, 0]
+point_count = 3
+
+[node name="PlayerBody" type="RigidBody2D" node_paths=PackedStringArray("pulse_timer")]
 collision_layer = 3
 collision_mask = 3
 script = ExtResource("1_tqoy0")
 settings = ExtResource("3_4ulju")
+pulse_timer = NodePath("Pulse_CD")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_smi2p")
 
-[node name="Graphics" type="Node2D" parent="." node_paths=PackedStringArray("sprite", "player")]
+[node name="Graphics" type="Node2D" parent="." node_paths=PackedStringArray("sprite", "player", "plus_particles", "minus_particles", "plus_burst_particles", "minus_burst_particles")]
 script = ExtResource("1_31gdm")
 sprite = NodePath("PlayerCharacter")
 player = NodePath("..")
+plus_particles = NodePath("PlusParticles")
+minus_particles = NodePath("MinusParticles")
+plus_burst_particles = NodePath("PlusBurst")
+minus_burst_particles = NodePath("MinusBurst")
 settings = ExtResource("3_4ulju")
 
 [node name="PlayerCharacter" type="Sprite2D" parent="Graphics"]
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("1_d561t")
 
-[node name="PulseEmitter" type="Node2D" parent="."]
-script = ExtResource("5_xv2b2")
+[node name="PlusParticles" type="CPUParticles2D" parent="Graphics"]
+emitting = false
+amount = 70
+texture = ExtResource("5_igkf6")
+spread = 180.0
+gravity = Vector2(0, 0)
+initial_velocity_max = 130.08
+scale_amount_min = 0.5
+scale_amount_max = 0.5
+scale_amount_curve = SubResource("Curve_ikk82")
+color = Color(1, 0, 0, 1)
 
-[node name="Area2D" type="Area2D" parent="PulseEmitter" groups=["pulse_area"]]
+[node name="MinusParticles" type="CPUParticles2D" parent="Graphics"]
+emitting = false
+amount = 70
+texture = ExtResource("6_ipbde")
+emission_shape = 2
+emission_sphere_radius = 128.0
+spread = 180.0
+gravity = Vector2(0, 0)
+radial_accel_min = -1.0
+radial_accel_max = -0.5
+radial_accel_curve = SubResource("Curve_wwg0b")
+scale_amount_min = 0.5
+scale_amount_max = 0.5
+scale_amount_curve = SubResource("Curve_ikk82")
+color = Color(0, 0, 1, 1)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="PulseEmitter/Area2D"]
-shape = SubResource("CircleShape2D_v8i1e")
+[node name="PlusBurst" type="CPUParticles2D" parent="Graphics"]
+emitting = false
+amount = 30
+lifetime = 0.3
+one_shot = true
+explosiveness = 1.0
+texture = ExtResource("5_igkf6")
+spread = 180.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 500.0
+initial_velocity_max = 500.0
+scale_amount_curve = SubResource("Curve_a04ll")
+color = Color(1, 0, 0, 1)
+
+[node name="MinusBurst" type="CPUParticles2D" parent="Graphics"]
+emitting = false
+amount = 30
+lifetime = 0.3
+one_shot = true
+explosiveness = 1.0
+texture = ExtResource("6_ipbde")
+spread = 180.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 500.0
+initial_velocity_max = 500.0
+scale_amount_curve = SubResource("Curve_a04ll")
+color = Color(0, 0, 1, 1)
+
+[node name="FieldManager" type="Node2D" parent="."]
+
+[node name="Pulse_CD" type="Timer" parent="."]
+one_shot = true
 
 [connection signal="polarity_changed" from="." to="Graphics" method="on_polarity_changed"]
-[connection signal="body_entered" from="PulseEmitter/Area2D" to="PulseEmitter" method="_on_area_2d_body_entered"]
+[connection signal="pulse_emitted" from="." to="Graphics" method="_on_player_body_pulse_emitted"]

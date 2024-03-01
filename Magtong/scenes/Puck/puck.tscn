@@ -1,0 +1,24 @@
+[gd_scene load_steps=5 format=3 uid="uid://dlc283cvpl3eh"]
+
+[ext_resource type="Script" path="res://scenes/Puck/Puck.gd" id="1_00uo3"]
+[ext_resource type="Texture2D" uid="uid://br4cd8nmno184" path="res://assets/Textures/puck_plus.png" id="2_dw57o"]
+[ext_resource type="Texture2D" uid="uid://c4bfjwroios8a" path="res://assets/Textures/puck_minus.png" id="3_dwqxq"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_0kl0c"]
+radius = 13.0384
+
+[node name="Puck" type="RigidBody2D" node_paths=PackedStringArray("plus_sprite", "minus_sprite") groups=["puck"]]
+script = ExtResource("1_00uo3")
+plus_sprite = NodePath("plus_sprite")
+minus_sprite = NodePath("minus_sprite")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_0kl0c")
+
+[node name="plus_sprite" type="Sprite2D" parent="."]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_dw57o")
+
+[node name="minus_sprite" type="Sprite2D" parent="."]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("3_dwqxq")
