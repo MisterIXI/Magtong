@@ -41,7 +41,6 @@ func _process(_delta):
 		if Input.is_action_just_pressed("restart") and input_locked and  countdown_timer.is_stopped():
 			reset_game()
 			start_game_countdown()
-
 func reset_game():
 	player1.reset(center_point.global_position + Vector2(0,300))
 	player2.reset(center_point.global_position + Vector2(0,-300))

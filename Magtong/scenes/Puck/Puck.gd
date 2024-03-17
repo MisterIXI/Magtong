@@ -9,27 +9,28 @@ var is_plus_pol: bool = true
 func _ready():
 	pass  # Replace with function body.
 
+@rpc("authority", "call_local", "reliable")
 func reset(new_forced_pos: Vector2):
-	plus_sprite.show()
-	minus_sprite.hide()
-	is_plus_pol = true
+	receive_pulse(true)
 	linear_velocity = Vector2(0, 0)
 	angular_velocity = 0
-	PhysicsServer2D.body_set_state(
-		get_rid(),
-		PhysicsServer2D.BODY_STATE_TRANSFORM,
-		Transform2D.IDENTITY.translated(new_forced_pos)
-	)
+	if is_multiplayer_authority():
+		PhysicsServer2D.body_set_state(
+			get_rid(),
+			PhysicsServer2D.BODY_STATE_TRANSFORM,
+			Transform2D.IDENTITY.translated(new_forced_pos)
+		)
 
-func receive_pulse():
-	if is_plus_pol:
-		plus_sprite.hide()
-		minus_sprite.show()
-		is_plus_pol = false
-	else:
+@rpc("authority", "call_local", "reliable")
+func receive_pulse(is_now_plus_pol: bool):
+	if is_now_plus_pol:
 		plus_sprite.show()
 		minus_sprite.hide()
 		is_plus_pol = true
+	else:
+		plus_sprite.hide()
+		minus_sprite.show()
+		is_plus_pol = false
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

@@ -1,0 +1,8 @@
+[gd_scene load_steps=3 format=3 uid="uid://bd7q71c45dkuk"]
+
+[ext_resource type="Script" path="res://global/resource_manager.gd" id="1_tpcej"]
+[ext_resource type="Resource" uid="uid://cnnrd1bk50cii" path="res://resources/icons.tres" id="2_b8a4s"]
+
+[node name="ResourceManager" type="Node"]
+script = ExtResource("1_tpcej")
+icons = ExtResource("2_b8a4s")

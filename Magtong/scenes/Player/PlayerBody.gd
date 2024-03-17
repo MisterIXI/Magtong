@@ -18,6 +18,7 @@ var forced_pos: Vector2 = Vector2()
 var force_move_flag: bool = false
 
 ## If the polarity is different from the current state, update the state and emit signal
+@rpc("any_peer")
 func change_polarity(new_pol: polarity):
 	if new_pol != state:
 		state = new_pol
@@ -52,7 +53,6 @@ func check_polarity_input():
 		change_polarity(polarity.POS)
 	elif neg and not pos:
 		change_polarity(polarity.NEG)
-
 
 func update_target_vel(new_vel: Vector2):
 	if new_vel.length() > 1:
@@ -94,12 +94,12 @@ func reset(new_forced_pos: Vector2):
 		Transform2D.IDENTITY.translated(new_forced_pos)
 	)
 
-
+@rpc("any_peer","call_local","reliable")
 func try_to_pulse():
 	if pulse_timer.is_stopped():
 		pulse_timer.start()
 		if puck.global_position.distance_to(global_position) < settings.pulse_range:
-			puck.receive_pulse()
+			puck.receive_pulse(not puck.is_plus_pol)
 		emit_signal("pulse_emitted")
 
 
@@ -121,6 +121,8 @@ func _process(_delta):
 
 
 func _physics_process(delta):
+	if not is_multiplayer_authority():
+		return
 	if state != polarity.IDLE:
 		#  apply magnetism to puck
 		var is_repelling = puck.is_plus_pol == (state == polarity.POS)
