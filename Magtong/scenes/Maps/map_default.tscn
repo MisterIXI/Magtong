@@ -1,0 +1,136 @@
+[gd_scene load_steps=11 format=3 uid="uid://c8t5ekg5tbap3"]
+
+[ext_resource type="Script" path="res://scenes/Maps/map_script.gd" id="1_wbm5i"]
+[ext_resource type="Texture2D" uid="uid://djiliwe7gmlcb" path="res://assets/Textures/PlayField/PlayFieldTex.png" id="2_tw27u"]
+[ext_resource type="PackedScene" uid="uid://do0i7ixg4d7p1" path="res://scenes/Player/player_body.tscn" id="2_wihr1"]
+[ext_resource type="Texture2D" uid="uid://dt4t6l1gnn6bj" path="res://assets/Textures/blank pixels.png" id="3_0ppxq"]
+[ext_resource type="PackedScene" uid="uid://dlc283cvpl3eh" path="res://scenes/Puck/puck.tscn" id="3_wk3dj"]
+[ext_resource type="Script" path="res://scenes/Maps/spawn_point_group.gd" id="4_jds7q"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wt5lj"]
+size = Vector2(500, 720)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wqkty"]
+size = Vector2(1500, 525)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2cnpn"]
+size = Vector2(530, 2.45)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_rw2oh"]
+size = Vector2(188, 12)
+
+[node name="MapDefault" type="Node2D" node_paths=PackedStringArray("player_spawn_groups", "ball_spawn_group", "spawner")]
+script = ExtResource("1_wbm5i")
+player_spawn_groups = [NodePath("FieldCenter/SpawnPoints/CenterBackSpawns"), NodePath("FieldCenter/SpawnPoints/LeftBackSpawns"), NodePath("FieldCenter/SpawnPoints/RightBackSpawns")]
+ball_spawn_group = NodePath("FieldCenter/SpawnPoints/BallSpawns")
+spawner = NodePath("FieldCenter/MultiplayerSpawner")
+player_body = ExtResource("2_wihr1")
+puck_body = ExtResource("3_wk3dj")
+
+[node name="FieldCenter" type="Node2D" parent="."]
+position = Vector2(640, 360)
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="FieldCenter"]
+_spawnable_scenes = PackedStringArray("res://scenes/Player/player_body.tscn", "res://scenes/Puck/puck.tscn")
+spawn_path = NodePath("../MultiplayerRoot")
+
+[node name="MultiplayerRoot" type="Node2D" parent="FieldCenter"]
+position = Vector2(-640, -360)
+
+[node name="PlayFieldTex" type="Sprite2D" parent="FieldCenter"]
+scale = Vector2(0.667, 0.667)
+texture = ExtResource("2_tw27u")
+
+[node name="BorderCollider" type="StaticBody2D" parent="FieldCenter"]
+
+[node name="RightWallCollider" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
+position = Vector2(510, 0)
+shape = SubResource("RectangleShape2D_wt5lj")
+
+[node name="LeftWallCollider" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
+position = Vector2(-510, 0)
+shape = SubResource("RectangleShape2D_wt5lj")
+
+[node name="TopWallCollider" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
+position = Vector2(0, -615.5)
+shape = SubResource("RectangleShape2D_wqkty")
+
+[node name="BottomWallCollider" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
+position = Vector2(0, 616)
+shape = SubResource("RectangleShape2D_wqkty")
+
+[node name="CenterLineCollider" type="StaticBody2D" parent="FieldCenter"]
+collision_layer = 2
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="FieldCenter/CenterLineCollider"]
+shape = SubResource("RectangleShape2D_2cnpn")
+
+[node name="GoalSouth" type="Area2D" parent="FieldCenter"]
+position = Vector2(0, 350)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="FieldCenter/GoalSouth"]
+shape = SubResource("RectangleShape2D_rw2oh")
+
+[node name="Sprite2D" type="Sprite2D" parent="FieldCenter/GoalSouth"]
+modulate = Color(1, 0, 0, 1)
+scale = Vector2(18.8, 1.16)
+texture = ExtResource("3_0ppxq")
+
+[node name="GoalNorth" type="Area2D" parent="FieldCenter"]
+position = Vector2(0, -350)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="FieldCenter/GoalNorth"]
+shape = SubResource("RectangleShape2D_rw2oh")
+
+[node name="Sprite2D" type="Sprite2D" parent="FieldCenter/GoalNorth"]
+modulate = Color(0, 0, 1, 1)
+scale = Vector2(18.8, 1.16)
+texture = ExtResource("3_0ppxq")
+
+[node name="SpawnPoints" type="Node2D" parent="FieldCenter"]
+
+[node name="BallSpawns" type="Node2D" parent="FieldCenter/SpawnPoints" node_paths=PackedStringArray("spawn_points")]
+script = ExtResource("4_jds7q")
+spawn_points = [NodePath("CenterSpawn"), NodePath("LeftSpawn"), NodePath("RightSpawn")]
+
+[node name="CenterSpawn" type="Node2D" parent="FieldCenter/SpawnPoints/BallSpawns"]
+
+[node name="LeftSpawn" type="Node2D" parent="FieldCenter/SpawnPoints/BallSpawns"]
+position = Vector2(-86, 0)
+
+[node name="RightSpawn" type="Node2D" parent="FieldCenter/SpawnPoints/BallSpawns"]
+position = Vector2(83, 0)
+
+[node name="CenterBackSpawns" type="Node2D" parent="FieldCenter/SpawnPoints" node_paths=PackedStringArray("spawn_points")]
+script = ExtResource("4_jds7q")
+spawn_points = [NodePath("P1_Spawn"), NodePath("P2_Spawn")]
+
+[node name="P1_Spawn" type="Node2D" parent="FieldCenter/SpawnPoints/CenterBackSpawns"]
+position = Vector2(0, 250)
+
+[node name="P2_Spawn" type="Node2D" parent="FieldCenter/SpawnPoints/CenterBackSpawns"]
+position = Vector2(0, -250)
+
+[node name="LeftBackSpawns" type="Node2D" parent="FieldCenter/SpawnPoints" node_paths=PackedStringArray("spawn_points")]
+script = ExtResource("4_jds7q")
+spawn_points = [NodePath("P1_Spawn"), NodePath("P2_Spawn")]
+
+[node name="P1_Spawn" type="Node2D" parent="FieldCenter/SpawnPoints/LeftBackSpawns"]
+position = Vector2(-200, 250)
+
+[node name="P2_Spawn" type="Node2D" parent="FieldCenter/SpawnPoints/LeftBackSpawns"]
+position = Vector2(200, -250)
+
+[node name="RightBackSpawns" type="Node2D" parent="FieldCenter/SpawnPoints" node_paths=PackedStringArray("spawn_points")]
+script = ExtResource("4_jds7q")
+spawn_points = [NodePath("P1_Spawn"), NodePath("P2_Spawn")]
+
+[node name="P1_Spawn" type="Node2D" parent="FieldCenter/SpawnPoints/RightBackSpawns"]
+position = Vector2(200, 250)
+
+[node name="P2_Spawn" type="Node2D" parent="FieldCenter/SpawnPoints/RightBackSpawns"]
+position = Vector2(-200, -250)
+
+[connection signal="body_entered" from="FieldCenter/GoalSouth" to="." method="_on_goal_collision" binds= [1]]
+[connection signal="body_entered" from="FieldCenter/GoalNorth" to="." method="_on_goal_collision" binds= [2]]

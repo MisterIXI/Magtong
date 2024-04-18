@@ -1,15 +1,56 @@
-[gd_scene load_steps=5 format=3 uid="uid://l7a1a0utyxrb"]
+[gd_scene load_steps=16 format=3 uid="uid://l7a1a0utyxrb"]
 
-[ext_resource type="PackedScene" uid="uid://c7gyn13lql2m8" path="res://scenes/Environment/game_field.tscn" id="1_rmyqn"]
+[ext_resource type="Script" path="res://scenes/Environment/game_field.gd" id="1_jd02v"]
+[ext_resource type="Texture2D" uid="uid://djiliwe7gmlcb" path="res://assets/Textures/PlayField/PlayFieldTex.png" id="2_fwiwj"]
 [ext_resource type="PackedScene" uid="uid://do0i7ixg4d7p1" path="res://scenes/Player/player_body.tscn" id="2_s3ej5"]
 [ext_resource type="PackedScene" uid="uid://dlc283cvpl3eh" path="res://scenes/Puck/puck.tscn" id="3_102ka"]
-[ext_resource type="Script" path="res://scenes/MP_Manager.gd" id="4_brb7h"]
+[ext_resource type="Texture2D" uid="uid://dt4t6l1gnn6bj" path="res://assets/Textures/blank pixels.png" id="3_54136"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_r56b0"]
+size = Vector2(500, 720)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_17bx5"]
+size = Vector2(1500, 525)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_sjui1"]
+size = Vector2(530, 2.45)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1ls0h"]
+size = Vector2(188, 12)
+
+[sub_resource type="RichTextEffect" id="RichTextEffect_yy0li"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_w3lg1"]
+font_size = 50
+font_color = Color(1, 0, 0, 1)
+outline_size = 5
+
+[sub_resource type="LabelSettings" id="LabelSettings_babci"]
+font_size = 50
+font_color = Color(0, 0, 1, 1)
+outline_size = 5
+
+[sub_resource type="LabelSettings" id="LabelSettings_1h3a5"]
+font_size = 50
+font_color = Color(0, 0, 0, 1)
+outline_size = 5
+
+[sub_resource type="LabelSettings" id="LabelSettings_8p8br"]
+font_size = 50
+font_color = Color(0, 0, 0, 1)
+outline_size = 5
+
+[sub_resource type="LabelSettings" id="LabelSettings_fr6ko"]
+font_size = 35
+font_color = Color(0, 0, 0, 1)
+outline_size = 5
 
 [node name="GameScene" type="Node"]
 metadata/_edit_horizontal_guides_ = [360.0]
 metadata/_edit_vertical_guides_ = [640.0]
 
-[node name="GameField" parent="." node_paths=PackedStringArray("player1", "player2", "puck", "goalSouth", "goalNorth", "p1_score_label", "p2_score_label", "timer_label", "status_label", "game_timer", "countdown_timer", "center_point") instance=ExtResource("1_rmyqn")]
+[node name="GameField" type="Node2D" parent="." node_paths=PackedStringArray("player1", "player2", "puck", "goalSouth", "goalNorth", "p1_score_label", "p2_score_label", "timer_label", "status_label", "game_timer", "countdown_timer", "center_point")]
+script = ExtResource("1_jd02v")
 player1 = NodePath("../Player1Body")
 player2 = NodePath("../Player2Body")
 puck = NodePath("../Puck")
@@ -22,6 +63,138 @@ status_label = NodePath("FieldCenter/GameGUIBOX/HBoxContainer/Won Label")
 game_timer = NodePath("Game_Timer")
 countdown_timer = NodePath("Countdown_Timer")
 center_point = NodePath("FieldCenter")
+
+[node name="FieldCenter" type="Node2D" parent="GameField"]
+position = Vector2(640, 360)
+
+[node name="PlayFieldTex" type="Sprite2D" parent="GameField/FieldCenter"]
+scale = Vector2(0.667, 0.667)
+texture = ExtResource("2_fwiwj")
+
+[node name="BorderCollider" type="StaticBody2D" parent="GameField/FieldCenter"]
+
+[node name="RightWallCollider" type="CollisionShape2D" parent="GameField/FieldCenter/BorderCollider"]
+position = Vector2(510, 0)
+shape = SubResource("RectangleShape2D_r56b0")
+
+[node name="LeftWallCollider" type="CollisionShape2D" parent="GameField/FieldCenter/BorderCollider"]
+position = Vector2(-510, 0)
+shape = SubResource("RectangleShape2D_r56b0")
+
+[node name="TopWallCollider" type="CollisionShape2D" parent="GameField/FieldCenter/BorderCollider"]
+position = Vector2(0, -615.5)
+shape = SubResource("RectangleShape2D_17bx5")
+
+[node name="BottomWallCollider" type="CollisionShape2D" parent="GameField/FieldCenter/BorderCollider"]
+position = Vector2(0, 616)
+shape = SubResource("RectangleShape2D_17bx5")
+
+[node name="CenterLineCollider" type="StaticBody2D" parent="GameField/FieldCenter"]
+collision_layer = 2
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GameField/FieldCenter/CenterLineCollider"]
+shape = SubResource("RectangleShape2D_sjui1")
+
+[node name="GoalSouth" type="Area2D" parent="GameField/FieldCenter"]
+position = Vector2(0, 350)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GameField/FieldCenter/GoalSouth"]
+shape = SubResource("RectangleShape2D_1ls0h")
+
+[node name="Sprite2D" type="Sprite2D" parent="GameField/FieldCenter/GoalSouth"]
+modulate = Color(1, 0, 0, 1)
+scale = Vector2(18.8, 1.16)
+texture = ExtResource("3_54136")
+
+[node name="GoalNorth" type="Area2D" parent="GameField/FieldCenter"]
+position = Vector2(0, -350)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GameField/FieldCenter/GoalNorth"]
+shape = SubResource("RectangleShape2D_1ls0h")
+
+[node name="Sprite2D" type="Sprite2D" parent="GameField/FieldCenter/GoalNorth"]
+modulate = Color(0, 0, 1, 1)
+scale = Vector2(18.8, 1.16)
+texture = ExtResource("3_54136")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="GameField/FieldCenter"]
+visible = false
+offset_left = 268.0
+offset_top = -327.0
+offset_right = 609.0
+offset_bottom = -218.0
+theme_override_font_sizes/normal_font_size = 44
+bbcode_enabled = true
+text = "[color=red]P1 00[/color] - [color=blue]P2 00[/color]"
+custom_effects = [SubResource("RichTextEffect_yy0li")]
+
+[node name="P1_Label" type="Label" parent="GameField/FieldCenter"]
+offset_left = -322.0
+offset_top = 291.0
+offset_right = -191.0
+offset_bottom = 360.0
+text = "P1"
+label_settings = SubResource("LabelSettings_w3lg1")
+
+[node name="P2_Label" type="Label" parent="GameField/FieldCenter"]
+offset_left = -328.0
+offset_top = -360.0
+offset_right = -197.0
+offset_bottom = -291.0
+text = "P2"
+label_settings = SubResource("LabelSettings_babci")
+
+[node name="GameGUIBOX" type="VBoxContainer" parent="GameField/FieldCenter"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 278.0
+offset_top = -327.0
+offset_right = 590.0
+offset_bottom = -27.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Timer_HBOX" type="HBoxContainer" parent="GameField/FieldCenter/GameGUIBOX"]
+layout_mode = 2
+
+[node name="Timer_Label" type="Label" parent="GameField/FieldCenter/GameGUIBOX/Timer_HBOX"]
+layout_mode = 2
+text = "05:00.000"
+label_settings = SubResource("LabelSettings_1h3a5")
+
+[node name="Score_HBOX" type="HBoxContainer" parent="GameField/FieldCenter/GameGUIBOX"]
+layout_mode = 2
+
+[node name="P1_Label" type="Label" parent="GameField/FieldCenter/GameGUIBOX/Score_HBOX"]
+layout_mode = 2
+text = "P1 00"
+label_settings = SubResource("LabelSettings_w3lg1")
+
+[node name="Spacer_Label" type="Label" parent="GameField/FieldCenter/GameGUIBOX/Score_HBOX"]
+layout_mode = 2
+text = " - "
+label_settings = SubResource("LabelSettings_8p8br")
+
+[node name="P2_Label" type="Label" parent="GameField/FieldCenter/GameGUIBOX/Score_HBOX"]
+layout_mode = 2
+text = "00 P2"
+label_settings = SubResource("LabelSettings_babci")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="GameField/FieldCenter/GameGUIBOX"]
+layout_mode = 2
+
+[node name="Won Label" type="Label" parent="GameField/FieldCenter/GameGUIBOX/HBoxContainer"]
+layout_mode = 2
+label_settings = SubResource("LabelSettings_fr6ko")
+
+[node name="Game_Timer" type="Timer" parent="GameField"]
+wait_time = 300.0
+
+[node name="Countdown_Timer" type="Timer" parent="GameField"]
 
 [node name="Player2Body" parent="." node_paths=PackedStringArray("opponent", "puck", "pulse_timer", "game_field") instance=ExtResource("2_s3ej5")]
 position = Vector2(641, 63)
@@ -45,52 +218,11 @@ mass = 0.3
 plus_sprite = NodePath("plus_sprite")
 minus_sprite = NodePath("minus_sprite")
 
-[node name="Menu" type="Control" parent="."]
-top_level = true
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="VBoxContainer" type="VBoxContainer" parent="Menu"]
-layout_mode = 1
-anchors_preset = 4
-anchor_top = 0.5
-anchor_bottom = 0.5
-offset_left = 152.0
-offset_top = -25.0
-offset_right = 228.0
-offset_bottom = 25.0
-grow_vertical = 2
-
-[node name="Host_Button" type="Button" parent="Menu/VBoxContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 30
-text = "Host"
-
-[node name="Join_Button" type="Button" parent="Menu/VBoxContainer"]
-auto_translate_mode = 1
-layout_mode = 2
-theme_override_font_sizes/font_size = 30
-text = "Join"
-
-[node name="RPC_Button" type="Button" parent="Menu/VBoxContainer"]
-auto_translate_mode = 1
-layout_mode = 2
-theme_override_font_sizes/font_size = 30
-text = "RPC"
-
-[node name="MP_Manager" type="Node" parent="."]
-script = ExtResource("4_brb7h")
-
-[node name="Node" type="Node" parent="MP_Manager"]
-
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
 _spawnable_scenes = PackedStringArray("res://scenes/Player/player_body.tscn", "res://scenes/Puck/puck.tscn")
 spawn_path = NodePath("..")
 
-[connection signal="pressed" from="Menu/VBoxContainer/Host_Button" to="MP_Manager" method="default_host"]
-[connection signal="pressed" from="Menu/VBoxContainer/Join_Button" to="MP_Manager" method="default_join"]
-[connection signal="pressed" from="Menu/VBoxContainer/RPC_Button" to="MP_Manager" method="call_rpc"]
+[connection signal="body_entered" from="GameField/FieldCenter/GoalSouth" to="GameField" method="_on_goal_south_body_entered"]
+[connection signal="body_entered" from="GameField/FieldCenter/GoalNorth" to="GameField" method="_on_goal_north_body_entered"]
+[connection signal="timeout" from="GameField/Game_Timer" to="GameField" method="_on_game_timeout"]
+[connection signal="timeout" from="GameField/Countdown_Timer" to="GameField" method="_on_countdown_timer_timeout"]

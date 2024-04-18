@@ -1,0 +1,137 @@
+[gd_scene load_steps=9 format=3 uid="uid://b7yo5ed5gg50k"]
+
+[ext_resource type="Script" path="res://scenes/match_manager.gd" id="1_ns4u8"]
+[ext_resource type="PackedScene" uid="uid://c8t5ekg5tbap3" path="res://scenes/Maps/map_default.tscn" id="2_belxq"]
+
+[sub_resource type="RichTextEffect" id="RichTextEffect_yy0li"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_s4epw"]
+font_size = 50
+font_color = Color(1, 0, 0, 1)
+outline_size = 5
+
+[sub_resource type="LabelSettings" id="LabelSettings_hh5e6"]
+font_size = 50
+font_color = Color(0, 0, 1, 1)
+outline_size = 5
+
+[sub_resource type="LabelSettings" id="LabelSettings_f18w1"]
+font_size = 50
+font_color = Color(0, 0, 0, 1)
+outline_size = 5
+
+[sub_resource type="LabelSettings" id="LabelSettings_i7iqq"]
+font_size = 50
+font_color = Color(0, 0, 0, 1)
+outline_size = 5
+
+[sub_resource type="LabelSettings" id="LabelSettings_ouugc"]
+font_size = 35
+font_color = Color(0, 0, 0, 1)
+outline_size = 5
+
+[node name="MatchManager" type="Node2D" node_paths=PackedStringArray("p1_score_label", "p2_score_label", "timer_label", "status_label", "game_timer", "countdown_timer", "ms")]
+script = ExtResource("1_ns4u8")
+p1_score_label = NodePath("GameGUIBOX/Score_HBOX/P1_Label")
+p2_score_label = NodePath("GameGUIBOX/Score_HBOX/P2_Label")
+timer_label = NodePath("GameGUIBOX/Timer_HBOX/Timer_Label")
+status_label = NodePath("GameGUIBOX/HBoxContainer/State_label")
+game_timer = NodePath("GameTimer")
+countdown_timer = NodePath("CountdownTimer")
+ms = NodePath("MapDefault")
+
+[node name="GameTimer" type="Timer" parent="."]
+
+[node name="CountdownTimer" type="Timer" parent="."]
+
+[node name="MapDefault" parent="." node_paths=PackedStringArray("player_spawn_groups", "ball_spawn_group", "spawner") instance=ExtResource("2_belxq")]
+player_spawn_groups = [NodePath("FieldCenter/SpawnPoints/CenterBackSpawns"), NodePath("FieldCenter/SpawnPoints/LeftBackSpawns"), NodePath("FieldCenter/SpawnPoints/RightBackSpawns")]
+ball_spawn_group = NodePath("FieldCenter/SpawnPoints/BallSpawns")
+spawner = NodePath("FieldCenter/MultiplayerSpawner")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+auto_translate_mode = 1
+visible = false
+offset_left = 268.0
+offset_top = -327.0
+offset_right = 609.0
+offset_bottom = -218.0
+theme_override_font_sizes/normal_font_size = 44
+bbcode_enabled = true
+text = "[color=red]P1 00[/color] - [color=blue]P2 00[/color]"
+custom_effects = [SubResource("RichTextEffect_yy0li")]
+
+[node name="P1_Label" type="Label" parent="."]
+auto_translate_mode = 1
+offset_left = 318.0
+offset_top = 651.0
+offset_right = 449.0
+offset_bottom = 720.0
+text = "P1"
+label_settings = SubResource("LabelSettings_s4epw")
+
+[node name="P2_Label" type="Label" parent="."]
+auto_translate_mode = 1
+offset_left = 312.0
+offset_right = 443.0
+offset_bottom = 69.0
+text = "P2"
+label_settings = SubResource("LabelSettings_hh5e6")
+
+[node name="GameGUIBOX" type="VBoxContainer" parent="."]
+auto_translate_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 918.0
+offset_top = 33.0
+offset_right = 1230.0
+offset_bottom = 333.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Timer_HBOX" type="HBoxContainer" parent="GameGUIBOX"]
+auto_translate_mode = 1
+layout_mode = 2
+
+[node name="Timer_Label" type="Label" parent="GameGUIBOX/Timer_HBOX"]
+auto_translate_mode = 1
+layout_mode = 2
+text = "05:00.000"
+label_settings = SubResource("LabelSettings_f18w1")
+
+[node name="Score_HBOX" type="HBoxContainer" parent="GameGUIBOX"]
+auto_translate_mode = 1
+layout_mode = 2
+
+[node name="P1_Label" type="Label" parent="GameGUIBOX/Score_HBOX"]
+auto_translate_mode = 1
+layout_mode = 2
+text = "P1 00"
+label_settings = SubResource("LabelSettings_s4epw")
+
+[node name="Spacer_Label" type="Label" parent="GameGUIBOX/Score_HBOX"]
+auto_translate_mode = 1
+layout_mode = 2
+text = " - "
+label_settings = SubResource("LabelSettings_i7iqq")
+
+[node name="P2_Label" type="Label" parent="GameGUIBOX/Score_HBOX"]
+auto_translate_mode = 1
+layout_mode = 2
+text = "00 P2"
+label_settings = SubResource("LabelSettings_hh5e6")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="GameGUIBOX"]
+auto_translate_mode = 1
+layout_mode = 2
+
+[node name="State_label" type="Label" parent="GameGUIBOX/HBoxContainer"]
+auto_translate_mode = 1
+layout_mode = 2
+label_settings = SubResource("LabelSettings_ouugc")
+
+[connection signal="timeout" from="GameTimer" to="." method="_on_game_timeout"]
+[connection signal="timeout" from="CountdownTimer" to="." method="_on_countdown_timer_timeout"]

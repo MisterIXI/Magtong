@@ -42,7 +42,7 @@ func on_polarity_changed(new_pol):
 		minus_particles.emitting = false
 
 
-func _on_player_body_pulse_emitted():
+func _on_player_body_pulse_emitted(_pos: Vector2):
 	# both are one_shot, so they will stop emitting by themselves
 	plus_burst_particles.emitting = true
 	minus_burst_particles.emitting = true

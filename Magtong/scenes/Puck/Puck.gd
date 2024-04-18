@@ -14,12 +14,11 @@ func reset(new_forced_pos: Vector2):
 	receive_pulse(true)
 	linear_velocity = Vector2(0, 0)
 	angular_velocity = 0
-	if is_multiplayer_authority():
-		PhysicsServer2D.body_set_state(
-			get_rid(),
-			PhysicsServer2D.BODY_STATE_TRANSFORM,
-			Transform2D.IDENTITY.translated(new_forced_pos)
-		)
+	PhysicsServer2D.body_set_state(
+		get_rid(),
+		PhysicsServer2D.BODY_STATE_TRANSFORM,
+		Transform2D.IDENTITY.translated(new_forced_pos)
+	)
 
 @rpc("authority", "call_local", "reliable")
 func receive_pulse(is_now_plus_pol: bool):
@@ -32,7 +31,3 @@ func receive_pulse(is_now_plus_pol: bool):
 		minus_sprite.show()
 		is_plus_pol = false
 
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
-	pass

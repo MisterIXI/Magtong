@@ -11,14 +11,15 @@ config_version=5
 [application]
 
 config/name="Magtong"
-run/main_scene="res://scenes/game_scene.tscn"
+run/main_scene="res://scenes/Menu/main_menu.tscn"
 config/features=PackedStringArray("4.3", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
 
-glob_resource_manager="*res://global/resource_manager.tscn"
-glob_input_manager="*res://global/input_manager.tscn"
+globInputManager="*res://global/Input/input_manager.gd"
+globResourceManager="*res://global/resource_manager.tscn"
+globGameManager="*res://global/game_manager.tscn"
 
 [debug]
 

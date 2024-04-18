@@ -1,0 +1,159 @@
+[gd_scene load_steps=5 format=3 uid="uid://bve1syav3fq1b"]
+
+[ext_resource type="Script" path="res://scenes/Lobby/lobby.gd" id="1_7jl7p"]
+[ext_resource type="PackedScene" uid="uid://7a0tqfpd7xb5" path="res://scenes/Lobby/player_container.tscn" id="2_hqkbe"]
+[ext_resource type="Texture2D" uid="uid://djiliwe7gmlcb" path="res://assets/Textures/PlayField/PlayFieldTex.png" id="3_j2fv2"]
+[ext_resource type="PackedScene" uid="uid://b8f3iuixb8vj3" path="res://scenes/Lobby/player_team_selector.tscn" id="4_xtut1"]
+
+[node name="Lobby" type="Control" node_paths=PackedStringArray("lobby_container")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_7jl7p")
+player_container = ExtResource("2_hqkbe")
+lobby_container = NodePath("PlayerSelector/MarginContainer/ScrollContainer/HFlowContainer")
+
+[node name="PlayerSelector" type="Control" parent="."]
+auto_translate_mode = 1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="PlayerSelector"]
+auto_translate_mode = 1
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -82.0
+offset_top = 20.0
+offset_right = 83.0
+offset_bottom = 59.0
+grow_horizontal = 2
+theme_type_variation = &"HeaderLarge"
+text = "PlayerLobby"
+
+[node name="MarginContainer" type="MarginContainer" parent="PlayerSelector"]
+auto_translate_mode = 1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 90
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="ScrollContainer" type="ScrollContainer" parent="PlayerSelector/MarginContainer"]
+auto_translate_mode = 1
+layout_mode = 2
+
+[node name="HFlowContainer" type="HFlowContainer" parent="PlayerSelector/MarginContainer/ScrollContainer"]
+auto_translate_mode = 1
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="PlayerSelector"]
+_spawnable_scenes = PackedStringArray("res://scenes/Lobby/player_container.tscn")
+spawn_path = NodePath("../MarginContainer/ScrollContainer/HFlowContainer")
+
+[node name="MapSelector" type="Control" parent="."]
+auto_translate_mode = 1
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Header" type="Label" parent="MapSelector"]
+auto_translate_mode = 1
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -94.0
+offset_top = 20.0
+offset_right = 95.0
+offset_bottom = 59.0
+grow_horizontal = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+theme_type_variation = &"HeaderLarge"
+text = "Map Selection"
+
+[node name="MarginContainer" type="MarginContainer" parent="MapSelector"]
+auto_translate_mode = 1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 80
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MapSelector/MarginContainer"]
+auto_translate_mode = 1
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MapSelector/MarginContainer/HBoxContainer"]
+auto_translate_mode = 1
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 3.0
+
+[node name="Panel" type="Panel" parent="MapSelector/MarginContainer/HBoxContainer/VBoxContainer"]
+auto_translate_mode = 1
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 2.0
+
+[node name="TextureRect" type="TextureRect" parent="MapSelector/MarginContainer/HBoxContainer/VBoxContainer/Panel"]
+auto_translate_mode = 1
+layout_mode = 1
+offset_right = 207.0
+offset_bottom = 207.0
+texture = ExtResource("3_j2fv2")
+expand_mode = 4
+stretch_mode = 4
+
+[node name="Panel2" type="Panel" parent="MapSelector/MarginContainer/HBoxContainer/VBoxContainer"]
+auto_translate_mode = 1
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="TextureRect" type="TextureRect" parent="MapSelector/MarginContainer/HBoxContainer/VBoxContainer/Panel2"]
+auto_translate_mode = 1
+layout_mode = 2
+offset_top = 4.0
+offset_bottom = 4.0
+
+[node name="HFlowContainer" type="HFlowContainer" parent="MapSelector/MarginContainer/HBoxContainer/VBoxContainer"]
+auto_translate_mode = 1
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MapSelector/MarginContainer/HBoxContainer"]
+auto_translate_mode = 1
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MapSelector/MarginContainer/HBoxContainer/ScrollContainer"]
+auto_translate_mode = 1
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PlayerTeamSelectionPanel" parent="MapSelector/MarginContainer/HBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("4_xtut1")]
+layout_mode = 2

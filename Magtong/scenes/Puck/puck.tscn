@@ -22,3 +22,5 @@ texture = ExtResource("2_dw57o")
 [node name="minus_sprite" type="Sprite2D" parent="."]
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("3_dwqxq")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
