@@ -1,11 +1,9 @@
-[gd_scene load_steps=8 format=3 uid="uid://7a0tqfpd7xb5"]
+[gd_scene load_steps=6 format=3 uid="uid://7a0tqfpd7xb5"]
 
 [ext_resource type="Script" path="res://scenes/Lobby/player_container.gd" id="1_m20bt"]
 [ext_resource type="Texture2D" uid="uid://ch7xm5r8df8gv" path="res://assets/Textures/PlayerCharacter.png" id="2_f5rhr"]
 [ext_resource type="Texture2D" uid="uid://cpcm7s6ueii1h" path="res://assets/Icons/keyboard.png" id="2_jqhe5"]
 [ext_resource type="Texture2D" uid="uid://jnwop8yfsf10" path="res://assets/Icons/exit-door.svg" id="3_0jy1l"]
-[ext_resource type="Texture2D" uid="uid://njwl7to6dmd0" path="res://assets/Textures/selection_rect.png" id="5_yfqb6"]
-[ext_resource type="Script" path="res://scenes/Lobby/selection_box.gd" id="6_2g5w7"]
 [ext_resource type="Script" path="res://scenes/Lobby/selection_tweener.gd" id="7_l6fae"]
 
 [node name="PlayerContainer" type="Panel" node_paths=PackedStringArray("main_content", "join_text", "player_label", "input_icon", "input_label", "player_icon", "button_left", "button_right", "check_box_ready", "button_leave", "selection_tweener")]
@@ -108,22 +106,6 @@ layout_mode = 2
 text = "Press any button to join..."
 horizontal_alignment = 1
 autowrap_mode = 3
-
-[node name="SelectionBox" type="NinePatchRect" parent="."]
-layout_mode = 2
-offset_left = 5.0
-offset_top = 221.0
-offset_right = 205.0
-offset_bottom = 255.655
-size_flags_horizontal = 4
-size_flags_vertical = 4
-texture = ExtResource("5_yfqb6")
-draw_center = false
-patch_margin_left = 5
-patch_margin_top = 5
-patch_margin_right = 5
-patch_margin_bottom = 5
-script = ExtResource("6_2g5w7")
 
 [node name="SelectionTweener" type="Node" parent="."]
 script = ExtResource("7_l6fae")

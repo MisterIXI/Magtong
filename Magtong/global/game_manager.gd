@@ -26,7 +26,8 @@ signal state_changed(old_state: State, new_state: State)
 @export var message_vbox: VBoxContainer
 @export var message_scrollbox: ScrollContainer
 
-
+var player_ids: Dictionary = {}
+var p_id_helper: int = 1
 
 @rpc("authority", "call_local", "reliable")
 func _change_state(new_state: State):
@@ -37,9 +38,12 @@ func _change_state(new_state: State):
 	elif new_state == State.GAME:
 		#TODO: change to map select scene when implemented
 		# for now just set teams manually and load the default map
-		var im = globInputManager
-		im.player_inputs.get(1).get(-1).team = 1
-		im.player_inputs.get(1).get(0).team = 2
+		if multiplayer.is_server():
+			var im = globInputManager
+			var p1 = im.get_child(0)
+			var p2 = im.get_child(1)
+			p1.team = 1
+			p2.team = 2
 		get_tree().change_scene_to_packed(default_map_scene)
 	state_changed.emit(old_state, new_state)
 
@@ -47,34 +51,48 @@ func _change_state(new_state: State):
 
 func host_game(is_local: bool):
 	assert(current_state == State.MENU)
+	multiplayer.peer_connected.connect(_on_peer_connected)
 	var peer = ENetMultiplayerPeer.new()
+	var retval
 	if is_local:
 		# 1 max client
-		peer.create_server(12345, 1)
+		retval = peer.create_server(12345, 1)
 	else:
 		# 32 max clients
-		peer.create_server(12345, 32)
-	print("Server created on port 12345")
-	_change_state(State.LOBBY)
-	multiplayer.peer_connected.connect(_on_peer_connected)
+		retval = peer.create_server(12345, 32)
+	if retval:
+		print("Server error: ", retval)
+	else:
+		print("Server created on port 12345")
+	_change_state.rpc(State.LOBBY)
+	multiplayer.multiplayer_peer = peer
+	_on_peer_connected(1)
 
 func join_game(ip: String, port: int):
 	assert(current_state == State.MENU)
+	multiplayer.connected_to_server.connect(_on_connected)
+	multiplayer.server_disconnected.connect(_on_disconnected)
 	var peer = ENetMultiplayerPeer.new()
-	peer.create_client(ip, port)
+	var returnval = peer.create_client(ip, port)
+	multiplayer.multiplayer_peer = peer
+	print("Client return val: ", returnval)
 	print("Client connected to ", ip, ":", port)
+	print_message("is_server "+ str(multiplayer.is_server()))
+	print_message("Client return val: " + str(returnval))
+
 	_change_state(State.LOBBY)
 
 func lobby_finished():
 	pass
 
-@rpc("authority", "call_local", "reliable")
+
+@rpc("any_peer", "call_local", "reliable" )
 func send_message(message: String):
 	print_message(message)
 
 func print_message(message: String):
 	message_log.append(message)
-	print("New Message received: ", message)
+	print("[gm]: ", message)
 	var label = Label.new()
 	label.text = message
 	message_vbox.add_child(label)
@@ -101,9 +119,17 @@ func countdown_step():
 		send_message.rpc("Start!")
 		if current_state == State.LOBBY:
 			#TODO: change to map select scene when implemented
-			_change_state(State.GAME)
+			_change_state.rpc(State.GAME)
 
-func _on_peer_connected(id: int):
-	send_message.rpc("New player connected! ID: " + str(id))
+func _on_peer_connected(peer_id: int):
+	player_ids[peer_id] = p_id_helper
+	send_message.rpc("New player connected! ID: " + str(p_id_helper))
+	p_id_helper += 1
 	if current_state == State.LOBBY:
 		pass
+
+func _on_connected():
+	print_message("Connected to server!")
+
+func _on_disconnected():
+	print_message("Disconnected from server!")

@@ -19,11 +19,12 @@ size = Vector2(530, 2.45)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_rw2oh"]
 size = Vector2(188, 12)
 
-[node name="MapDefault" type="Node2D" node_paths=PackedStringArray("player_spawn_groups", "ball_spawn_group", "spawner")]
+[node name="MapDefault" type="Node2D" node_paths=PackedStringArray("player_spawn_groups", "ball_spawn_group", "spawner", "mp_root")]
 script = ExtResource("1_wbm5i")
 player_spawn_groups = [NodePath("FieldCenter/SpawnPoints/CenterBackSpawns"), NodePath("FieldCenter/SpawnPoints/LeftBackSpawns"), NodePath("FieldCenter/SpawnPoints/RightBackSpawns")]
 ball_spawn_group = NodePath("FieldCenter/SpawnPoints/BallSpawns")
 spawner = NodePath("FieldCenter/MultiplayerSpawner")
+mp_root = NodePath("FieldCenter/MultiplayerRoot")
 player_body = ExtResource("2_wihr1")
 puck_body = ExtResource("3_wk3dj")
 
@@ -33,9 +34,6 @@ position = Vector2(640, 360)
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="FieldCenter"]
 _spawnable_scenes = PackedStringArray("res://scenes/Player/player_body.tscn", "res://scenes/Puck/puck.tscn")
 spawn_path = NodePath("../MultiplayerRoot")
-
-[node name="MultiplayerRoot" type="Node2D" parent="FieldCenter"]
-position = Vector2(-640, -360)
 
 [node name="PlayFieldTex" type="Sprite2D" parent="FieldCenter"]
 scale = Vector2(0.667, 0.667)
@@ -87,6 +85,9 @@ shape = SubResource("RectangleShape2D_rw2oh")
 modulate = Color(0, 0, 1, 1)
 scale = Vector2(18.8, 1.16)
 texture = ExtResource("3_0ppxq")
+
+[node name="MultiplayerRoot" type="Node2D" parent="FieldCenter"]
+position = Vector2(-640, -360)
 
 [node name="SpawnPoints" type="Node2D" parent="FieldCenter"]
 

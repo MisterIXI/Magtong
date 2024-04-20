@@ -52,4 +52,4 @@ func boot_to_menu_with_message(_message: String) -> void:
 
 
 func _on_join_online_pressed():
-	globGameManager.join_game("127.0.0.1", 12345)
+	globGameManager.join_game("localhost", 12345)

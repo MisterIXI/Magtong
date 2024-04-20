@@ -44,10 +44,11 @@ ms = NodePath("MapDefault")
 
 [node name="CountdownTimer" type="Timer" parent="."]
 
-[node name="MapDefault" parent="." node_paths=PackedStringArray("player_spawn_groups", "ball_spawn_group", "spawner") instance=ExtResource("2_belxq")]
+[node name="MapDefault" parent="." node_paths=PackedStringArray("player_spawn_groups", "ball_spawn_group", "spawner", "mp_root") instance=ExtResource("2_belxq")]
 player_spawn_groups = [NodePath("FieldCenter/SpawnPoints/CenterBackSpawns"), NodePath("FieldCenter/SpawnPoints/LeftBackSpawns"), NodePath("FieldCenter/SpawnPoints/RightBackSpawns")]
 ball_spawn_group = NodePath("FieldCenter/SpawnPoints/BallSpawns")
 spawner = NodePath("FieldCenter/MultiplayerSpawner")
+mp_root = NodePath("FieldCenter/MultiplayerRoot")
 
 [node name="RichTextLabel" type="RichTextLabel" parent="."]
 auto_translate_mode = 1

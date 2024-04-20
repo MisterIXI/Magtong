@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://dlc283cvpl3eh"]
+[gd_scene load_steps=6 format=3 uid="uid://dlc283cvpl3eh"]
 
 [ext_resource type="Script" path="res://scenes/Puck/Puck.gd" id="1_00uo3"]
 [ext_resource type="Texture2D" uid="uid://br4cd8nmno184" path="res://assets/Textures/puck_plus.png" id="2_dw57o"]
@@ -6,6 +6,14 @@
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_0kl0c"]
 radius = 13.0384
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_asgvy"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
 
 [node name="Puck" type="RigidBody2D" node_paths=PackedStringArray("plus_sprite", "minus_sprite") groups=["puck"]]
 script = ExtResource("1_00uo3")
@@ -20,7 +28,9 @@ scale = Vector2(0.5, 0.5)
 texture = ExtResource("2_dw57o")
 
 [node name="minus_sprite" type="Sprite2D" parent="."]
+visible = false
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("3_dwqxq")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_asgvy")

@@ -63,10 +63,10 @@ func check_input(event: InputEvent) -> InputInfo:
 		print(key_event)
 		if key_event.keycode == self.k_up:
 			input.input_type = InputInfo.InputType.MOVE_Y
-			input.axis_value = 1.0 if key_event.pressed else 0.0
+			input.axis_value = -1.0 if key_event.pressed else 0.0
 		elif key_event.keycode == self.k_down:
 			input.input_type = InputInfo.InputType.MOVE_Y
-			input.axis_value = -1.0 if key_event.pressed else 0.0
+			input.axis_value = 1.0 if key_event.pressed else 0.0
 		elif key_event.keycode == self.k_left:
 			input.input_type = InputInfo.InputType.MOVE_X
 			input.axis_value = -1.0 if key_event.pressed else 0.0

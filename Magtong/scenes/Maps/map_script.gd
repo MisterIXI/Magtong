@@ -4,6 +4,7 @@ class_name MapScript
 @export var player_spawn_groups: Array[SpawnPointGroup] = []
 @export var ball_spawn_group: SpawnPointGroup
 @export var spawner: MultiplayerSpawner
+@export var mp_root: Node2D
 @export var player_body: PackedScene
 @export var puck_body: PackedScene
 
@@ -25,10 +26,12 @@ func _ready():
 		player_sg_indices.append(i)
 
 func setup(match_manager: MatchManager) -> void:
+	if not multiplayer.is_server():
+		return
 	im = globInputManager
 	mm = match_manager
 	var puck = puck_body.instantiate()
-	spawner.add_child(puck)
+	mp_root.add_child(puck,true)
 	pucks.append(puck)
 	players = [[],[]]
 	# TODO: get team num somehow to not hardcode this
@@ -40,7 +43,7 @@ func setup(match_manager: MatchManager) -> void:
 			if team <= 0:
 				continue # skip spectators and invalid team
 			var new_player: PlayerBody = player_body.instantiate()
-			spawner.add_child(new_player)
+			mp_root.add_child(new_player, true)
 			new_player.setup(im.player_inputs[peer][player])
 			players[team - 1].append(new_player)
 			team_counter[team] = team_counter.get(team, 0) + 1
@@ -55,6 +58,8 @@ func _on_goal_collision(body: Node, team: int) -> void:
 		goal_scored.emit(team)
 	
 func reset_field() -> void:
+	if not multiplayer.is_server():
+		return
 	await get_tree().physics_frame
 	reset_balls()
 	reset_players()

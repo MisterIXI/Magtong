@@ -1,4 +1,5 @@
 extends Node
+class_name SelectionTweener
 
 var tween: Tween = null
 var prev_control: Control = null

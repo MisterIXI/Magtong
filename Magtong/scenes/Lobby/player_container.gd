@@ -16,7 +16,7 @@ class_name PlayerContainer
 @export var check_box_ready: CheckBox
 @export var button_leave: Button
 
-@export var selection_tweener: Node
+@export var selection_tweener: SelectionTweener
 
 var player_input: PlayerInput = null
 var selected_option: Control = null
@@ -27,38 +27,36 @@ func _ready():
 	main_content.set_deferred("visible", false)
 
 
-func set_player(player_input: PlayerInput) -> void:
+func set_player(input_dict: Dictionary, player_id: int) -> void:
 	join_text.set_deferred("visible", false)
-	self.player_input = player_input
-	var player_id := str(player_input.peer_id) + "_" + str(player_input.device_id)
-	player_input.input_received.connect(_receive_input)
+	var player_name := str(player_id) + "_" + str(input_dict["device_id"])
 	# check if online player
-	if player_input.peer_id != multiplayer.get_unique_id():
+	if input_dict["peer_id"] != multiplayer.get_unique_id():
 		# is online player
 		input_icon.texture = globResourceManager.icons.ui_icons[IconPack.IconIDs.GLOBE]
-		player_label.text = "Player: " + str(player_id)
+		player_label.text = "Player: " + str(player_name)
 		input_label.text = "Online"
 	else:
 		# is local player
-		if player_input.device_id == - 1:
+		if input_dict["device_id"] == - 1:
 			# is keyboard
 			input_icon.texture = globResourceManager.icons.ui_icons[IconPack.IconIDs.KEYBOARD]
-			player_label.text = "Player: " + str(player_id)
+			player_label.text = "Player: " + str(player_name)
 			input_label.text = "Keyboard"
 		else:
 			# is gamepad
 			input_icon.texture = globResourceManager.icons.ui_icons[IconPack.IconIDs.GAMEPAD]
-			player_label.text = "Player: " + str(player_id)
-			input_label.text = "Gamepad " + str(player_input.device_id) 
+			player_label.text = "Player: " + str(player_name)
+			input_label.text = "Gamepad " + str(input_dict["device_id"]) 
 	selected_option = check_box_ready
 	selection_tweener.highlight_control(selected_option)
 
 	main_content.set_deferred("visible", true)
 	player_icon.texture = globResourceManager.icons.player_sprites[0]
-	player_input.team = 0
-	player_input.is_ready = false
-	player_input.player_sprite_id = 0
-	
+
+func connect_player(player_input: PlayerInput):
+	self.player_input = player_input
+	player_input.input_received.connect(_receive_input)
 
 func _exit_tree():
 	if player_input != null:
