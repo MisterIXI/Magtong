@@ -13,7 +13,6 @@ var state = polarity.IDLE
 
 var target_vel: Vector2 = Vector2()
 @export var pulse_timer: Timer
-@export var game_field: Game
 var forced_pos: Vector2 = Vector2()
 var force_move_flag: bool = false
 
@@ -24,32 +23,46 @@ var minus_input: float = 0.0
 var current_polarity
 
 @onready var im: InputManager = globInputManager
+var mm: MatchManager
 var player_input: PlayerInput
 
 func setup(player_input: PlayerInput):
 	self.player_input = player_input
 	player_input.input_received.connect(on_input)
+	globInputManager.input_unlocked.connect(_on_input_unlocked)
+	mm = get_node("/root/MatchManager") as MatchManager
 
 func on_input(input_info: InputInfo):
 	assert(multiplayer.is_server())
 	match input_info.input_type:
 		InputInfo.InputType.MOVE_X:
 			x_input = input_info.axis_value
-			update_target_vel(Vector2(x_input, y_input))
+			if not im.input_locked:
+				update_target_vel(Vector2(x_input, y_input))
 		InputInfo.InputType.MOVE_Y:
 			y_input = input_info.axis_value
-			update_target_vel(Vector2(x_input, y_input))
+			if not im.input_locked:
+				update_target_vel(Vector2(x_input, y_input))
 		InputInfo.InputType.PLUS:
 			plus_input = input_info.axis_value
-			update_polarity()
+			if not im.input_locked:
+				update_polarity()
 		InputInfo.InputType.MINUS:
 			minus_input = input_info.axis_value
-			update_polarity()
+			if not im.input_locked:
+				update_polarity()
 		InputInfo.InputType.PRIMARY:
-			if input_info.is_pressed:
+			if input_info.is_pressed and not im.input_locked:
 				try_to_pulse()
+		InputInfo.InputType.MENU:
+			if input_info.is_pressed:
+				mm.request_restart.rpc_id(1)
 		_:
 			pass
+
+func _on_input_unlocked():
+	update_target_vel(Vector2(x_input, y_input))
+	update_polarity()
 
 func update_target_vel(new_vel: Vector2):
 	if new_vel.length() > 1:
@@ -73,7 +86,15 @@ func change_polarity(new_pol: polarity):
 	if new_pol != state:
 		state = new_pol
 		polarity_changed.emit(state)
-
+@rpc("any_peer", "call_local", "reliable")
+func reset_input():
+	x_input = 0.0
+	y_input = 0.0
+	plus_input = 0.0
+	minus_input = 0.0
+	update_target_vel(Vector2(x_input, y_input))
+	update_polarity()
+	
 func reset(new_pos: Vector2):
 	linear_velocity = Vector2()
 	angular_velocity = 0

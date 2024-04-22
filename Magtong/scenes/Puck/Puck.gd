@@ -10,8 +10,9 @@ func _ready():
 	pass  # Replace with function body.
 
 @rpc("authority", "call_local", "reliable")
-func reset(new_forced_pos: Vector2):
-	receive_pulse(true)
+func reset(new_forced_pos: Vector2, reset_state: bool):
+	if reset_state:
+		receive_pulse.rpc(true)
 	linear_velocity = Vector2(0, 0)
 	angular_velocity = 0
 	PhysicsServer2D.body_set_state(

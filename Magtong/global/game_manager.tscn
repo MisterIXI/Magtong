@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://dtbob5x5gnibc"]
+[gd_scene load_steps=6 format=3 uid="uid://dtbob5x5gnibc"]
 
 [ext_resource type="Script" path="res://global/game_manager.gd" id="1_s7x7p"]
 [ext_resource type="PackedScene" uid="uid://c3ev5o6ua0dou" path="res://scenes/Menu/main_menu.tscn" id="2_1lq6v"]
 [ext_resource type="PackedScene" uid="uid://bve1syav3fq1b" path="res://scenes/Lobby/lobby_scene.tscn" id="3_j3l8s"]
 [ext_resource type="PackedScene" uid="uid://b7yo5ed5gg50k" path="res://scenes/Maps/match_manager.tscn" id="4_5jak3"]
+[ext_resource type="Script" path="res://global/ping_tester.gd" id="5_eaeoo"]
 
 [node name="GameManager" type="Node" node_paths=PackedStringArray("timer", "message_vbox", "message_scrollbox")]
 script = ExtResource("1_s7x7p")
@@ -18,7 +19,7 @@ message_scrollbox = NodePath("MessagePanel/MessageMarginContainer/MessageScrollB
 one_shot = true
 
 [node name="MessagePanel" type="PanelContainer" parent="."]
-offset_right = 525.0
+offset_right = 379.0
 offset_bottom = 178.0
 size_flags_horizontal = 0
 size_flags_vertical = 0
@@ -35,3 +36,13 @@ layout_mode = 2
 
 [node name="MessageVBox" type="VBoxContainer" parent="MessagePanel/MessageMarginContainer/MessageScrollBox"]
 layout_mode = 2
+
+[node name="PingTester" type="Node" parent="." node_paths=PackedStringArray("timer")]
+process_mode = 4
+script = ExtResource("5_eaeoo")
+timer = NodePath("Timer")
+
+[node name="Timer" type="Timer" parent="PingTester"]
+
+[connection signal="timeout" from="Countdown_Timer" to="." method="countdown_step"]
+[connection signal="timeout" from="PingTester/Timer" to="PingTester" method="on_timeout"]

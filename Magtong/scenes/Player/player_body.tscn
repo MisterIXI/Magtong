@@ -1,7 +1,8 @@
-[gd_scene load_steps=12 format=3 uid="uid://do0i7ixg4d7p1"]
+[gd_scene load_steps=13 format=3 uid="uid://do0i7ixg4d7p1"]
 
 [ext_resource type="Script" path="res://scenes/Player/PlayerVisuals.gd" id="1_31gdm"]
 [ext_resource type="Texture2D" uid="uid://ch7xm5r8df8gv" path="res://assets/Textures/PlayerCharacter.png" id="1_d561t"]
+[ext_resource type="PhysicsMaterial" uid="uid://b0b4nmkgg6odu" path="res://resources/Player_physics_mat.tres" id="1_o1307"]
 [ext_resource type="Script" path="res://scenes/Player/PlayerBody.gd" id="1_tqoy0"]
 [ext_resource type="Resource" uid="uid://cmntx6lne4hft" path="res://resources/player_settings.tres" id="3_4ulju"]
 [ext_resource type="Texture2D" uid="uid://dkusv4cnx2ij0" path="res://assets/Textures/plus_sign.png" id="5_igkf6"]
@@ -35,6 +36,7 @@ properties/1/replication_mode = 1
 [node name="PlayerBody" type="RigidBody2D" node_paths=PackedStringArray("pulse_timer")]
 collision_layer = 3
 collision_mask = 3
+physics_material_override = ExtResource("1_o1307")
 script = ExtResource("1_tqoy0")
 settings = ExtResource("3_4ulju")
 pulse_timer = NodePath("Pulse_CD")

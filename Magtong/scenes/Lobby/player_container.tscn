@@ -6,7 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://jnwop8yfsf10" path="res://assets/Icons/exit-door.svg" id="3_0jy1l"]
 [ext_resource type="Script" path="res://scenes/Lobby/selection_tweener.gd" id="7_l6fae"]
 
-[node name="PlayerContainer" type="Panel" node_paths=PackedStringArray("main_content", "join_text", "player_label", "input_icon", "input_label", "player_icon", "button_left", "button_right", "check_box_ready", "button_leave", "selection_tweener")]
+[node name="PlayerContainer" type="Panel" node_paths=PackedStringArray("main_content", "join_text", "player_label", "input_icon", "input_label", "player_icon", "start_selection", "button_left", "button_right", "check_box_ready", "button_leave", "selection_tweener")]
 auto_translate_mode = 1
 custom_minimum_size = Vector2(200, 300)
 script = ExtResource("1_m20bt")
@@ -16,6 +16,7 @@ player_label = NodePath("MarginContainer/VBoxContainer/PlayerLabel")
 input_icon = NodePath("MarginContainer/VBoxContainer/HBoxInput/InputIcon")
 input_label = NodePath("MarginContainer/VBoxContainer/HBoxInput/InputLabel")
 player_icon = NodePath("MarginContainer/VBoxContainer/PlayerIcon")
+start_selection = NodePath("MarginContainer/VBoxContainer/ReadyBox")
 button_left = NodePath("MarginContainer/VBoxContainer/HBoxContainer2/CharSelectLeft")
 button_right = NodePath("MarginContainer/VBoxContainer/HBoxContainer2/CharSelectRight")
 check_box_ready = NodePath("MarginContainer/VBoxContainer/ReadyBox")
@@ -77,6 +78,10 @@ size_flags_horizontal = 4
 [node name="CharSelectLeft" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer2"]
 custom_minimum_size = Vector2(50, 0)
 layout_mode = 2
+focus_neighbor_left = NodePath("../CharSelectRight")
+focus_neighbor_top = NodePath("../../LeaveButton")
+focus_neighbor_right = NodePath("../CharSelectRight")
+focus_neighbor_bottom = NodePath("../../ReadyBox")
 focus_mode = 0
 text = "<"
 
@@ -84,16 +89,24 @@ text = "<"
 auto_translate_mode = 1
 custom_minimum_size = Vector2(50, 0)
 layout_mode = 2
+focus_neighbor_left = NodePath("../CharSelectLeft")
+focus_neighbor_top = NodePath("../../LeaveButton")
+focus_neighbor_right = NodePath("../CharSelectLeft")
+focus_neighbor_bottom = NodePath("../../ReadyBox")
 focus_mode = 0
 text = ">"
 
 [node name="ReadyBox" type="CheckBox" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
+focus_neighbor_top = NodePath("../HBoxContainer2/CharSelectRight")
+focus_neighbor_bottom = NodePath("../LeaveButton")
 focus_mode = 0
 text = "Ready"
 
 [node name="LeaveButton" type="Button" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
+focus_neighbor_top = NodePath("../ReadyBox")
+focus_neighbor_bottom = NodePath("../HBoxContainer2/CharSelectRight")
 focus_mode = 0
 text = "Leave"
 icon = ExtResource("3_0jy1l")

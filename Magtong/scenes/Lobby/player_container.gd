@@ -11,10 +11,12 @@ class_name PlayerContainer
 
 @export var player_icon: TextureRect
 
+@export var start_selection: Control
 @export var button_left: Button
 @export var button_right: Button
 @export var check_box_ready: CheckBox
 @export var button_leave: Button
+@onready var selectable_controls: Array[Control] = [button_left, button_right, check_box_ready, button_leave]
 
 @export var selection_tweener: SelectionTweener
 
@@ -22,10 +24,13 @@ var player_input: PlayerInput = null
 var selected_option: Control = null
 var selected_skin: int = 0
 var is_ready: bool = false
+var last_y_input: float = 0
+var last_x_input: float = 0
+
 func _ready():
 	join_text.set_deferred("visible", true)
 	main_content.set_deferred("visible", false)
-
+	_select_option(selectable_controls.find(start_selection))
 
 func set_player(input_dict: Dictionary, player_id: int) -> void:
 	join_text.set_deferred("visible", false)
@@ -48,7 +53,7 @@ func set_player(input_dict: Dictionary, player_id: int) -> void:
 			input_icon.texture = globResourceManager.icons.ui_icons[IconPack.IconIDs.GAMEPAD]
 			player_label.text = "Player: " + str(player_name)
 			input_label.text = "Gamepad " + str(input_dict["device_id"]) 
-	selected_option = check_box_ready
+	selected_option = start_selection
 	selection_tweener.highlight_control(selected_option)
 
 	main_content.set_deferred("visible", true)
@@ -64,7 +69,6 @@ func _exit_tree():
 
 func _receive_input(input: InputInfo) -> void:
 	assert(multiplayer.is_server())
-	var old_selection = selected_option
 	# check for button
 	if input.input_type == InputInfo.InputType.PRIMARY and input.is_pressed:
 		if selected_option == button_left:
@@ -86,47 +90,27 @@ func _receive_input(input: InputInfo) -> void:
 			player_input.is_ready = is_ready
 			get_node("/root/Lobby").check_for_ready()
 			_change_ready.rpc(is_ready)
-	elif input.input_type == InputInfo.InputType.MOVE_Y and input.axis_value != 0:
-		var move_up = input.axis_value > 0 
-		if move_up:
-			if selected_option == button_left or selected_option == button_right:
-				selected_option = button_leave
-			elif selected_option == check_box_ready:
-				selected_option = button_right
-			elif selected_option == button_leave:
-				selected_option = check_box_ready
-		else:
-			if selected_option == button_left or selected_option == button_right:
-				selected_option = check_box_ready
-			elif selected_option == check_box_ready:
-				selected_option = button_leave
-			elif selected_option == button_leave:
-				selected_option = button_right
-	elif input.input_type == InputInfo.InputType.MOVE_X and input.axis_value != 0:
-		if selected_option == button_left:
-			selected_option = button_right
-		elif selected_option == button_right:
-			selected_option = button_left
-	if selected_option != old_selection:
-		if selected_option == button_left:
-			_select_option.rpc(0)
-		elif selected_option == button_right:
-			_select_option.rpc(1)
-		elif selected_option == check_box_ready:
-			_select_option.rpc(2)
-		elif selected_option == button_leave:
-			_select_option.rpc(3)
+	elif input.input_type == InputInfo.InputType.MOVE_Y:
+		# min max axis value (-1, 0, 1)
+		var axis_val = -1 if input.axis_value < 0 else (1 if input.axis_value > 0 else 0)
+		if axis_val != last_y_input:
+			last_y_input = axis_val
+			if axis_val > 0:
+				_select_option.rpc(selectable_controls.find(selected_option.get_node(selected_option.focus_neighbor_bottom)))
+			elif axis_val < 0:
+				_select_option.rpc(selectable_controls.find(selected_option.get_node(selected_option.focus_neighbor_top)))
+	elif input.input_type == InputInfo.InputType.MOVE_X:
+		var axis_val = -1 if input.axis_value < 0 else (1 if input.axis_value > 0 else 0)
+		if axis_val != last_x_input:
+			last_x_input = axis_val
+			if axis_val > 0:
+				_select_option.rpc(selectable_controls.find(selected_option.get_node(selected_option.focus_neighbor_right)))
+			elif axis_val < 0:
+				_select_option.rpc(selectable_controls.find(selected_option.get_node(selected_option.focus_neighbor_left)))
 
 @rpc("any_peer", "call_local", "reliable")
 func _select_option(option: int):
-	if option == 0:
-		selected_option = button_left
-	elif option == 1:
-		selected_option = button_right
-	elif option == 2:
-		selected_option = check_box_ready
-	elif option == 3:
-		selected_option = button_leave
+	selected_option = selectable_controls[option]
 	selection_tweener.highlight_control(selected_option)
 
 @rpc("authority", "call_local", "reliable")

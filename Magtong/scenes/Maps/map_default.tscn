@@ -87,7 +87,6 @@ scale = Vector2(18.8, 1.16)
 texture = ExtResource("3_0ppxq")
 
 [node name="MultiplayerRoot" type="Node2D" parent="FieldCenter"]
-position = Vector2(-640, -360)
 
 [node name="SpawnPoints" type="Node2D" parent="FieldCenter"]
 
@@ -133,5 +132,5 @@ position = Vector2(200, 250)
 [node name="P2_Spawn" type="Node2D" parent="FieldCenter/SpawnPoints/RightBackSpawns"]
 position = Vector2(-200, -250)
 
-[connection signal="body_entered" from="FieldCenter/GoalSouth" to="." method="_on_goal_collision" binds= [1]]
-[connection signal="body_entered" from="FieldCenter/GoalNorth" to="." method="_on_goal_collision" binds= [2]]
+[connection signal="body_entered" from="FieldCenter/GoalSouth" to="." method="_on_goal_collision" binds= [2]]
+[connection signal="body_entered" from="FieldCenter/GoalNorth" to="." method="_on_goal_collision" binds= [1]]

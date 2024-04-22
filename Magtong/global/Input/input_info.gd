@@ -39,5 +39,6 @@ enum InputType{
 	MINUS = 4,
 	# button inputs
 	PRIMARY = 5,
-	SECONDARY = 6
+	SECONDARY = 6,
+	MENU = 7,
 }

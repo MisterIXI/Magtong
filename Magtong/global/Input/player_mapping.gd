@@ -11,6 +11,7 @@ var k_plus: Key
 var k_minus: Key
 var k_primary: Key
 var k_secondary: Key
+var k_menu: Key
 var j_x_axis: JoyAxis
 var j_y_axis: JoyAxis
 var j_plus: JoyAxis
@@ -19,6 +20,12 @@ var j_minus: JoyAxis
 var j_minusB: JoyButton
 var j_primary: JoyButton
 var j_secondary: JoyButton
+var j_menu: JoyButton
+
+var k_right_pressed: bool = false
+var k_left_pressed: bool = false
+var k_up_pressed: bool = false
+var k_down_pressed: bool = false
 
 func _init(player_id: int, is_keyboard: bool):
 	self.player_id = player_id
@@ -31,6 +38,7 @@ func _init(player_id: int, is_keyboard: bool):
 	self.j_minusB = JOY_BUTTON_LEFT_SHOULDER
 	self.j_primary = JOY_BUTTON_A
 	self.j_secondary = JOY_BUTTON_B
+	self.j_menu = JOY_BUTTON_START
 	set_keyboard_mapping1()
 
 func set_keyboard_mapping1():
@@ -42,6 +50,7 @@ func set_keyboard_mapping1():
 	self.k_minus = KEY_V
 	self.k_primary = KEY_X
 	self.k_secondary = KEY_F
+	self.k_menu = KEY_ESCAPE
 
 func set_keyboard_mapping2():
 	self.k_up = KEY_UP
@@ -52,6 +61,7 @@ func set_keyboard_mapping2():
 	self.k_minus = KEY_L
 	self.k_primary = KEY_J
 	self.k_secondary = KEY_I
+	self.k_menu = KEY_NUMBERSIGN
 
 func check_input(event: InputEvent) -> InputInfo:
 	# check keyboard
@@ -62,17 +72,21 @@ func check_input(event: InputEvent) -> InputInfo:
 		var keycode = key_event.keycode
 		print(key_event)
 		if key_event.keycode == self.k_up:
+			self.k_up_pressed = key_event.pressed
 			input.input_type = InputInfo.InputType.MOVE_Y
-			input.axis_value = -1.0 if key_event.pressed else 0.0
+			input.axis_value = average_axis(self.k_up_pressed, self.k_down_pressed)
 		elif key_event.keycode == self.k_down:
+			self.k_down_pressed = key_event.pressed
 			input.input_type = InputInfo.InputType.MOVE_Y
-			input.axis_value = 1.0 if key_event.pressed else 0.0
+			input.axis_value = average_axis(self.k_up_pressed, self.k_down_pressed)
 		elif key_event.keycode == self.k_left:
+			self.k_left_pressed = key_event.pressed
 			input.input_type = InputInfo.InputType.MOVE_X
-			input.axis_value = -1.0 if key_event.pressed else 0.0
+			input.axis_value = average_axis(self.k_left_pressed, self.k_right_pressed)
 		elif key_event.keycode == self.k_right:
+			self.k_right_pressed = key_event.pressed
 			input.input_type = InputInfo.InputType.MOVE_X
-			input.axis_value = 1.0 if key_event.pressed else 0.0
+			input.axis_value = average_axis(self.k_left_pressed, self.k_right_pressed)
 		elif key_event.keycode == self.k_plus:
 			input.input_type = InputInfo.InputType.PLUS
 			input.axis_value = 1.0 if key_event.pressed else 0.0
@@ -84,6 +98,9 @@ func check_input(event: InputEvent) -> InputInfo:
 			input.is_pressed = key_event.pressed
 		elif key_event.keycode == self.k_secondary:
 			input.input_type = InputInfo.InputType.SECONDARY
+			input.is_pressed = key_event.pressed
+		elif key_event.keycode == self.k_menu:
+			input.input_type = InputInfo.InputType.MENU
 			input.is_pressed = key_event.pressed
 	# check joystick axis
 	elif not self.is_keyboard and event is InputEventJoypadMotion:
@@ -115,6 +132,9 @@ func check_input(event: InputEvent) -> InputInfo:
 		elif joy_event.button_index == self.j_secondary:
 			input.input_type = InputInfo.InputType.SECONDARY
 			input.is_pressed = joy_event.pressed
+		elif joy_event.button_index == self.j_menu:
+			input.input_type = InputInfo.InputType.MENU
+			input.is_pressed = joy_event.pressed
 
 	if input.input_type == InputInfo.InputType.EMPTY:
 		return null
@@ -124,3 +144,13 @@ func check_input(event: InputEvent) -> InputInfo:
 		if input.axis_value < dead_zone and input.axis_value > -dead_zone:
 			input.axis_value = 0.0
 		return input
+
+func average_axis(negative: bool, positive: bool) -> float:
+	if positive and negative:
+		return 0.0
+	elif positive:
+		return 1.0
+	elif negative:
+		return -1.0
+	else:
+		return 0.0

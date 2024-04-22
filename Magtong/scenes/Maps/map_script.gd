@@ -20,6 +20,7 @@ var im: InputManager
 
 var max_team_size: int
 func _ready():
+	im = globInputManager
 	settings = globResourceManager.player_settings
 	player_sg_indices = []
 	for i in range(player_spawn_groups.size()):
@@ -57,26 +58,33 @@ func _on_goal_collision(body: Node, team: int) -> void:
 	if body.is_in_group("puck"):
 		goal_scored.emit(team)
 	
-func reset_field() -> void:
+func reset_field(keep_position: bool = false) -> void:
 	if not multiplayer.is_server():
 		return
 	await get_tree().physics_frame
-	reset_balls()
-	reset_players()
+	reset_balls(keep_position)
+	reset_players(keep_position)
 	# TODO: countdown for start
 
-func reset_balls() -> void:
+func reset_balls(keep_position: bool) -> void:
 	assert(multiplayer.is_server())
 	ball_spawn_group.shuffle()
 	for i in range(pucks.size()):
-		pucks[i].reset(ball_spawn_group.get_shuffled_point(i).global_position)
+		if keep_position:
+			pucks[i].reset(pucks[i].global_position, not keep_position)
+		else:
+			pucks[i].reset(ball_spawn_group.get_shuffled_point(i).global_position, not keep_position)
 	
-func reset_players() -> void:
+func reset_players(keep_position: bool) -> void:
 	assert(multiplayer.is_server())
 	player_sg_indices.shuffle()
 	for i in len(players):
 		for j in len(players[i]):
-			players[i][j].reset(player_spawn_groups[player_sg_indices[j]].spawn_points[i].global_position)
+			if keep_position:
+				players[i][j].reset(players[i][j].global_position)
+			else:
+				players[i][j].reset(player_spawn_groups[player_sg_indices[j]].spawn_points[i].global_position)
+			players[i][j].reset_input.rpc()
 
 func _physics_process(delta):
 	if not multiplayer.is_server():

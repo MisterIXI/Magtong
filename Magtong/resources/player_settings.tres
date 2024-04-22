@@ -8,7 +8,7 @@ point_count = 2
 
 [resource]
 script = ExtResource("1_081nq")
-magnet_force = 1000.0
+magnet_force = 3000.0
 magnet_dropoff = SubResource("Curve_x41yb")
 magnet_range = 500.0
 pulse_range = 150.0

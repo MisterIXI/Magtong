@@ -6,7 +6,7 @@ var player_inputs: Dictionary = {} # maps peer IDs to dictionaries of deviceID->
 var player_cust_id: Dictionary = {} # maps peer IDs to custom IDs
 var cust_id_helper: int = 1
 @onready var own_id: int = multiplayer.get_unique_id()
-
+signal input_unlocked()
 var input_locked: bool = false
 func total_player_count() -> int:
 	var count = 0
@@ -21,8 +21,6 @@ func _input(event: InputEvent) -> void:
 				var node = get_node("/root/MatchManager")
 				if node:
 					node.restart_match.rpc()
-	if input_locked:
-		return
 	# check for keyboard
 	if event is InputEventKey:
 		if player_mappings.has( - 1):
@@ -46,9 +44,17 @@ func _input(event: InputEvent) -> void:
 			if input:
 				send_input.rpc_id(1, event.device, input.to_dict())
 
+func set_input_locked(locked: bool) -> void:
+	input_locked = locked
+	if not locked:
+		input_unlocked.emit()
+
 @rpc("any_peer", "call_local", "reliable")
 func send_input(device_id: int, input_dict: Dictionary) -> void:
+	# if input_locked:
+	# 	return
 	var input_info = InputInfo.new(input_dict)
+	print("Received Input: ", input_info.to_string())
 	var peer_id: int = multiplayer.get_remote_sender_id()
 	# check if player input exists
 	if not player_inputs.has(peer_id) or not player_inputs[peer_id].has(device_id):

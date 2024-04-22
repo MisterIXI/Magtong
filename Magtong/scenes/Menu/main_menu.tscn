@@ -46,25 +46,33 @@ grow_vertical = 2
 
 [node name="Start_local" type="Button" parent="StartMenu/VBoxContainer"]
 layout_mode = 2
+focus_neighbor_bottom = NodePath("../Host_online")
 text = "Play Local"
 
 [node name="Host_online" type="Button" parent="StartMenu/VBoxContainer"]
 auto_translate_mode = 1
 layout_mode = 2
+focus_neighbor_top = NodePath("../Start_local")
+focus_neighbor_bottom = NodePath("../Join_online")
 text = "Host game"
 
 [node name="Join_online" type="Button" parent="StartMenu/VBoxContainer"]
 auto_translate_mode = 1
 layout_mode = 2
+focus_neighbor_top = NodePath("../Host_online")
+focus_neighbor_bottom = NodePath("../Settings")
 text = "Join game"
 
 [node name="Settings" type="Button" parent="StartMenu/VBoxContainer"]
 auto_translate_mode = 1
 layout_mode = 2
+focus_neighbor_top = NodePath("../Join_online")
+focus_neighbor_bottom = NodePath("../Quit")
 text = "Settings"
 
 [node name="Quit" type="Button" parent="StartMenu/VBoxContainer"]
 layout_mode = 2
+focus_neighbor_top = NodePath("../Settings")
 text = "Quit"
 
 [node name="PanelContainer" type="PanelContainer" parent="StartMenu"]

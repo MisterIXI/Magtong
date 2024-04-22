@@ -44,6 +44,10 @@ func _change_state(new_state: State):
 			var p2 = im.get_child(1)
 			p1.team = 1
 			p2.team = 2
+		# else:
+		# 	await get_tree().physics_frame
+		# 	await get_tree().physics_frame
+		# 	await get_tree().physics_frame
 		get_tree().change_scene_to_packed(default_map_scene)
 	state_changed.emit(old_state, new_state)
 
@@ -98,12 +102,12 @@ func print_message(message: String):
 	message_vbox.add_child(label)
 	# wait for the box to change
 	await get_tree().process_frame
+	await get_tree().process_frame
 	# scroll to the bottom
 	message_scrollbox.scroll_vertical = int(message_scrollbox.get_v_scroll_bar().max_value)
 
 func start_countdown():
 	countdown = 3
-	timer.timeout.connect(countdown_step)
 	timer.start()
 
 func cancel_countdown():
