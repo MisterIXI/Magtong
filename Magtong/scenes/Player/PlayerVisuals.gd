@@ -47,3 +47,8 @@ func _on_player_body_pulse_emitted(_pos: Vector2):
 	plus_burst_particles.emitting = true
 	minus_burst_particles.emitting = true
 
+func _on_player_impulse_emitted(_pos: Vector2, _pol: PlayerBody.polarity):
+	if _pol == player.polarity.POS:
+		plus_burst_particles.emitting = true
+	else:
+		minus_burst_particles.emitting = true

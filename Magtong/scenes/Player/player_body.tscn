@@ -33,13 +33,14 @@ properties/1/path = NodePath(".:rotation")
 properties/1/spawn = true
 properties/1/replication_mode = 1
 
-[node name="PlayerBody" type="RigidBody2D" node_paths=PackedStringArray("pulse_timer")]
+[node name="PlayerBody" type="RigidBody2D" node_paths=PackedStringArray("pulse_timer", "impulse_timer")]
 collision_layer = 3
 collision_mask = 3
 physics_material_override = ExtResource("1_o1307")
 script = ExtResource("1_tqoy0")
 settings = ExtResource("3_4ulju")
 pulse_timer = NodePath("Pulse_CD")
+impulse_timer = NodePath("Impulse_CD")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_smi2p")
@@ -119,8 +120,12 @@ color = Color(0, 0, 1, 1)
 [node name="Pulse_CD" type="Timer" parent="."]
 one_shot = true
 
+[node name="Impulse_CD" type="Timer" parent="."]
+one_shot = true
+
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_i0q21")
 
+[connection signal="impulse_emitted" from="." to="Graphics" method="_on_player_impulse_emitted"]
 [connection signal="polarity_changed" from="." to="Graphics" method="on_polarity_changed"]
 [connection signal="pulse_emitted" from="." to="Graphics" method="_on_player_body_pulse_emitted"]

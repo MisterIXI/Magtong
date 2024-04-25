@@ -49,6 +49,7 @@ func setup(match_manager: MatchManager) -> void:
 			players[team - 1].append(new_player)
 			team_counter[team] = team_counter.get(team, 0) + 1
 			new_player.pulse_emitted.connect(on_pulse_from)
+			new_player.impulse_emitted.connect(on_impulse_from)
 	max_team_size = team_counter.values().max()
 
 	
@@ -106,20 +107,20 @@ func _physics_process(delta):
 					puck.apply_central_force(scaled_force)
 					player.apply_central_force( - scaled_force)
 				# and affect all other players
-				for opp_team in players:
-					for opp_player in opp_team:
-						if opp_player == player:
-							continue
-						var is_repelling = player.state == opp_player.state
-						var dist = player.global_position.distance_to(opp_player.global_position)
-						var force = settings.magnet_dropoff.sample(dist / settings.magnet_range)
-						if not is_repelling:
-							force = -force
-						var scaled_force = (
-							(opp_player.global_position - player.global_position).normalized() * force * settings.magnet_force
-						)
-						opp_player.apply_central_force(scaled_force)
-						player.apply_central_force( - scaled_force)
+				# for opp_team in players:
+				# 	for opp_player in opp_team:
+				# 		if opp_player == player:
+				# 			continue
+				# 		var is_repelling = player.state == opp_player.state
+				# 		var dist = player.global_position.distance_to(opp_player.global_position)
+				# 		var force = settings.magnet_dropoff.sample(dist / settings.magnet_range)
+				# 		if not is_repelling:
+				# 			force = -force
+				# 		var scaled_force = (
+				# 			(opp_player.global_position - player.global_position).normalized() * force * settings.magnet_force
+				# 		)
+				# 		opp_player.apply_central_force(scaled_force)
+				# 		player.apply_central_force( - scaled_force)
 	# regardless of state, apply input
 	for team in players:
 		for player in team:
@@ -134,3 +135,14 @@ func on_pulse_from(pulse_pos: Vector2) -> void:
 		var dist = puck.global_position.distance_to(pulse_pos)
 		if dist < settings.pulse_range:
 			puck.receive_pulse.rpc(not puck.is_plus_pol)
+
+func on_impulse_from(impulse_pos: Vector2, polarity: PlayerBody.polarity) -> void:
+	for puck in pucks:
+		var puck_pol = PlayerBody.polarity.POS if puck.is_plus_pol else PlayerBody.polarity.NEG
+		var mult = 1 if puck_pol == polarity else -1
+		var dist = puck.global_position.distance_to(impulse_pos)
+		var force = settings.magnet_dropoff.sample(dist / settings.magnet_range)
+		var scaled_force = (
+			(puck.global_position - impulse_pos).normalized() * force * settings.magnet_force * mult * settings.impulse_mult
+		)
+		puck.apply_impulse(scaled_force)

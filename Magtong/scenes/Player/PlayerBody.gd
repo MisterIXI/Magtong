@@ -6,6 +6,7 @@ class_name PlayerBody
 enum polarity {IDLE, POS, NEG}
 signal polarity_changed(new_pol: polarity)
 signal pulse_emitted(pulse_position: Vector2)
+signal impulse_emitted(pulse_position: Vector2, pol: polarity)
 
 @export var opponent: PlayerBody
 @export var puck: Puck
@@ -13,6 +14,7 @@ var state = polarity.IDLE
 
 var target_vel: Vector2 = Vector2()
 @export var pulse_timer: Timer
+@export var impulse_timer: Timer
 var forced_pos: Vector2 = Vector2()
 var force_move_flag: bool = false
 
@@ -54,6 +56,9 @@ func on_input(input_info: InputInfo):
 		InputInfo.InputType.PRIMARY:
 			if input_info.is_pressed and not im.input_locked:
 				try_to_pulse()
+		InputInfo.InputType.SECONDARY:
+			if input_info.is_pressed and not im.input_locked:
+				try_to_impulse()
 		InputInfo.InputType.MENU:
 			if input_info.is_pressed:
 				mm.request_restart.rpc_id(1)
@@ -115,7 +120,16 @@ func try_to_pulse():
 		pulse_timer.start()
 		pulse.rpc()
 
+
 @rpc("authority", "call_local", "reliable")
 func pulse():
 	pulse_emitted.emit(global_position)
 
+func try_to_impulse():
+	if impulse_timer.is_stopped() and state != polarity.IDLE:
+		impulse_timer.start()
+		impulse.rpc()
+
+@rpc("authority", "call_local", "reliable")
+func impulse():
+	impulse_emitted.emit(global_position, state)
