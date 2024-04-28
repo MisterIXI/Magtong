@@ -1,7 +1,9 @@
-[gd_resource type="Resource" script_class="IconPack" load_steps=7 format=3 uid="uid://cnnrd1bk50cii"]
+[gd_resource type="Resource" script_class="IconPack" load_steps=9 format=3 uid="uid://cnnrd1bk50cii"]
 
 [ext_resource type="Script" path="res://resources/icon_pack.gd" id="1_bts6i"]
-[ext_resource type="Texture2D" uid="uid://ch7xm5r8df8gv" path="res://assets/Textures/PlayerCharacter.png" id="1_kvopf"]
+[ext_resource type="Texture2D" uid="uid://ci8l6erft2vsr" path="res://assets/Textures/PlayerSkins/01_skin_stripes.png" id="1_l3mlm"]
+[ext_resource type="Texture2D" uid="uid://bsf2w26s7ek5f" path="res://assets/Textures/PlayerSkins/02_skin_happy.png" id="2_gnrqn"]
+[ext_resource type="Texture2D" uid="uid://dl30scovigfb7" path="res://assets/Textures/PlayerSkins/03_skin_uwu.png" id="3_f7hma"]
 [ext_resource type="Texture2D" uid="uid://cxvxxpxfe1qyk" path="res://assets/Icons/wireframe-globe.png" id="3_fpkm4"]
 [ext_resource type="Texture2D" uid="uid://bxuo2kxs8lnx3" path="res://assets/Icons/gamepad.png" id="4_c3ncp"]
 [ext_resource type="Texture2D" uid="uid://cpcm7s6ueii1h" path="res://assets/Icons/keyboard.png" id="5_aqda8"]
@@ -9,5 +11,5 @@
 
 [resource]
 script = ExtResource("1_bts6i")
-player_sprites = Array[Texture2D]([ExtResource("1_kvopf")])
+player_sprites = Array[Texture2D]([ExtResource("1_l3mlm"), ExtResource("2_gnrqn"), ExtResource("3_f7hma")])
 ui_icons = Array[Texture2D]([ExtResource("3_fpkm4"), ExtResource("4_c3ncp"), ExtResource("5_aqda8"), ExtResource("6_53k2d")])

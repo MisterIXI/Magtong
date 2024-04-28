@@ -3,7 +3,7 @@ class_name Lobby
 
 @onready var input_manager: InputManager = globInputManager
 @export var player_container: PackedScene
-@export var lobby_container: HFlowContainer
+@export var lobby_container: HBoxContainer
 func _ready():
 	if multiplayer.is_server():
 		create_new_container()
@@ -40,12 +40,12 @@ func _on_peer_connected(peer_id: int):
 				set_container.rpc_id(peer_id, i, pc.player_input.to_dict(), globGameManager.player_ids[peer_id])
 
 @rpc("authority", "call_local", "reliable")
-func set_container(index: int, dict: Dictionary, player_id: int):
+func set_container(index: int, dict: Dictionary, readable_peer_id: int):
 	var player_containers = lobby_container.get_children()
 	if index >= player_containers.size():
 		globGameManager.send_message.rpc("Error: PlayerContainer index "+ str(index)+ " out of bounds")
 	else:
-		player_containers[index].set_player(dict, player_id)
+		player_containers[index].set_player(dict, readable_peer_id)
 
 func connect_container(index: int, player_input: PlayerInput):
 	var pcs = lobby_container.get_children()

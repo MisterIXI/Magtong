@@ -1,14 +1,16 @@
 [gd_scene load_steps=6 format=3 uid="uid://7a0tqfpd7xb5"]
 
 [ext_resource type="Script" path="res://scenes/Lobby/player_container.gd" id="1_m20bt"]
-[ext_resource type="Texture2D" uid="uid://ch7xm5r8df8gv" path="res://assets/Textures/PlayerCharacter.png" id="2_f5rhr"]
 [ext_resource type="Texture2D" uid="uid://cpcm7s6ueii1h" path="res://assets/Icons/keyboard.png" id="2_jqhe5"]
 [ext_resource type="Texture2D" uid="uid://jnwop8yfsf10" path="res://assets/Icons/exit-door.svg" id="3_0jy1l"]
+[ext_resource type="Texture2D" uid="uid://ci8l6erft2vsr" path="res://assets/Textures/PlayerSkins/01_skin_stripes.png" id="3_258ui"]
 [ext_resource type="Script" path="res://scenes/Lobby/selection_tweener.gd" id="7_l6fae"]
 
 [node name="PlayerContainer" type="Panel" node_paths=PackedStringArray("main_content", "join_text", "player_label", "input_icon", "input_label", "player_icon", "start_selection", "button_left", "button_right", "check_box_ready", "button_leave", "selection_tweener")]
 auto_translate_mode = 1
-custom_minimum_size = Vector2(200, 300)
+custom_minimum_size = Vector2(300, 0)
+offset_right = 200.0
+offset_bottom = 383.0
 script = ExtResource("1_m20bt")
 main_content = NodePath("MarginContainer/VBoxContainer")
 join_text = NodePath("MarginContainer/JoinInfoLabel")
@@ -68,8 +70,15 @@ layout_mode = 2
 [node name="PlayerIcon" type="TextureRect" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
-texture = ExtResource("2_f5rhr")
-stretch_mode = 4
+size_flags_vertical = 3
+texture = ExtResource("3_258ui")
+expand_mode = 2
+stretch_mode = 5
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 60
+theme_override_constants/margin_right = 60
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2

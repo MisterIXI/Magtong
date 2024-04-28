@@ -17,7 +17,7 @@ var target_vel: Vector2 = Vector2()
 @export var impulse_timer: Timer
 var forced_pos: Vector2 = Vector2()
 var force_move_flag: bool = false
-
+@export var player_skin: Sprite2D
 var x_input: float = 0.0
 var y_input: float = 0.0
 var plus_input: float = 0.0
@@ -33,6 +33,8 @@ func setup(player_input: PlayerInput):
 	player_input.input_received.connect(on_input)
 	globInputManager.input_unlocked.connect(_on_input_unlocked)
 	mm = get_node("/root/MatchManager") as MatchManager
+	player_skin.texture = globResourceManager.icons.player_sprites[player_input.player_sprite_id]
+	set_skin.rpc(player_input.player_sprite_id)
 
 func on_input(input_info: InputInfo):
 	assert(multiplayer.is_server())
@@ -133,3 +135,7 @@ func try_to_impulse():
 @rpc("authority", "call_local", "reliable")
 func impulse():
 	impulse_emitted.emit(global_position, state)
+
+@rpc("any_peer", "call_remote", "reliable")
+func set_skin(player_sprite_id: int):
+	player_skin.texture = globResourceManager.icons.player_sprites[player_sprite_id]

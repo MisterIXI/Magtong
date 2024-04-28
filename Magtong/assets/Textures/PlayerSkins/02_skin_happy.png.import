@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ch7xm5r8df8gv"
-path="res://.godot/imported/PlayerCharacter.png-607c5904fc3715816e862232f799ed29.ctex"
+uid="uid://bsf2w26s7ek5f"
+path="res://.godot/imported/02_skin_happy.png-05b8308ec95b891982f860af9d165073.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Textures/PlayerCharacter.png"
-dest_files=["res://.godot/imported/PlayerCharacter.png-607c5904fc3715816e862232f799ed29.ctex"]
+source_file="res://assets/Textures/PlayerSkins/02_skin_happy.png"
+dest_files=["res://.godot/imported/02_skin_happy.png-05b8308ec95b891982f860af9d165073.ctex"]
 
 [params]
 
@@ -23,7 +23,7 @@ compress/normal_map=0
 compress/channel_pack=0
 mipmaps/generate=false
 mipmaps/limit=-1
-roughness/mode=1
+roughness/mode=0
 roughness/src_normal=""
 process/fix_alpha_border=true
 process/premult_alpha=false

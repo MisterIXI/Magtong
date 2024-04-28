@@ -1,11 +1,11 @@
 [gd_scene load_steps=13 format=3 uid="uid://do0i7ixg4d7p1"]
 
 [ext_resource type="Script" path="res://scenes/Player/PlayerVisuals.gd" id="1_31gdm"]
-[ext_resource type="Texture2D" uid="uid://ch7xm5r8df8gv" path="res://assets/Textures/PlayerCharacter.png" id="1_d561t"]
 [ext_resource type="PhysicsMaterial" uid="uid://b0b4nmkgg6odu" path="res://resources/Player_physics_mat.tres" id="1_o1307"]
 [ext_resource type="Script" path="res://scenes/Player/PlayerBody.gd" id="1_tqoy0"]
 [ext_resource type="Resource" uid="uid://cmntx6lne4hft" path="res://resources/player_settings.tres" id="3_4ulju"]
 [ext_resource type="Texture2D" uid="uid://dkusv4cnx2ij0" path="res://assets/Textures/plus_sign.png" id="5_igkf6"]
+[ext_resource type="Texture2D" uid="uid://ci8l6erft2vsr" path="res://assets/Textures/PlayerSkins/01_skin_stripes.png" id="5_nlqny"]
 [ext_resource type="Texture2D" uid="uid://d20d2kk22uqyt" path="res://assets/Textures/minus_sign.png" id="6_ipbde"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_smi2p"]
@@ -33,7 +33,7 @@ properties/1/path = NodePath(".:rotation")
 properties/1/spawn = true
 properties/1/replication_mode = 1
 
-[node name="PlayerBody" type="RigidBody2D" node_paths=PackedStringArray("pulse_timer", "impulse_timer")]
+[node name="PlayerBody" type="RigidBody2D" node_paths=PackedStringArray("pulse_timer", "impulse_timer", "player_skin")]
 collision_layer = 3
 collision_mask = 3
 physics_material_override = ExtResource("1_o1307")
@@ -41,6 +41,7 @@ script = ExtResource("1_tqoy0")
 settings = ExtResource("3_4ulju")
 pulse_timer = NodePath("Pulse_CD")
 impulse_timer = NodePath("Impulse_CD")
+player_skin = NodePath("Graphics/PlayerCharacter")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_smi2p")
@@ -56,8 +57,8 @@ minus_burst_particles = NodePath("MinusBurst")
 settings = ExtResource("3_4ulju")
 
 [node name="PlayerCharacter" type="Sprite2D" parent="Graphics"]
-scale = Vector2(0.5, 0.5)
-texture = ExtResource("1_d561t")
+scale = Vector2(0.06, 0.06)
+texture = ExtResource("5_nlqny")
 
 [node name="PlusParticles" type="CPUParticles2D" parent="Graphics"]
 emitting = false

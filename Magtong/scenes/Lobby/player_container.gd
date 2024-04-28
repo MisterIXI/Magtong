@@ -32,18 +32,21 @@ func _ready():
 	main_content.set_deferred("visible", false)
 	_select_option(selectable_controls.find(start_selection))
 
-func set_player(input_dict: Dictionary, player_id: int) -> void:
+func set_player(input_dict: Dictionary, readable_peer_id: int) -> void:
+	if not multiplayer.is_server():
+		var pi = PlayerInput.new(input_dict["peer_id"], input_dict["device_id"], input_dict["is_ready"])
+		player_input = pi
 	join_text.set_deferred("visible", false)
-	var player_name := str(player_id) + "_" + str(input_dict["device_id"])
+	var player_name := str(readable_peer_id) + "_" + str(player_input.device_id)
 	# check if online player
-	if input_dict["peer_id"] != multiplayer.get_unique_id():
+	if player_input.peer_id != multiplayer.get_unique_id():
 		# is online player
 		input_icon.texture = globResourceManager.icons.ui_icons[IconPack.IconIDs.GLOBE]
 		player_label.text = "Player: " + str(player_name)
 		input_label.text = "Online"
 	else:
 		# is local player
-		if input_dict["device_id"] == - 1:
+		if player_input.device_id == - 1:
 			# is keyboard
 			input_icon.texture = globResourceManager.icons.ui_icons[IconPack.IconIDs.KEYBOARD]
 			player_label.text = "Player: " + str(player_name)
@@ -52,7 +55,7 @@ func set_player(input_dict: Dictionary, player_id: int) -> void:
 			# is gamepad
 			input_icon.texture = globResourceManager.icons.ui_icons[IconPack.IconIDs.GAMEPAD]
 			player_label.text = "Player: " + str(player_name)
-			input_label.text = "Gamepad " + str(input_dict["device_id"]) 
+			input_label.text = "Gamepad " + str(player_input.device_id) 
 	selected_option = start_selection
 	selection_tweener.highlight_control(selected_option)
 
@@ -96,17 +99,21 @@ func _receive_input(input: InputInfo) -> void:
 		if axis_val != last_y_input:
 			last_y_input = axis_val
 			if axis_val > 0:
-				_select_option.rpc(selectable_controls.find(selected_option.get_node(selected_option.focus_neighbor_bottom)))
+				if not selected_option.focus_neighbor_bottom.is_empty():
+					_select_option.rpc(selectable_controls.find(selected_option.get_node(selected_option.focus_neighbor_bottom)))
 			elif axis_val < 0:
-				_select_option.rpc(selectable_controls.find(selected_option.get_node(selected_option.focus_neighbor_top)))
+				if not selected_option.focus_neighbor_top.is_empty():
+					_select_option.rpc(selectable_controls.find(selected_option.get_node(selected_option.focus_neighbor_top)))
 	elif input.input_type == InputInfo.InputType.MOVE_X:
 		var axis_val = -1 if input.axis_value < 0 else (1 if input.axis_value > 0 else 0)
 		if axis_val != last_x_input:
 			last_x_input = axis_val
 			if axis_val > 0:
-				_select_option.rpc(selectable_controls.find(selected_option.get_node(selected_option.focus_neighbor_right)))
+				if not selected_option.focus_neighbor_right.is_empty():
+					_select_option.rpc(selectable_controls.find(selected_option.get_node(selected_option.focus_neighbor_right)))
 			elif axis_val < 0:
-				_select_option.rpc(selectable_controls.find(selected_option.get_node(selected_option.focus_neighbor_left)))
+				if not selected_option.focus_neighbor_left.is_empty():
+					_select_option.rpc(selectable_controls.find(selected_option.get_node(selected_option.focus_neighbor_left)))
 
 @rpc("any_peer", "call_local", "reliable")
 func _select_option(option: int):

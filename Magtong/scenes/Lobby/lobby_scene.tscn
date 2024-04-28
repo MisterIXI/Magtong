@@ -14,7 +14,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_7jl7p")
 player_container = ExtResource("2_hqkbe")
-lobby_container = NodePath("PlayerSelector/MarginContainer/ScrollContainer/HFlowContainer")
+lobby_container = NodePath("PlayerSelector/MarginContainer/ScrollContainer/HBoxContainer")
 
 [node name="PlayerSelector" type="Control" parent="."]
 auto_translate_mode = 1
@@ -48,23 +48,22 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 90
+theme_override_constants/margin_top = 200
 theme_override_constants/margin_right = 20
-theme_override_constants/margin_bottom = 20
+theme_override_constants/margin_bottom = 100
 
 [node name="ScrollContainer" type="ScrollContainer" parent="PlayerSelector/MarginContainer"]
 auto_translate_mode = 1
 layout_mode = 2
 
-[node name="HFlowContainer" type="HFlowContainer" parent="PlayerSelector/MarginContainer/ScrollContainer"]
-auto_translate_mode = 1
+[node name="HBoxContainer" type="HBoxContainer" parent="PlayerSelector/MarginContainer/ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="PlayerSelector"]
 _spawnable_scenes = PackedStringArray("res://scenes/Lobby/player_container.tscn")
-spawn_path = NodePath("../MarginContainer/ScrollContainer/HFlowContainer")
+spawn_path = NodePath("../MarginContainer/ScrollContainer/HBoxContainer")
 
 [node name="MapSelector" type="Control" parent="."]
 auto_translate_mode = 1
