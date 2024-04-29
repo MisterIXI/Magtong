@@ -8,7 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://dkusv4cnx2ij0" path="res://assets/Textures/plus_sign.png" id="5_igkf6"]
 [ext_resource type="Texture2D" uid="uid://ci8l6erft2vsr" path="res://assets/Textures/PlayerSkins/01_skin_stripes.png" id="5_nlqny"]
 [ext_resource type="Texture2D" uid="uid://d20d2kk22uqyt" path="res://assets/Textures/minus_sign.png" id="6_ipbde"]
-[ext_resource type="Material" uid="uid://dkfcjddsh4ldk" path="res://scenes/Player/pos_aura_mat.tres" id="9_6x4cd"]
+[ext_resource type="Material" uid="uid://df5q7yunlak58" path="res://scenes/Player/player_power_shader.tres" id="9_egiyc"]
 [ext_resource type="Texture2D" uid="uid://dt4t6l1gnn6bj" path="res://assets/Textures/blank pixels.png" id="10_mioy0"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_smi2p"]
@@ -72,15 +72,16 @@ scale = Vector2(0.06, 0.06)
 texture = ExtResource("5_nlqny")
 
 [node name="PlusParticles" type="CPUParticles2D" parent="Graphics"]
-visible = false
 emitting = false
 amount = 70
+local_coords = true
 texture = ExtResource("5_igkf6")
+emission_shape = 1
+emission_sphere_radius = 128.0
 spread = 180.0
 gravity = Vector2(0, 0)
-initial_velocity_max = 130.08
-scale_amount_min = 0.5
-scale_amount_max = 0.5
+scale_amount_min = 0.3
+scale_amount_max = 0.3
 scale_amount_curve = SubResource("Curve_ikk82")
 color = Color(1, 0, 0, 1)
 
@@ -133,8 +134,8 @@ color = Color(0, 0, 1, 1)
 copy_mode = 2
 
 [node name="PlayerShader" type="Sprite2D" parent="Graphics/BackBufferCopy"]
-material = ExtResource("9_6x4cd")
-scale = Vector2(37.135, 37.135)
+material = ExtResource("9_egiyc")
+scale = Vector2(28.985, 28.985)
 texture = ExtResource("10_mioy0")
 
 [node name="FieldManager" type="Node2D" parent="."]
