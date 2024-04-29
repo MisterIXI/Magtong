@@ -35,6 +35,7 @@ func _ready():
 func set_player(input_dict: Dictionary, readable_peer_id: int) -> void:
 	if not multiplayer.is_server():
 		var pi = PlayerInput.new(input_dict["peer_id"], input_dict["device_id"], input_dict["is_ready"])
+		pi.from_dict(input_dict)
 		player_input = pi
 	join_text.set_deferred("visible", false)
 	var player_name := str(readable_peer_id) + "_" + str(player_input.device_id)
@@ -60,7 +61,8 @@ func set_player(input_dict: Dictionary, readable_peer_id: int) -> void:
 	selection_tweener.highlight_control(selected_option)
 
 	main_content.set_deferred("visible", true)
-	player_icon.texture = globResourceManager.icons.player_sprites[0]
+	player_icon.texture = globResourceManager.icons.player_sprites[player_input.player_sprite_id]
+	check_box_ready.button_pressed = player_input.is_ready
 
 func connect_player(player_input: PlayerInput):
 	self.player_input = player_input
