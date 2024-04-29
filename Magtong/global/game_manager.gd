@@ -28,13 +28,14 @@ signal state_changed(old_state: State, new_state: State)
 
 var player_ids: Dictionary = {}
 var p_id_helper: int = 1
+@onready var scene_root: SceneRoot = get_node("/root/MainScene/SceneRoot")
 
 @rpc("authority", "call_local", "reliable")
 func _change_state(new_state: State):
 	var old_state = current_state
 	current_state = new_state
 	if new_state == State.LOBBY:
-		get_tree().change_scene_to_packed(lobby_scene)
+		scene_root.change_scene(lobby_scene.instantiate())
 	elif new_state == State.GAME:
 		#TODO: change to map select scene when implemented
 		# for now just set teams manually and load the default map
@@ -48,8 +49,10 @@ func _change_state(new_state: State):
 		# 	await get_tree().physics_frame
 		# 	await get_tree().physics_frame
 		# 	await get_tree().physics_frame
-		get_tree().change_scene_to_packed(default_map_scene)
+		if multiplayer.is_server():
+			scene_root.change_scene(default_map_scene.instantiate())
 	state_changed.emit(old_state, new_state)
+
 
 
 

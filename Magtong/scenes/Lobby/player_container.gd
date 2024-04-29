@@ -69,7 +69,7 @@ func connect_player(player_input: PlayerInput):
 	player_input.input_received.connect(_receive_input)
 
 func _exit_tree():
-	if player_input != null:
+	if player_input != null && player_input.input_received.is_connected(_receive_input):
 		player_input.input_received.disconnect(_receive_input)
 
 func _receive_input(input: InputInfo) -> void:
@@ -93,7 +93,7 @@ func _receive_input(input: InputInfo) -> void:
 				is_ready = true
 				check_box_ready.button_pressed = true
 			player_input.is_ready = is_ready
-			get_node("/root/Lobby").check_for_ready()
+			globGameManager.scene_root.current_scene.check_for_ready()
 			_change_ready.rpc(is_ready)
 	elif input.input_type == InputInfo.InputType.MOVE_Y:
 		# min max axis value (-1, 0, 1)

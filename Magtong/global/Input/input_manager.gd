@@ -18,8 +18,8 @@ func _input(event: InputEvent) -> void:
 	if multiplayer.is_server():
 		if event is InputEventKey and event.is_pressed():
 			if event.keycode == KEY_P:
-				var node = get_node("/root/MatchManager")
-				if node:
+				var node = globGameManager.scene_root.current_scene
+				if node is MatchManager:
 					node.restart_match.rpc()
 	# check for keyboard
 	if event is InputEventKey:
@@ -73,7 +73,7 @@ func request_player_registration(device_id: int) -> void:
 		player_inputs[peer_id] = {}
 	if not player_inputs[peer_id].has(device_id):
 		# create placeholder to prevent multiple requests
-		var lobby:Lobby = get_node("/root/Lobby")
+		var lobby:Lobby = globGameManager.scene_root.current_scene
 		var player_input = PlayerInput.new(peer_id, device_id, globGameManager.player_ids[peer_id])
 		globInputManager.add_child(player_input, true)
 		# if dictionary does not exist, create it

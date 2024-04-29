@@ -32,7 +32,7 @@ func setup(player_input: PlayerInput):
 	self.player_input = player_input
 	player_input.input_received.connect(on_input)
 	globInputManager.input_unlocked.connect(_on_input_unlocked)
-	mm = get_node("/root/MatchManager") as MatchManager
+	mm = globGameManager.scene_root.current_scene as MatchManager
 	player_skin.texture = globResourceManager.icons.player_sprites[player_input.player_sprite_id]
 	set_skin.rpc(player_input.player_sprite_id)
 	setup_completed.emit(self)
