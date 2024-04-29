@@ -7,7 +7,7 @@
 GridContainer/constants/h_separation = 50
 GridContainer/constants/v_separation = 50
 
-[node name="MainMenu" type="Control" node_paths=PackedStringArray("start_menu", "start_entry_focus", "settings_menu", "settings_entry_focus")]
+[node name="MainMenu" type="Control" node_paths=PackedStringArray("start_menu", "start_entry_focus", "settings_menu", "settings_entry_focus", "ip_edit_field")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -19,6 +19,7 @@ start_menu = NodePath("StartMenu")
 start_entry_focus = NodePath("StartMenu/VBoxContainer/Start_local")
 settings_menu = NodePath("Settings")
 settings_entry_focus = NodePath("Settings/Panel/MarginContainer/GridContainer/MasterSlider")
+ip_edit_field = NodePath("StartMenu/VBoxContainer/IP_Edit_Field")
 
 [node name="StartMenu" type="Control" parent="."]
 layout_mode = 1
@@ -61,7 +62,19 @@ auto_translate_mode = 1
 layout_mode = 2
 focus_neighbor_top = NodePath("../Host_online")
 focus_neighbor_bottom = NodePath("../Settings")
-text = "Join game"
+text = "Join Online game"
+
+[node name="IP_Edit_Field" type="TextEdit" parent="StartMenu/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+text = "79.241.84.132"
+
+[node name="Join_local" type="Button" parent="StartMenu/VBoxContainer"]
+auto_translate_mode = 1
+layout_mode = 2
+focus_neighbor_top = NodePath("../Host_online")
+focus_neighbor_bottom = NodePath("../Settings")
+text = "Join Localhost"
 
 [node name="Settings" type="Button" parent="StartMenu/VBoxContainer"]
 auto_translate_mode = 1
@@ -196,5 +209,6 @@ text = "X"
 [connection signal="pressed" from="StartMenu/VBoxContainer/Start_local" to="." method="_on_start_local_pressed"]
 [connection signal="pressed" from="StartMenu/VBoxContainer/Host_online" to="." method="_on_host_online_pressed"]
 [connection signal="pressed" from="StartMenu/VBoxContainer/Join_online" to="." method="_on_join_online_pressed"]
+[connection signal="pressed" from="StartMenu/VBoxContainer/Join_local" to="." method="_on_join_local_pressed"]
 [connection signal="pressed" from="StartMenu/VBoxContainer/Settings" to="." method="_on_settings_pressed"]
 [connection signal="pressed" from="Settings/Panel/CloseButton" to="." method="settings_close"]

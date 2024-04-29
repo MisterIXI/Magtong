@@ -3,7 +3,7 @@ extends Control
 @export var start_entry_focus: Control
 @export var settings_menu: Control
 @export var settings_entry_focus: Control
-
+@export var ip_edit_field: TextEdit
 var previous_menu: Control
 var current_menu: Control
 
@@ -52,4 +52,7 @@ func boot_to_menu_with_message(_message: String) -> void:
 
 
 func _on_join_online_pressed():
-	globGameManager.join_game("79.241.84.132", 12345)
+	globGameManager.join_game(ip_edit_field.text, 12345)
+
+func _on_join_local_pressed():
+	globGameManager.join_game("127.0.0.1", 12345)
