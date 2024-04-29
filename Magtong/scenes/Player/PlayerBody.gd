@@ -7,7 +7,7 @@ enum polarity {IDLE, POS, NEG}
 signal polarity_changed(new_pol: polarity)
 signal pulse_emitted(pulse_position: Vector2)
 signal impulse_emitted(pulse_position: Vector2, pol: polarity)
-
+signal setup_completed(player_body: PlayerBody)
 @export var opponent: PlayerBody
 @export var puck: Puck
 var state = polarity.IDLE
@@ -35,6 +35,7 @@ func setup(player_input: PlayerInput):
 	mm = get_node("/root/MatchManager") as MatchManager
 	player_skin.texture = globResourceManager.icons.player_sprites[player_input.player_sprite_id]
 	set_skin.rpc(player_input.player_sprite_id)
+	setup_completed.emit(self)
 
 func on_input(input_info: InputInfo):
 	assert(multiplayer.is_server())

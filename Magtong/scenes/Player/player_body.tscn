@@ -1,12 +1,15 @@
-[gd_scene load_steps=13 format=3 uid="uid://do0i7ixg4d7p1"]
+[gd_scene load_steps=16 format=3 uid="uid://do0i7ixg4d7p1"]
 
 [ext_resource type="Script" path="res://scenes/Player/PlayerVisuals.gd" id="1_31gdm"]
 [ext_resource type="PhysicsMaterial" uid="uid://b0b4nmkgg6odu" path="res://resources/Player_physics_mat.tres" id="1_o1307"]
 [ext_resource type="Script" path="res://scenes/Player/PlayerBody.gd" id="1_tqoy0"]
 [ext_resource type="Resource" uid="uid://cmntx6lne4hft" path="res://resources/player_settings.tres" id="3_4ulju"]
+[ext_resource type="Texture2D" uid="uid://cmy6u5rwg4j0f" path="res://icon.svg" id="4_o87xm"]
 [ext_resource type="Texture2D" uid="uid://dkusv4cnx2ij0" path="res://assets/Textures/plus_sign.png" id="5_igkf6"]
 [ext_resource type="Texture2D" uid="uid://ci8l6erft2vsr" path="res://assets/Textures/PlayerSkins/01_skin_stripes.png" id="5_nlqny"]
 [ext_resource type="Texture2D" uid="uid://d20d2kk22uqyt" path="res://assets/Textures/minus_sign.png" id="6_ipbde"]
+[ext_resource type="Material" uid="uid://dkfcjddsh4ldk" path="res://scenes/Player/pos_aura_mat.tres" id="9_6x4cd"]
+[ext_resource type="Texture2D" uid="uid://dt4t6l1gnn6bj" path="res://assets/Textures/blank pixels.png" id="10_mioy0"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_smi2p"]
 radius = 15.0333
@@ -37,16 +40,22 @@ properties/1/replication_mode = 1
 collision_layer = 3
 collision_mask = 3
 physics_material_override = ExtResource("1_o1307")
+lock_rotation = true
 script = ExtResource("1_tqoy0")
 settings = ExtResource("3_4ulju")
 pulse_timer = NodePath("Pulse_CD")
 impulse_timer = NodePath("Impulse_CD")
 player_skin = NodePath("Graphics/PlayerCharacter")
 
+[node name="TestSprite" type="Sprite2D" parent="."]
+visible = false
+scale = Vector2(3.39, 3.39)
+texture = ExtResource("4_o87xm")
+
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_smi2p")
 
-[node name="Graphics" type="Node2D" parent="." node_paths=PackedStringArray("sprite", "player", "plus_particles", "minus_particles", "plus_burst_particles", "minus_burst_particles")]
+[node name="Graphics" type="Node2D" parent="." node_paths=PackedStringArray("sprite", "player", "plus_particles", "minus_particles", "plus_burst_particles", "minus_burst_particles", "pol_shader_sprite")]
 script = ExtResource("1_31gdm")
 sprite = NodePath("PlayerCharacter")
 player = NodePath("..")
@@ -55,12 +64,15 @@ minus_particles = NodePath("MinusParticles")
 plus_burst_particles = NodePath("PlusBurst")
 minus_burst_particles = NodePath("MinusBurst")
 settings = ExtResource("3_4ulju")
+pol_shader_sprite = NodePath("BackBufferCopy/PlayerShader")
 
 [node name="PlayerCharacter" type="Sprite2D" parent="Graphics"]
+z_index = 1
 scale = Vector2(0.06, 0.06)
 texture = ExtResource("5_nlqny")
 
 [node name="PlusParticles" type="CPUParticles2D" parent="Graphics"]
+visible = false
 emitting = false
 amount = 70
 texture = ExtResource("5_igkf6")
@@ -73,6 +85,7 @@ scale_amount_curve = SubResource("Curve_ikk82")
 color = Color(1, 0, 0, 1)
 
 [node name="MinusParticles" type="CPUParticles2D" parent="Graphics"]
+visible = false
 emitting = false
 amount = 70
 texture = ExtResource("6_ipbde")
@@ -116,6 +129,14 @@ initial_velocity_max = 500.0
 scale_amount_curve = SubResource("Curve_a04ll")
 color = Color(0, 0, 1, 1)
 
+[node name="BackBufferCopy" type="BackBufferCopy" parent="Graphics"]
+copy_mode = 2
+
+[node name="PlayerShader" type="Sprite2D" parent="Graphics/BackBufferCopy"]
+material = ExtResource("9_6x4cd")
+scale = Vector2(37.135, 37.135)
+texture = ExtResource("10_mioy0")
+
 [node name="FieldManager" type="Node2D" parent="."]
 
 [node name="Pulse_CD" type="Timer" parent="."]
@@ -130,3 +151,4 @@ replication_config = SubResource("SceneReplicationConfig_i0q21")
 [connection signal="impulse_emitted" from="." to="Graphics" method="_on_player_impulse_emitted"]
 [connection signal="polarity_changed" from="." to="Graphics" method="on_polarity_changed"]
 [connection signal="pulse_emitted" from="." to="Graphics" method="_on_player_body_pulse_emitted"]
+[connection signal="setup_completed" from="." to="Graphics" method="_on_player_body_setup_completed"]

@@ -18,3 +18,4 @@ class_name PlayerSettings
 @export var viz_idle_speed: float = 3
 @export var viz_acc: float = 5
 @export var viz_max_speed: float = 10
+@export var pol_shader_change_dur: float = 0.3

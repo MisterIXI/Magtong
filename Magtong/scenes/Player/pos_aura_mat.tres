@@ -1,0 +1,15 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://dkfcjddsh4ldk"]
+
+[ext_resource type="Shader" path="res://resources/Shaders/player_body.gdshader" id="1_answg"]
+
+[resource]
+resource_local_to_scene = true
+shader = ExtResource("1_answg")
+shader_parameter/center = Vector2(0.5, 0.5)
+shader_parameter/pos_col = Color(1, 0, 0, 1)
+shader_parameter/neg_col = Color(0, 0, 1, 1)
+shader_parameter/polarity = 4.75e-08
+shader_parameter/ripple = 0.303
+shader_parameter/force = 0.05
+shader_parameter/size = 0.555
+shader_parameter/thickness = -0.2

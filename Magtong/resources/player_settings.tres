@@ -18,3 +18,4 @@ accell = 6000.0
 viz_idle_speed = 2.0
 viz_acc = 150.0
 viz_max_speed = 40.0
+pol_shader_change_dur = 0.3
