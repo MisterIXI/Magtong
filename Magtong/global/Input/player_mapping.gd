@@ -46,10 +46,10 @@ func set_keyboard_mapping1():
 	self.k_down = KEY_S
 	self.k_left = KEY_A
 	self.k_right = KEY_D
-	self.k_plus = KEY_C
-	self.k_minus = KEY_V
-	self.k_primary = KEY_X
-	self.k_secondary = KEY_F
+	self.k_plus = KEY_J
+	self.k_minus = KEY_K
+	self.k_primary = KEY_SPACE
+	self.k_secondary = KEY_L
 	self.k_menu = KEY_ESCAPE
 
 func set_keyboard_mapping2():
