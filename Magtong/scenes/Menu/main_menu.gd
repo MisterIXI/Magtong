@@ -56,3 +56,6 @@ func _on_join_online_pressed():
 
 func _on_join_local_pressed():
 	globGameManager.join_game("127.0.0.1", 12345)
+
+func _on_quit_pressed() -> void:
+	get_tree().quit()

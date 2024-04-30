@@ -211,4 +211,5 @@ text = "X"
 [connection signal="pressed" from="StartMenu/VBoxContainer/Join_online" to="." method="_on_join_online_pressed"]
 [connection signal="pressed" from="StartMenu/VBoxContainer/Join_local" to="." method="_on_join_local_pressed"]
 [connection signal="pressed" from="StartMenu/VBoxContainer/Settings" to="." method="_on_settings_pressed"]
+[connection signal="pressed" from="StartMenu/VBoxContainer/Quit" to="." method="_on_quit_pressed"]
 [connection signal="pressed" from="Settings/Panel/CloseButton" to="." method="settings_close"]
