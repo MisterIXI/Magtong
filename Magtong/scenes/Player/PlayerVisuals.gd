@@ -60,6 +60,22 @@ func _on_player_body_pulse_emitted(_pos: Vector2):
 	# both are one_shot, so they will stop emitting by themselves
 	plus_burst_particles.emitting = true
 	minus_burst_particles.emitting = true
+	pulse_tweener()
+
+
+func _on_player_impulse_emitted(_pos: Vector2, _pol: PlayerBody.polarity):
+	if _pol == player.polarity.POS:
+		plus_burst_particles.emitting = true
+	else:
+		minus_burst_particles.emitting = true
+	pulse_tweener()
+
+func _on_player_body_setup_completed(player_body:PlayerBody):
+	mm = player_body.mm
+
+func pulse_tweener():
+	if pulse_tween.is_running():
+		pulse_tween.kill()
 	pulse_tween = create_tween()
 	pulse_tween.tween_method(
 		func(val): pol_shader_sprite.material.set_shader_parameter("size", val),
@@ -75,13 +91,3 @@ func _on_player_body_pulse_emitted(_pos: Vector2):
 		0.3
 	)
 	pulse_tween.play()
-
-func _on_player_impulse_emitted(_pos: Vector2, _pol: PlayerBody.polarity):
-	if _pol == player.polarity.POS:
-		plus_burst_particles.emitting = true
-	else:
-		minus_burst_particles.emitting = true
-
-
-func _on_player_body_setup_completed(player_body:PlayerBody):
-	mm = player_body.mm

@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://do0i7ixg4d7p1"]
+[gd_scene load_steps=15 format=3 uid="uid://do0i7ixg4d7p1"]
 
 [ext_resource type="Script" path="res://scenes/Player/PlayerVisuals.gd" id="1_31gdm"]
 [ext_resource type="PhysicsMaterial" uid="uid://b0b4nmkgg6odu" path="res://resources/Player_physics_mat.tres" id="1_o1307"]
@@ -15,14 +15,8 @@
 radius = 15.0333
 
 [sub_resource type="Curve" id="Curve_ikk82"]
-_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.709459, 0.841758), -0.221778, -0.221778, 0, 0, Vector2(0.97973, 0), -3.80947, 0.0, 0, 0]
-point_count = 3
-
-[sub_resource type="Curve" id="Curve_wwg0b"]
-min_value = -200.0
-max_value = 200.0
-_data = [Vector2(0.00675676, 147.253), 0.0, 0.0, 0, 0, Vector2(1, 0), -436.38, 0.0, 0, 0]
-point_count = 2
+_data = [Vector2(0, 0.0156175), 0.0, 8.96711, 0, 0, Vector2(0.226415, 0.987695), -1.03467, -1.03467, 0, 0, Vector2(0.833962, 0.575485), -0.221778, -0.221778, 0, 0, Vector2(0.97973, 0), -3.80947, 0.0, 0, 0]
+point_count = 4
 
 [sub_resource type="Curve" id="Curve_a04ll"]
 _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.718468, 0.797802), -0.798401, -0.798401, 0, 0, Vector2(1, 0), -3.20139, 0.0, 0, 0]
@@ -73,34 +67,35 @@ texture = ExtResource("5_nlqny")
 
 [node name="PlusParticles" type="CPUParticles2D" parent="Graphics"]
 emitting = false
-amount = 70
-local_coords = true
+amount = 200
+lifetime = 0.3
 texture = ExtResource("5_igkf6")
 emission_shape = 1
 emission_sphere_radius = 128.0
 spread = 180.0
 gravity = Vector2(0, 0)
+initial_velocity_min = 6.76
+initial_velocity_max = 20.27
 scale_amount_min = 0.3
 scale_amount_max = 0.3
 scale_amount_curve = SubResource("Curve_ikk82")
 color = Color(1, 0, 0, 1)
 
 [node name="MinusParticles" type="CPUParticles2D" parent="Graphics"]
-visible = false
 emitting = false
-amount = 70
+amount = 200
+lifetime = 0.3
 texture = ExtResource("6_ipbde")
-emission_shape = 2
+emission_shape = 1
 emission_sphere_radius = 128.0
 spread = 180.0
 gravity = Vector2(0, 0)
-radial_accel_min = -1.0
-radial_accel_max = -0.5
-radial_accel_curve = SubResource("Curve_wwg0b")
-scale_amount_min = 0.5
-scale_amount_max = 0.5
+initial_velocity_min = 6.76
+initial_velocity_max = 20.27
+scale_amount_min = 0.3
+scale_amount_max = 0.3
 scale_amount_curve = SubResource("Curve_ikk82")
-color = Color(0, 0, 1, 1)
+color = Color(0.505344, 0.505344, 0.505344, 1)
 
 [node name="PlusBurst" type="CPUParticles2D" parent="Graphics"]
 emitting = false
