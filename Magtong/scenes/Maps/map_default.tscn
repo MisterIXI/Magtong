@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://c8t5ekg5tbap3"]
+[gd_scene load_steps=13 format=3 uid="uid://c8t5ekg5tbap3"]
 
 [ext_resource type="Script" path="res://scenes/Maps/map_script.gd" id="1_wbm5i"]
 [ext_resource type="Texture2D" uid="uid://djiliwe7gmlcb" path="res://assets/Textures/PlayField/PlayFieldTex.png" id="2_tw27u"]
@@ -7,11 +7,13 @@
 [ext_resource type="PackedScene" uid="uid://dlc283cvpl3eh" path="res://scenes/Puck/puck.tscn" id="3_wk3dj"]
 [ext_resource type="Script" path="res://scenes/Maps/spawn_point_group.gd" id="4_jds7q"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_wt5lj"]
-size = Vector2(500, 720)
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_5nsau"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_wqkty"]
-size = Vector2(1500, 525)
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_f7hg0"]
+
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_me1nk"]
+
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_oflq2"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_2cnpn"]
 size = Vector2(530, 2.45)
@@ -43,20 +45,23 @@ texture = ExtResource("2_tw27u")
 [node name="BorderCollider" type="StaticBody2D" parent="FieldCenter"]
 
 [node name="RightWallCollider" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
-position = Vector2(510, 0)
-shape = SubResource("RectangleShape2D_wt5lj")
+position = Vector2(262, 0)
+rotation = -1.5708
+shape = SubResource("WorldBoundaryShape2D_5nsau")
 
 [node name="LeftWallCollider" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
-position = Vector2(-510, 0)
-shape = SubResource("RectangleShape2D_wt5lj")
+position = Vector2(-262, 0)
+rotation = 1.5708
+shape = SubResource("WorldBoundaryShape2D_f7hg0")
 
 [node name="TopWallCollider" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
-position = Vector2(0, -615.5)
-shape = SubResource("RectangleShape2D_wqkty")
+position = Vector2(0, -355)
+rotation = 3.14159
+shape = SubResource("WorldBoundaryShape2D_me1nk")
 
 [node name="BottomWallCollider" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
-position = Vector2(0, 616)
-shape = SubResource("RectangleShape2D_wqkty")
+position = Vector2(0, 355)
+shape = SubResource("WorldBoundaryShape2D_oflq2")
 
 [node name="CenterLineCollider" type="StaticBody2D" parent="FieldCenter"]
 collision_layer = 2
