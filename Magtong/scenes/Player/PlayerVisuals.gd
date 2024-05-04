@@ -74,7 +74,7 @@ func _on_player_body_setup_completed(player_body:PlayerBody):
 	mm = player_body.mm
 
 func pulse_tweener():
-	if pulse_tween.is_running():
+	if pulse_tween != null and pulse_tween.is_running():
 		pulse_tween.kill()
 	pulse_tween = create_tween()
 	pulse_tween.tween_method(
