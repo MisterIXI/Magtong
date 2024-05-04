@@ -95,13 +95,20 @@ func change_polarity(new_pol: polarity):
 		state = new_pol
 		polarity_changed.emit(state)
 @rpc("any_peer", "call_local", "reliable")
-func reset_input():
-	x_input = 0.0
-	y_input = 0.0
+func reset_input_state(retain_input: bool):
+	var old_plus = plus_input
+	var old_minus = minus_input
 	plus_input = 0.0
 	minus_input = 0.0
-	update_target_vel(Vector2(x_input, y_input))
+	update_target_vel(Vector2(0.0, 0.0))
 	update_polarity()
+	if retain_input:
+		plus_input = old_plus
+		minus_input = old_minus
+	else:
+		x_input = 0.0
+		y_input = 0.0
+		
 	
 func reset(new_pos: Vector2):
 	linear_velocity = Vector2()

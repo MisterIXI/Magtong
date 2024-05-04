@@ -85,7 +85,7 @@ func reset_players(keep_position: bool) -> void:
 				players[i][j].reset(players[i][j].global_position)
 			else:
 				players[i][j].reset(player_spawn_groups[player_sg_indices[j]].spawn_points[i].global_position)
-			players[i][j].reset_input.rpc()
+			players[i][j].reset_input_state.rpc()
 
 func _physics_process(delta):
 	if not multiplayer.is_server():
