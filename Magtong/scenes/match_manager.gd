@@ -1,7 +1,7 @@
 extends Node
 class_name MatchManager
 
-var match_time: float = 300
+var match_time: float = 10
 var im : InputManager
 var gm: GameManager
 
@@ -20,6 +20,9 @@ var game_running: bool = false
 @export var ms: MapScript
 var peer_ready_state: Dictionary = {}
 var all_ready: bool = false
+var is_in_overtime: bool = false
+var overtime_start_time: float = 0
+var time_since_last_goal: float = 0
 
 @rpc("authority", "call_local", "reliable")
 func setup(match_time: float):
@@ -63,6 +66,7 @@ func restart_match():
 	game_running = true
 	player1_score = 0
 	player2_score = 0
+	is_in_overtime = false
 	p1_score_label.text = "P1 " + str(player1_score).pad_zeros(2)
 	p2_score_label.text = str(player2_score).pad_zeros(2) + " P2"
 	ms.reset_field()
@@ -75,25 +79,34 @@ func restart_match():
 func score_for_team(team: int):
 	if team == 1:
 		player1_score += 1
-		gm.print_message("Player 1 scored!")
+		gm.print_message("Player 1 scored after " + str((Time.get_ticks_msec() - time_since_last_goal) / 1000) + " seconds!")
 	elif team == 2:
 		player2_score += 1
-		gm.print_message("Player 2 scored!")
+		gm.print_message("Player 2 scored after " + str((Time.get_ticks_msec() - time_since_last_goal) / 1000) + " seconds!")
+	elif team == 0:
+		is_in_overtime = true
+		gm.print_message("Tie! Game will be decided with the next goal!")
 	gm.print_message("Score: " + str(player1_score) + " - " + str(player2_score))
 	p1_score_label.text = "P1 " + str(player1_score).pad_zeros(2)
 	p2_score_label.text = str(player2_score).pad_zeros(2) + " P2"
 	game_timer.paused = true
-	ms.reset_field()
 	if multiplayer.is_server():
-		im.set_input_locked(true)
-		countdown = 4
-		_on_countdown_timer_timeout()
+		if is_in_overtime and team != 0:
+			game_over.rpc(_determine_winner())
+		else:
+			ms.reset_field()
+			im.set_input_locked(true)
+			countdown = 4
+			_on_countdown_timer_timeout()
 
 @rpc("authority", "call_local", "reliable")
 func resume_game():
 	if multiplayer.is_server():
 		im.set_input_locked(false)
-	game_timer.paused = false
+	if is_in_overtime:
+		overtime_start_time = Time.get_ticks_msec()
+	else:
+		game_timer.paused = false
 	countdown_timer.stop()
 
 @rpc("authority", "call_local", "reliable")
@@ -124,12 +137,17 @@ func request_restart():
 		restart_match.rpc()
 
 func _process(_delta):
-	if game_running and not game_timer.paused:
+	if game_running and countdown_timer.is_stopped() and (not game_timer.paused or is_in_overtime):
+		var time: float
+		if is_in_overtime:
+			time = (Time.get_ticks_msec() - overtime_start_time) / 1000
+		else:
+			time = game_timer.time_left
 		# formate game_timer.time_left to MM:SS:MS
-		var minutes = int(game_timer.time_left / 60)
-		var seconds = int(game_timer.time_left) % 60
-		var milliseconds = int((game_timer.time_left - int(game_timer.time_left)) * 100)
-		timer_label.text = str(minutes).pad_zeros(2) + ":" + str(seconds).pad_zeros(2) + ":" + str(milliseconds).pad_zeros(2)
+		var minutes = int(time / 60)
+		var seconds = int(time) % 60
+		var milliseconds = int((time - int(time)) * 100)
+		timer_label.text = str(minutes).pad_zeros(2) + ":" + str(seconds).pad_zeros(2) + ":" + str(milliseconds).pad_zeros(2) + (" OT" if is_in_overtime else "")
 
 func on_goal_scored(team_id: int):
 	score_for_team.rpc(team_id)
@@ -144,6 +162,7 @@ func _on_countdown_timer_timeout():
 	timer_label.text = str(countdown) + "..."
 	if countdown == 0:
 		timer_label.text = "GO!"
+		time_since_last_goal = Time.get_ticks_msec()
 		if game_running:
 			resume_game.rpc()
 		else:
@@ -170,13 +189,22 @@ func _on_goal_north_body_entered(body:Node2D):
 		status_label.text = "Player 1 scored!"
 		score_for_team.rpc(1)
 
+func _determine_winner() -> int:
+	if player1_score > player2_score:
+		return 1
+	elif player2_score > player1_score:
+		return 2
+	else:
+		return 0
+
 func _on_game_timeout():
 	if not multiplayer.is_server():
 		return
-	var winning_team = 0
-	if player1_score > player2_score:
-		winning_team = 1
-	elif player2_score > player1_score:
-		winning_team = 2
-	game_running = false
-	game_over.rpc(winning_team)
+	var winning_team = _determine_winner()
+	if winning_team == 0:
+		is_in_overtime = true
+		overtime_start_time = Time.get_ticks_msec()
+		score_for_team.rpc(0)
+	else:
+		game_running = false
+		game_over.rpc(winning_team)

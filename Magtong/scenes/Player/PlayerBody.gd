@@ -95,7 +95,7 @@ func change_polarity(new_pol: polarity):
 		state = new_pol
 		polarity_changed.emit(state)
 @rpc("any_peer", "call_local", "reliable")
-func reset_input_state(retain_input: bool):
+func reset_input_state(retain_input: bool = true):
 	var old_plus = plus_input
 	var old_minus = minus_input
 	plus_input = 0.0
