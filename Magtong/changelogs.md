@@ -1,3 +1,10 @@
+# 0.4
+- fixed player input retention over across goals
+- Overtime implemented
+- shader color adjustment
+- new default keyboard bindings
+- quit button functionality added
+
 # 0.3
 - changelogs added
 - custom (temporary) join buttons with IP join added
