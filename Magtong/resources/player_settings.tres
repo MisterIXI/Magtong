@@ -19,3 +19,4 @@ viz_idle_speed = 2.0
 viz_acc = 150.0
 viz_max_speed = 40.0
 pol_shader_change_dur = 0.3
+team_colors = [Color(1, 0, 0, 1), Color(0, 0, 1, 1), Color(0, 1, 0, 1), Color(1, 1, 0, 1), Color(1, 0, 1, 1), Color(0, 1, 1, 1)]

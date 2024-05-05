@@ -15,3 +15,6 @@ func shuffle():
 
 func get_shuffled_point(index: int) -> Node2D:
 	return spawn_points[shuffle_indices[index]]
+
+func size() -> int:
+	return spawn_points.size()

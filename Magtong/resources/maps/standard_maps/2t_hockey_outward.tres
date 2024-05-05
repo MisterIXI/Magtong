@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="MapParameters" load_steps=3 format=3 uid="uid://d1rt2n2js4i21"]
+
+[ext_resource type="Script" path="res://resources/maps/map_parameters.gd" id="1_3wsw3"]
+[ext_resource type="Texture2D" uid="uid://djiliwe7gmlcb" path="res://assets/Textures/PlayField/PlayFieldTex.png" id="1_dpetw"]
+
+[resource]
+script = ExtResource("1_3wsw3")
+map_image = ExtResource("1_dpetw")
+team_count = 2
+team_colors = Array[Color]([Color(1, 0, 0, 1), Color(0, 0, 1, 1)])
+team_positions = Array[Vector2]([Vector2(0.5, 0.25), Vector2(0.5, 0.25)])

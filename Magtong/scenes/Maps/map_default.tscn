@@ -1,10 +1,8 @@
-[gd_scene load_steps=13 format=3 uid="uid://c8t5ekg5tbap3"]
+[gd_scene load_steps=11 format=3 uid="uid://c8t5ekg5tbap3"]
 
 [ext_resource type="Script" path="res://scenes/Maps/map_script.gd" id="1_wbm5i"]
 [ext_resource type="Texture2D" uid="uid://djiliwe7gmlcb" path="res://assets/Textures/PlayField/PlayFieldTex.png" id="2_tw27u"]
-[ext_resource type="PackedScene" uid="uid://do0i7ixg4d7p1" path="res://scenes/Player/player_body.tscn" id="2_wihr1"]
 [ext_resource type="Texture2D" uid="uid://dt4t6l1gnn6bj" path="res://assets/Textures/blank pixels.png" id="3_0ppxq"]
-[ext_resource type="PackedScene" uid="uid://dlc283cvpl3eh" path="res://scenes/Puck/puck.tscn" id="3_wk3dj"]
 [ext_resource type="Script" path="res://scenes/Maps/spawn_point_group.gd" id="4_jds7q"]
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_5nsau"]
@@ -27,11 +25,8 @@ player_spawn_groups = [NodePath("FieldCenter/SpawnPoints/CenterBackSpawns"), Nod
 ball_spawn_group = NodePath("FieldCenter/SpawnPoints/BallSpawns")
 spawner = NodePath("FieldCenter/MultiplayerSpawner")
 mp_root = NodePath("FieldCenter/MultiplayerRoot")
-player_body = ExtResource("2_wihr1")
-puck_body = ExtResource("3_wk3dj")
 
 [node name="FieldCenter" type="Node2D" parent="."]
-position = Vector2(640, 360)
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="FieldCenter"]
 _spawnable_scenes = PackedStringArray("res://scenes/Player/player_body.tscn", "res://scenes/Puck/puck.tscn")
@@ -137,6 +132,29 @@ position = Vector2(200, 250)
 
 [node name="P2_Spawn" type="Node2D" parent="FieldCenter/SpawnPoints/RightBackSpawns"]
 position = Vector2(-200, -250)
+
+[node name="TeamIndicatorPoints" type="Node2D" parent="FieldCenter" node_paths=PackedStringArray("spawn_points")]
+script = ExtResource("4_jds7q")
+spawn_points = [NodePath("T1"), NodePath("T2")]
+
+[node name="T1" type="Node2D" parent="FieldCenter/TeamIndicatorPoints"]
+position = Vector2(0, 150)
+
+[node name="T2" type="Node2D" parent="FieldCenter/TeamIndicatorPoints"]
+position = Vector2(0, -150)
+
+[node name="Panel" type="Panel" parent="."]
+visible = false
+modulate = Color(1, 1, 1, 0.494118)
+offset_left = -635.0
+offset_top = -360.0
+offset_right = 635.0
+offset_bottom = 360.0
+
+[node name="GM_message_box" type="Panel" parent="Panel"]
+layout_mode = 0
+offset_right = 365.0
+offset_bottom = 180.0
 
 [connection signal="body_entered" from="FieldCenter/GoalSouth" to="." method="_on_goal_collision" binds= [2]]
 [connection signal="body_entered" from="FieldCenter/GoalNorth" to="." method="_on_goal_collision" binds= [1]]

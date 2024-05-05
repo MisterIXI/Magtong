@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/Lobby/lobby.gd" id="1_7jl7p"]
 [ext_resource type="PackedScene" uid="uid://7a0tqfpd7xb5" path="res://scenes/Lobby/player_container.tscn" id="2_hqkbe"]
-[ext_resource type="Texture2D" uid="uid://djiliwe7gmlcb" path="res://assets/Textures/PlayField/PlayFieldTex.png" id="3_j2fv2"]
+[ext_resource type="PackedScene" uid="uid://c8t5ekg5tbap3" path="res://scenes/Maps/map_default.tscn" id="4_qdq2x"]
 [ext_resource type="PackedScene" uid="uid://b8f3iuixb8vj3" path="res://scenes/Lobby/player_team_selector.tscn" id="4_xtut1"]
 
 [node name="Lobby" type="Control" node_paths=PackedStringArray("lobby_container")]
@@ -17,7 +17,7 @@ player_container = ExtResource("2_hqkbe")
 lobby_container = NodePath("PlayerSelector/MarginContainer/ScrollContainer/LobbyContainer")
 
 [node name="PlayerSelector" type="Control" parent="."]
-auto_translate_mode = 1
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -67,7 +67,6 @@ spawn_path = NodePath("../MarginContainer/ScrollContainer/LobbyContainer")
 
 [node name="MapSelector" type="Control" parent="."]
 auto_translate_mode = 1
-visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -108,42 +107,6 @@ theme_override_constants/margin_bottom = 10
 auto_translate_mode = 1
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MapSelector/MarginContainer/HBoxContainer"]
-auto_translate_mode = 1
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_stretch_ratio = 3.0
-
-[node name="Panel" type="Panel" parent="MapSelector/MarginContainer/HBoxContainer/VBoxContainer"]
-auto_translate_mode = 1
-layout_mode = 2
-size_flags_vertical = 3
-size_flags_stretch_ratio = 2.0
-
-[node name="TextureRect" type="TextureRect" parent="MapSelector/MarginContainer/HBoxContainer/VBoxContainer/Panel"]
-auto_translate_mode = 1
-layout_mode = 1
-offset_right = 207.0
-offset_bottom = 207.0
-texture = ExtResource("3_j2fv2")
-expand_mode = 4
-stretch_mode = 4
-
-[node name="Panel2" type="Panel" parent="MapSelector/MarginContainer/HBoxContainer/VBoxContainer"]
-auto_translate_mode = 1
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="TextureRect" type="TextureRect" parent="MapSelector/MarginContainer/HBoxContainer/VBoxContainer/Panel2"]
-auto_translate_mode = 1
-layout_mode = 2
-offset_top = 4.0
-offset_bottom = 4.0
-
-[node name="HFlowContainer" type="HFlowContainer" parent="MapSelector/MarginContainer/HBoxContainer/VBoxContainer"]
-auto_translate_mode = 1
-layout_mode = 2
-
 [node name="ScrollContainer" type="ScrollContainer" parent="MapSelector/MarginContainer/HBoxContainer"]
 auto_translate_mode = 1
 layout_mode = 2
@@ -156,3 +119,202 @@ size_flags_horizontal = 3
 
 [node name="PlayerTeamSelectionPanel" parent="MapSelector/MarginContainer/HBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("4_xtut1")]
 layout_mode = 2
+
+[node name="PlayerTeamSelectionPanel2" parent="MapSelector/MarginContainer/HBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("4_xtut1")]
+layout_mode = 2
+
+[node name="PlayerTeamSelectionPanel3" parent="MapSelector/MarginContainer/HBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("4_xtut1")]
+layout_mode = 2
+
+[node name="PlayerTeamSelectionPanel4" parent="MapSelector/MarginContainer/HBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("4_xtut1")]
+layout_mode = 2
+
+[node name="PlayerTeamSelectionPanel5" parent="MapSelector/MarginContainer/HBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("4_xtut1")]
+layout_mode = 2
+
+[node name="PlayerTeamSelectionPanel6" parent="MapSelector/MarginContainer/HBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("4_xtut1")]
+layout_mode = 2
+
+[node name="PlayerTeamSelectionPanel7" parent="MapSelector/MarginContainer/HBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("4_xtut1")]
+layout_mode = 2
+
+[node name="PlayerTeamSelectionPanel8" parent="MapSelector/MarginContainer/HBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("4_xtut1")]
+layout_mode = 2
+
+[node name="PlayerTeamSelectionPanel9" parent="MapSelector/MarginContainer/HBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("4_xtut1")]
+layout_mode = 2
+
+[node name="PlayerTeamSelectionPanel10" parent="MapSelector/MarginContainer/HBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("4_xtut1")]
+layout_mode = 2
+
+[node name="Panel" type="Panel" parent="MapSelector/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 2.0
+
+[node name="HBoxContainer" type="VBoxContainer" parent="MapSelector/MarginContainer/HBoxContainer/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CenterContainer" type="CenterContainer" parent="MapSelector/MarginContainer/HBoxContainer/Panel/HBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MapName" type="Label" parent="MapSelector/MarginContainer/HBoxContainer/Panel/HBoxContainer/CenterContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 45
+text = "Map Name"
+
+[node name="CenterContainer2" type="CenterContainer" parent="MapSelector/MarginContainer/HBoxContainer/Panel/HBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 9.0
+
+[node name="Control" type="Control" parent="MapSelector/MarginContainer/HBoxContainer/Panel/HBoxContainer/CenterContainer2"]
+layout_mode = 2
+
+[node name="MapDefault" parent="MapSelector/MarginContainer/HBoxContainer/Panel/HBoxContainer/CenterContainer2/Control" node_paths=PackedStringArray("player_spawn_groups", "ball_spawn_group", "spawner", "mp_root") instance=ExtResource("4_qdq2x")]
+scale = Vector2(0.489, 0.489)
+player_spawn_groups = [NodePath("FieldCenter/SpawnPoints/CenterBackSpawns"), NodePath("FieldCenter/SpawnPoints/LeftBackSpawns"), NodePath("FieldCenter/SpawnPoints/RightBackSpawns")]
+ball_spawn_group = NodePath("FieldCenter/SpawnPoints/BallSpawns")
+spawner = NodePath("FieldCenter/MultiplayerSpawner")
+mp_root = NodePath("FieldCenter/MultiplayerRoot")
+
+[node name="Panel2" type="Panel" parent="MapSelector/MarginContainer/HBoxContainer"]
+auto_translate_mode = 1
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MapSelector/MarginContainer/HBoxContainer/Panel2"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="MapSelector/MarginContainer/HBoxContainer/Panel2/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="Label" type="Label" parent="MapSelector/MarginContainer/HBoxContainer/Panel2/VBoxContainer/MarginContainer"]
+layout_mode = 2
+size_flags_vertical = 2
+theme_override_font_sizes/font_size = 20
+text = "Map: < map_01 >"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MarginContainer2" type="MarginContainer" parent="MapSelector/MarginContainer/HBoxContainer/Panel2/VBoxContainer"]
+auto_translate_mode = 1
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="Label" type="Label" parent="MapSelector/MarginContainer/HBoxContainer/Panel2/VBoxContainer/MarginContainer2"]
+auto_translate_mode = 1
+layout_mode = 2
+size_flags_vertical = 2
+theme_override_font_sizes/font_size = 20
+text = "Mode: < Time >"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MarginContainer3" type="MarginContainer" parent="MapSelector/MarginContainer/HBoxContainer/Panel2/VBoxContainer"]
+auto_translate_mode = 1
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="Label" type="Label" parent="MapSelector/MarginContainer/HBoxContainer/Panel2/VBoxContainer/MarginContainer3"]
+auto_translate_mode = 1
+layout_mode = 2
+size_flags_vertical = 2
+theme_override_font_sizes/font_size = 20
+text = "Game length: < 5 minutes >"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MarginContainer4" type="MarginContainer" parent="MapSelector/MarginContainer/HBoxContainer/Panel2/VBoxContainer"]
+auto_translate_mode = 1
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="Label" type="Label" parent="MapSelector/MarginContainer/HBoxContainer/Panel2/VBoxContainer/MarginContainer4"]
+auto_translate_mode = 1
+layout_mode = 2
+size_flags_vertical = 2
+theme_override_font_sizes/font_size = 20
+text = "Stocks: < 01 >"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MarginContainer5" type="MarginContainer" parent="MapSelector/MarginContainer/HBoxContainer/Panel2/VBoxContainer"]
+auto_translate_mode = 1
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="Label" type="Label" parent="MapSelector/MarginContainer/HBoxContainer/Panel2/VBoxContainer/MarginContainer5"]
+auto_translate_mode = 1
+layout_mode = 2
+size_flags_vertical = 2
+theme_override_font_sizes/font_size = 20
+text = "Puck count: < 1 >"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="MapSelector/MarginContainer/HBoxContainer/Panel2/VBoxContainer"]
+layout_mode = 2
+
+[node name="MarginContainer6" type="MarginContainer" parent="MapSelector/MarginContainer/HBoxContainer/Panel2/VBoxContainer"]
+auto_translate_mode = 1
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="Label" type="Label" parent="MapSelector/MarginContainer/HBoxContainer/Panel2/VBoxContainer/MarginContainer6"]
+auto_translate_mode = 1
+layout_mode = 2
+size_flags_vertical = 2
+theme_override_font_sizes/font_size = 20
+text = "Magnet strength: < 1 >"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MarginContainer7" type="MarginContainer" parent="MapSelector/MarginContainer/HBoxContainer/Panel2/VBoxContainer"]
+auto_translate_mode = 1
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="Label" type="Label" parent="MapSelector/MarginContainer/HBoxContainer/Panel2/VBoxContainer/MarginContainer7"]
+auto_translate_mode = 1
+layout_mode = 2
+size_flags_vertical = 2
+theme_override_font_sizes/font_size = 20
+text = "Pulse enabled: < Yes >"
+horizontal_alignment = 1
+vertical_alignment = 1

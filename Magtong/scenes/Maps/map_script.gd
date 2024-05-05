@@ -5,8 +5,7 @@ class_name MapScript
 @export var ball_spawn_group: SpawnPointGroup
 @export var spawner: MultiplayerSpawner
 @export var mp_root: Node2D
-@export var player_body: PackedScene
-@export var puck_body: PackedScene
+@export var team_indicator_groups: SpawnPointGroup
 
 var player_sg_indices: Array[int] = []
 
@@ -17,7 +16,6 @@ var pucks: Array[Puck] = []
 var players: Array[Array] = []
 var mm: MatchManager
 var im: InputManager
-
 var max_team_size: int
 func _ready():
 	im = globInputManager
@@ -31,8 +29,11 @@ func setup(match_manager: MatchManager) -> void:
 		return
 	im = globInputManager
 	mm = match_manager
+	var puck_body = globResourceManager.puck_scene
+	var player_body = globResourceManager.player_scene
+
 	var puck = puck_body.instantiate()
-	mp_root.add_child(puck,true)
+	mp_root.add_child(puck, true)
 	pucks.append(puck)
 	players = [[],[]]
 	# TODO: get team num somehow to not hardcode this
@@ -51,7 +52,6 @@ func setup(match_manager: MatchManager) -> void:
 			new_player.pulse_emitted.connect(on_pulse_from)
 			new_player.impulse_emitted.connect(on_impulse_from)
 	max_team_size = team_counter.values().max()
-
 	
 func _on_goal_collision(body: Node, team: int) -> void:
 	if not multiplayer.is_server():
@@ -59,7 +59,7 @@ func _on_goal_collision(body: Node, team: int) -> void:
 	if body.is_in_group("puck"):
 		goal_scored.emit(team)
 	
-func reset_field(keep_position: bool = false) -> void:
+func reset_field(keep_position: bool=false) -> void:
 	if not multiplayer.is_server():
 		return
 	await get_tree().physics_frame
@@ -139,10 +139,16 @@ func on_pulse_from(pulse_pos: Vector2) -> void:
 func on_impulse_from(impulse_pos: Vector2, polarity: PlayerBody.polarity) -> void:
 	for puck in pucks:
 		var puck_pol = PlayerBody.polarity.POS if puck.is_plus_pol else PlayerBody.polarity.NEG
-		var mult = 1 if puck_pol == polarity else -1
+		var mult = 1 if puck_pol == polarity else - 1
 		var dist = puck.global_position.distance_to(impulse_pos)
 		var force = settings.magnet_dropoff.sample(dist / settings.magnet_range)
 		var scaled_force = (
 			(puck.global_position - impulse_pos).normalized() * force * settings.magnet_force * mult * settings.impulse_mult
 		)
 		puck.apply_impulse(scaled_force)
+
+func get_max_pucks() -> int: return ball_spawn_group.size()
+
+func get_team_count() -> int: return player_spawn_groups[0].size()
+
+func get_max_team_size() -> int: return player_spawn_groups.size()
