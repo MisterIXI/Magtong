@@ -67,7 +67,7 @@ texture = ExtResource("5_nlqny")
 
 [node name="PlusParticles" type="CPUParticles2D" parent="Graphics"]
 emitting = false
-amount = 200
+amount = 100
 lifetime = 0.3
 texture = ExtResource("5_igkf6")
 emission_shape = 1
@@ -79,11 +79,11 @@ initial_velocity_max = 20.27
 scale_amount_min = 0.3
 scale_amount_max = 0.3
 scale_amount_curve = SubResource("Curve_ikk82")
-color = Color(1, 0, 0, 1)
+color = Color(1, 0, 0, 0.498039)
 
 [node name="MinusParticles" type="CPUParticles2D" parent="Graphics"]
 emitting = false
-amount = 200
+amount = 100
 lifetime = 0.3
 texture = ExtResource("6_ipbde")
 emission_shape = 1
@@ -95,7 +95,7 @@ initial_velocity_max = 20.27
 scale_amount_min = 0.3
 scale_amount_max = 0.3
 scale_amount_curve = SubResource("Curve_ikk82")
-color = Color(0.505344, 0.505344, 0.505344, 1)
+color = Color(0, 0, 1, 0.498039)
 
 [node name="PlusBurst" type="CPUParticles2D" parent="Graphics"]
 emitting = false
