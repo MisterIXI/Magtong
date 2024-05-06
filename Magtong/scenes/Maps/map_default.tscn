@@ -27,6 +27,7 @@ spawner = NodePath("FieldCenter/MultiplayerSpawner")
 mp_root = NodePath("FieldCenter/MultiplayerRoot")
 
 [node name="FieldCenter" type="Node2D" parent="."]
+position = Vector2(640, 360)
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="FieldCenter"]
 _spawnable_scenes = PackedStringArray("res://scenes/Player/player_body.tscn", "res://scenes/Puck/puck.tscn")

@@ -17,7 +17,6 @@ player_container = ExtResource("2_hqkbe")
 lobby_container = NodePath("PlayerSelector/MarginContainer/ScrollContainer/LobbyContainer")
 
 [node name="PlayerSelector" type="Control" parent="."]
-visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -67,6 +66,7 @@ spawn_path = NodePath("../MarginContainer/ScrollContainer/LobbyContainer")
 
 [node name="MapSelector" type="Control" parent="."]
 auto_translate_mode = 1
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
