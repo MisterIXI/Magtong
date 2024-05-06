@@ -19,8 +19,8 @@ message_scrollbox = NodePath("MessagePanel/MessageMarginContainer/MessageScrollB
 one_shot = true
 
 [node name="MessagePanel" type="PanelContainer" parent="."]
-offset_right = 379.0
-offset_bottom = 178.0
+offset_right = 380.0
+offset_bottom = 180.0
 size_flags_horizontal = 0
 size_flags_vertical = 0
 
