@@ -1,7 +1,7 @@
 extends Node
 class_name MatchManager
 
-var match_time: float = 10
+var match_time: float = 180
 var im : InputManager
 var gm: GameManager
 
