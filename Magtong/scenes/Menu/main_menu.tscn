@@ -67,7 +67,7 @@ text = "Join Online game"
 [node name="IP_Edit_Field" type="TextEdit" parent="StartMenu/VBoxContainer"]
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
-text = "79.241.84.132"
+text = "79.241.87.169"
 
 [node name="Join_local" type="Button" parent="StartMenu/VBoxContainer"]
 auto_translate_mode = 1
