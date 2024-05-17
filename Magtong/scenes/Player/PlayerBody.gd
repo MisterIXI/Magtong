@@ -23,6 +23,8 @@ var y_input: float = 0.0
 var plus_input: float = 0.0
 var minus_input: float = 0.0
 var current_polarity
+var sync_pos: Vector2
+var sync_rot: float
 
 @onready var im: InputManager = globInputManager
 var mm: MatchManager
@@ -36,6 +38,16 @@ func setup(player_input: PlayerInput):
 	player_skin.texture = globResourceManager.icons.player_sprites[player_input.player_sprite_id]
 	set_skin.rpc(player_input.player_sprite_id)
 	setup_completed.emit(self)
+
+# fixing MP flickering
+# https://www.reddit.com/r/godot/comments/180ywzs/multiplayersynchronizer_and_rigidbody/
+func _integrate_forces(_state):
+	if is_multiplayer_authority():
+		sync_pos = global_position
+		sync_rot = rotation
+	else:
+		global_position = sync_pos
+		rotation = sync_rot
 
 func on_input(input_info: InputInfo):
 	assert(multiplayer.is_server())
