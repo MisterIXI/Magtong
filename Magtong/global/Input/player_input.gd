@@ -7,14 +7,15 @@ var player_id: int
 var peer_id: int
 var device_id: int
 var is_ready: bool = false
-var team: int = 0 # team 0 is spectator, actual teams count up from 1
+var team: int = -1 # team 0 is spectator, actual teams count up from 1
 var player_sprite_id: int = 0
+var is_host: bool = false
 
-
-func _init(peer_id: int = -1, device_id: int = -1, player_id: int = -1) -> void:
+func _init(peer_id: int = -1, device_id: int = -1, player_id: int = -1, is_host: bool = false) -> void:
 	self.peer_id = peer_id
 	self.device_id = device_id
 	self.player_id = player_id
+	self.is_host = is_host
 
 
 func execute_input(input_info: InputInfo) -> void:

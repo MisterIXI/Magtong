@@ -6,17 +6,22 @@ class_name MapScript
 @export var spawner: MultiplayerSpawner
 @export var mp_root: Node2D
 @export var team_indicator_groups: SpawnPointGroup
+@export var divider_collider: StaticBody2D
+@export var lobby_areas: Array[Area2D]
+@export var lobby_labels: Array[Label]
 
+var is_lobby_map: bool = false
 var player_sg_indices: Array[int] = []
 
 signal goal_scored(team: int)
+signal player_entered_team_area(player_input: PlayerInput, team: int)
+signal player_left_team_area(player_input: PlayerInput, team: int)
 
 var settings: PlayerSettings
 var pucks: Array[Puck] = []
 var players: Array[Array] = []
 var mm: MatchManager
 var im: InputManager
-var max_team_size: int
 func _ready():
 	im = globInputManager
 	settings = globResourceManager.player_settings
@@ -24,9 +29,35 @@ func _ready():
 	for i in range(player_spawn_groups.size()):
 		player_sg_indices.append(i)
 
+func set_lobby_mode() -> void:
+	players = [[]]
+	is_lobby_map = true
+	if divider_collider != null:
+		var childs = divider_collider.get_children()
+		for child: CollisionShape2D in childs:
+			child.set_deferred("disabled", true)
+
+func disable_lobby_features() -> void:
+	for area in lobby_areas:
+		area.set_deferred("disabled", true)
+		area.monitorable = false
+		area.monitoring = false
+		area.visible = false
+
+func spawn_player(player_input: PlayerInput) -> PlayerBody:
+	var player_body = globResourceManager.player_scene
+	var new_player: PlayerBody = player_body.instantiate()
+	mp_root.add_child(new_player, true)
+	new_player.setup(player_input, is_lobby_map)
+	new_player.pulse_emitted.connect(on_pulse_from)
+	new_player.impulse_emitted.connect(on_impulse_from)
+	players[0].append(new_player)
+	return new_player
+	
 func setup(match_manager: MatchManager) -> void:
 	if not multiplayer.is_server():
 		return
+	disable_lobby_features()
 	im = globInputManager
 	mm = match_manager
 	var puck_body = globResourceManager.puck_scene
@@ -51,10 +82,11 @@ func setup(match_manager: MatchManager) -> void:
 			team_counter[team] = team_counter.get(team, 0) + 1
 			new_player.pulse_emitted.connect(on_pulse_from)
 			new_player.impulse_emitted.connect(on_impulse_from)
-	max_team_size = team_counter.values().max()
 	
 func _on_goal_collision(body: Node, team: int) -> void:
 	if not multiplayer.is_server():
+		return
+	if is_lobby_map:
 		return
 	if body.is_in_group("puck"):
 		goal_scored.emit(team)
@@ -152,3 +184,9 @@ func get_max_pucks() -> int: return ball_spawn_group.size()
 func get_team_count() -> int: return player_spawn_groups[0].size()
 
 func get_max_team_size() -> int: return player_spawn_groups.size()
+
+func on_player_entered_team_area(body: Node2D, team: int):
+	player_entered_team_area.emit(body.player_input, team)
+
+func on_player_left_team_area(body: Node2D, team: int):
+	player_left_team_area.emit(body.player_input, team)

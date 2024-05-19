@@ -70,7 +70,7 @@ func check_input(event: InputEvent) -> InputInfo:
 	if self.is_keyboard and event is InputEventKey:
 		var key_event = event as InputEventKey
 		var keycode = key_event.keycode
-		print(key_event)
+		# print(key_event)
 		if key_event.keycode == self.k_up:
 			self.k_up_pressed = key_event.pressed
 			input.input_type = InputInfo.InputType.MOVE_Y

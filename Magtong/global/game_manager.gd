@@ -43,12 +43,14 @@ func _change_state(new_state: State):
 			var im = globInputManager
 			var p1 = im.get_child(0)
 			var p2 = im.get_child(1)
-			var p3 = im.get_child(2)
-			var p4 = im.get_child(3)
 			p1.team = 1
 			p2.team = 2
-			p3.team = 1
-			p4.team = 2
+			if im.get_children().size() > 2:
+				var p3 = im.get_child(2)
+				p3.team = 1
+			if im.get_children().size() > 3:
+				var p4 = im.get_child(3)
+				p4.team = 2
 		# else:
 		# 	await get_tree().physics_frame
 		# 	await get_tree().physics_frame

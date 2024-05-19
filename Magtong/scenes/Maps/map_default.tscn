@@ -1,9 +1,11 @@
-[gd_scene load_steps=11 format=3 uid="uid://c8t5ekg5tbap3"]
+[gd_scene load_steps=15 format=3 uid="uid://c8t5ekg5tbap3"]
 
 [ext_resource type="Script" path="res://scenes/Maps/map_script.gd" id="1_wbm5i"]
 [ext_resource type="Texture2D" uid="uid://djiliwe7gmlcb" path="res://assets/Textures/PlayField/PlayFieldTex.png" id="2_tw27u"]
 [ext_resource type="Texture2D" uid="uid://dt4t6l1gnn6bj" path="res://assets/Textures/blank pixels.png" id="3_0ppxq"]
+[ext_resource type="Texture2D" uid="uid://c3ltadrfcuk57" path="res://assets/Textures/PlayerSkins/9slice_box_round_border.png" id="4_70e28"]
 [ext_resource type="Script" path="res://scenes/Maps/spawn_point_group.gd" id="4_jds7q"]
+[ext_resource type="Script" path="res://scenes/visual_components/tween_modulate_alpha_blink.gd" id="5_e81lu"]
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_5nsau"]
 
@@ -19,18 +21,27 @@ size = Vector2(530, 2.45)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_rw2oh"]
 size = Vector2(188, 12)
 
-[node name="MapDefault" type="Node2D" node_paths=PackedStringArray("player_spawn_groups", "ball_spawn_group", "spawner", "mp_root")]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ilral"]
+size = Vector2(250, 150)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wws8m"]
+size = Vector2(60, 260)
+
+[node name="MapDefault" type="Node2D" node_paths=PackedStringArray("player_spawn_groups", "ball_spawn_group", "spawner", "mp_root", "team_indicator_groups", "divider_collider", "lobby_areas", "lobby_labels")]
 script = ExtResource("1_wbm5i")
 player_spawn_groups = [NodePath("FieldCenter/SpawnPoints/CenterBackSpawns"), NodePath("FieldCenter/SpawnPoints/LeftBackSpawns"), NodePath("FieldCenter/SpawnPoints/RightBackSpawns")]
 ball_spawn_group = NodePath("FieldCenter/SpawnPoints/BallSpawns")
-spawner = NodePath("FieldCenter/MultiplayerSpawner")
+spawner = NodePath("FieldCenter/MapSpawner")
 mp_root = NodePath("FieldCenter/MultiplayerRoot")
+team_indicator_groups = NodePath("FieldCenter/TeamIndicatorPoints")
+divider_collider = NodePath("FieldCenter/CenterLineCollider")
+lobby_areas = [NodePath("FieldCenter/Team0_ready_area"), NodePath("FieldCenter/Team1_ready_area"), NodePath("FieldCenter/Team2_ready_area")]
+lobby_labels = [NodePath("FieldCenter/Team0_ready_area/T0ReadyLabel"), NodePath("FieldCenter/Team1_ready_area/T1ReadyLabel"), NodePath("FieldCenter/Team2_ready_area/T2ReadyLabel")]
 
 [node name="FieldCenter" type="Node2D" parent="."]
-position = Vector2(640, 360)
 
-[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="FieldCenter"]
-_spawnable_scenes = PackedStringArray("res://scenes/Player/player_body.tscn", "res://scenes/Puck/puck.tscn")
+[node name="MapSpawner" type="MultiplayerSpawner" parent="FieldCenter"]
+_spawnable_scenes = PackedStringArray("res://scenes/Player/player_body.tscn")
 spawn_path = NodePath("../MultiplayerRoot")
 
 [node name="PlayFieldTex" type="Sprite2D" parent="FieldCenter"]
@@ -87,6 +98,118 @@ shape = SubResource("RectangleShape2D_rw2oh")
 modulate = Color(0, 0, 1, 1)
 scale = Vector2(18.8, 1.16)
 texture = ExtResource("3_0ppxq")
+
+[node name="Team1_ready_area" type="Area2D" parent="FieldCenter"]
+position = Vector2(0, 278)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="FieldCenter/Team1_ready_area"]
+shape = SubResource("RectangleShape2D_ilral")
+
+[node name="DownScaler" type="Node2D" parent="FieldCenter/Team1_ready_area"]
+scale = Vector2(0.25, 0.25)
+
+[node name="NinePatchRect" type="NinePatchRect" parent="FieldCenter/Team1_ready_area/DownScaler"]
+auto_translate_mode = 1
+modulate = Color(1, 0, 0, 0.451809)
+offset_left = -500.0
+offset_top = -300.0
+offset_right = 500.0
+offset_bottom = 264.0
+texture = ExtResource("4_70e28")
+region_rect = Rect2(3, 3, 506, 506)
+patch_margin_left = 80
+patch_margin_top = 80
+patch_margin_right = 80
+patch_margin_bottom = 80
+
+[node name="VC_BlinkAlpha" type="Node" parent="FieldCenter/Team1_ready_area/DownScaler/NinePatchRect"]
+script = ExtResource("5_e81lu")
+upper_bound = 0.5
+lower_bound = 0.4
+cycle_duration = 1.5
+
+[node name="T1ReadyLabel" type="Label" parent="FieldCenter/Team1_ready_area"]
+offset_left = 125.0
+offset_top = 33.0
+offset_right = 171.0
+offset_bottom = 75.0
+theme_override_font_sizes/font_size = 30
+text = "0/3"
+
+[node name="Team2_ready_area" type="Area2D" parent="FieldCenter"]
+position = Vector2(0, -278)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="FieldCenter/Team2_ready_area"]
+shape = SubResource("RectangleShape2D_ilral")
+
+[node name="DownScaler" type="Node2D" parent="FieldCenter/Team2_ready_area"]
+scale = Vector2(0.25, 0.25)
+
+[node name="NinePatchRect" type="NinePatchRect" parent="FieldCenter/Team2_ready_area/DownScaler"]
+modulate = Color(0, 0, 1, 0.451809)
+offset_left = -500.0
+offset_top = -264.0
+offset_right = 500.0
+offset_bottom = 300.0
+texture = ExtResource("4_70e28")
+region_rect = Rect2(3, 3, 506, 506)
+patch_margin_left = 80
+patch_margin_top = 80
+patch_margin_right = 80
+patch_margin_bottom = 80
+
+[node name="VC_BlinkAlpha2" type="Node" parent="FieldCenter/Team2_ready_area/DownScaler/NinePatchRect"]
+script = ExtResource("5_e81lu")
+upper_bound = 0.5
+lower_bound = 0.4
+cycle_duration = 1.5
+
+[node name="T2ReadyLabel" type="Label" parent="FieldCenter/Team2_ready_area"]
+auto_translate_mode = 1
+offset_left = 125.0
+offset_top = -75.0
+offset_right = 171.0
+offset_bottom = -33.0
+theme_override_font_sizes/font_size = 30
+text = "0/3"
+
+[node name="Team0_ready_area" type="Area2D" parent="FieldCenter"]
+position = Vector2(260, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="FieldCenter/Team0_ready_area"]
+position = Vector2(-30, 0)
+shape = SubResource("RectangleShape2D_wws8m")
+
+[node name="DownScaler" type="Node2D" parent="FieldCenter/Team0_ready_area"]
+scale = Vector2(0.25, 0.25)
+
+[node name="NinePatchRect" type="NinePatchRect" parent="FieldCenter/Team0_ready_area/DownScaler"]
+auto_translate_mode = 1
+modulate = Color(0.194349, 0.194349, 0.194349, 0.451809)
+offset_left = -240.0
+offset_top = -520.0
+offset_bottom = 520.0
+texture = ExtResource("4_70e28")
+region_rect = Rect2(3, 3, 506, 506)
+patch_margin_left = 80
+patch_margin_top = 80
+patch_margin_right = 80
+patch_margin_bottom = 80
+
+[node name="VC_BlinkAlpha3" type="Node" parent="FieldCenter/Team0_ready_area/DownScaler/NinePatchRect"]
+script = ExtResource("5_e81lu")
+upper_bound = 0.5
+lower_bound = 0.4
+cycle_duration = 1.5
+
+[node name="T0ReadyLabel" type="Label" parent="FieldCenter/Team0_ready_area"]
+auto_translate_mode = 1
+offset_left = -46.0
+offset_top = -172.0
+offset_bottom = -130.0
+theme_override_font_sizes/font_size = 30
+text = "0"
+horizontal_alignment = 2
 
 [node name="MultiplayerRoot" type="Node2D" parent="FieldCenter"]
 
@@ -159,3 +282,9 @@ offset_bottom = 180.0
 
 [connection signal="body_entered" from="FieldCenter/GoalSouth" to="." method="_on_goal_collision" binds= [2]]
 [connection signal="body_entered" from="FieldCenter/GoalNorth" to="." method="_on_goal_collision" binds= [1]]
+[connection signal="body_entered" from="FieldCenter/Team1_ready_area" to="." method="on_player_entered_team_area" binds= [1]]
+[connection signal="body_exited" from="FieldCenter/Team1_ready_area" to="." method="on_player_left_team_area" binds= [1]]
+[connection signal="body_entered" from="FieldCenter/Team2_ready_area" to="." method="on_player_entered_team_area" binds= [2]]
+[connection signal="body_exited" from="FieldCenter/Team2_ready_area" to="." method="on_player_left_team_area" binds= [2]]
+[connection signal="body_entered" from="FieldCenter/Team0_ready_area" to="." method="on_player_entered_team_area" binds= [0]]
+[connection signal="body_exited" from="FieldCenter/Team0_ready_area" to="." method="on_player_left_team_area" binds= [0]]

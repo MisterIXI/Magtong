@@ -28,15 +28,22 @@ var sync_rot: float
 
 @onready var im: InputManager = globInputManager
 var mm: MatchManager
+var gl: GameLobby
 var player_input: PlayerInput
+var is_in_lobby: bool = false
 
-func setup(player_input: PlayerInput):
+func setup(player_input: PlayerInput, is_in_lobby: bool = false):
 	self.player_input = player_input
 	player_input.input_received.connect(on_input)
 	globInputManager.input_unlocked.connect(_on_input_unlocked)
-	mm = globGameManager.scene_root.current_scene as MatchManager
+	if is_in_lobby:
+		gl = globGameManager.scene_root.current_scene as GameLobby
+	else:
+		mm = globGameManager.scene_root.current_scene as MatchManager
 	player_skin.texture = globResourceManager.icons.player_sprites[player_input.player_sprite_id]
 	set_skin.rpc(player_input.player_sprite_id)
+	if not is_multiplayer_authority():
+		freeze = true
 	setup_completed.emit(self)
 
 # fixing MP flickering
@@ -45,7 +52,9 @@ func _integrate_forces(_state):
 	if is_multiplayer_authority():
 		sync_pos = global_position
 		sync_rot = rotation
+		# print("Nope")
 	else:
+		# print("Sync_pos: ", sync_pos, "Sync_rot: ", sync_rot)
 		global_position = sync_pos
 		rotation = sync_rot
 
@@ -76,7 +85,10 @@ func on_input(input_info: InputInfo):
 				try_to_impulse()
 		InputInfo.InputType.MENU:
 			if input_info.is_pressed:
-				mm.request_restart.rpc_id(1)
+				if is_in_lobby and player_input.peer_id == 1:
+					pass
+				else:
+					mm.request_restart()
 		_:
 			pass
 

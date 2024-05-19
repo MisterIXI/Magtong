@@ -1,0 +1,96 @@
+[gd_scene load_steps=4 format=3 uid="uid://1qy067e4ex88"]
+
+[ext_resource type="Script" path="res://scenes/Lobby/game_lobby.gd" id="1_xd21i"]
+[ext_resource type="Script" path="res://scenes/Maps/MPs_map_adder.gd" id="2_ygmby"]
+[ext_resource type="Script" path="res://scenes/Lobby/ready_banner.gd" id="3_gc8kx"]
+
+[node name="GameLobby" type="Node2D" node_paths=PackedStringArray("map_root", "player_game_banner")]
+script = ExtResource("1_xd21i")
+map_root = NodePath("MapRoot")
+player_game_banner = NodePath("CanvasLayer/ReadyBanner")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position_smoothing_enabled = true
+drag_horizontal_enabled = true
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
+spawn_path = NodePath("../MapRoot")
+
+[node name="MPMapAdder" type="Node" parent="MultiplayerSpawner"]
+script = ExtResource("2_ygmby")
+
+[node name="MapRoot" type="Node2D" parent="."]
+
+[node name="HostSettings" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="ReadyBanner" type="Control" parent="CanvasLayer" node_paths=PackedStringArray("upper_banner", "lower_banner")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("3_gc8kx")
+upper_banner = NodePath("UpperBanner")
+lower_banner = NodePath("LowerBanner")
+
+[node name="UpperBanner" type="PanelContainer" parent="CanvasLayer/ReadyBanner"]
+visible = false
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = 1280.0
+offset_top = -104.0
+offset_right = 1280.0
+offset_bottom = -35.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label2" type="Label" parent="CanvasLayer/ReadyBanner/UpperBanner"]
+auto_translate_mode = 1
+layout_mode = 2
+theme_override_font_sizes/font_size = 50
+text = "READY TO PLAY"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LowerBanner" type="PanelContainer" parent="CanvasLayer/ReadyBanner"]
+visible = false
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -1280.0
+offset_top = -34.5
+offset_right = -1280.0
+offset_bottom = 34.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/ReadyBanner/LowerBanner"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 50
+text = "PRESS START"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[connection signal="all_ready_changed" from="." to="CanvasLayer/ReadyBanner" method="on_all_ready_changed"]

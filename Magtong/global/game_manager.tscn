@@ -2,39 +2,41 @@
 
 [ext_resource type="Script" path="res://global/game_manager.gd" id="1_s7x7p"]
 [ext_resource type="PackedScene" uid="uid://c3ev5o6ua0dou" path="res://scenes/Menu/main_menu.tscn" id="2_1lq6v"]
-[ext_resource type="PackedScene" uid="uid://bve1syav3fq1b" path="res://scenes/Lobby/lobby_scene.tscn" id="3_j3l8s"]
+[ext_resource type="PackedScene" uid="uid://1qy067e4ex88" path="res://scenes/Lobby/game_lobby.tscn" id="3_sr1ib"]
 [ext_resource type="PackedScene" uid="uid://b7yo5ed5gg50k" path="res://scenes/Maps/match_manager.tscn" id="4_5jak3"]
 [ext_resource type="Script" path="res://global/ping_tester.gd" id="5_eaeoo"]
 
 [node name="GameManager" type="Node" node_paths=PackedStringArray("timer", "message_vbox", "message_scrollbox")]
 script = ExtResource("1_s7x7p")
 menu_scene = ExtResource("2_1lq6v")
-lobby_scene = ExtResource("3_j3l8s")
+lobby_scene = ExtResource("3_sr1ib")
 default_map_scene = ExtResource("4_5jak3")
 timer = NodePath("Countdown_Timer")
-message_vbox = NodePath("MessagePanel/MessageMarginContainer/MessageScrollBox/MessageVBox")
-message_scrollbox = NodePath("MessagePanel/MessageMarginContainer/MessageScrollBox")
+message_vbox = NodePath("CanvasLayer/MessagePanel/MessageMarginContainer/MessageScrollBox/MessageVBox")
+message_scrollbox = NodePath("CanvasLayer/MessagePanel/MessageMarginContainer/MessageScrollBox")
 
 [node name="Countdown_Timer" type="Timer" parent="."]
 one_shot = true
 
-[node name="MessagePanel" type="PanelContainer" parent="."]
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="MessagePanel" type="PanelContainer" parent="CanvasLayer"]
 offset_right = 380.0
 offset_bottom = 180.0
 size_flags_horizontal = 0
 size_flags_vertical = 0
 
-[node name="MessageMarginContainer" type="MarginContainer" parent="MessagePanel"]
+[node name="MessageMarginContainer" type="MarginContainer" parent="CanvasLayer/MessagePanel"]
 layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="MessageScrollBox" type="ScrollContainer" parent="MessagePanel/MessageMarginContainer"]
+[node name="MessageScrollBox" type="ScrollContainer" parent="CanvasLayer/MessagePanel/MessageMarginContainer"]
 layout_mode = 2
 
-[node name="MessageVBox" type="VBoxContainer" parent="MessagePanel/MessageMarginContainer/MessageScrollBox"]
+[node name="MessageVBox" type="VBoxContainer" parent="CanvasLayer/MessagePanel/MessageMarginContainer/MessageScrollBox"]
 layout_mode = 2
 
 [node name="PingTester" type="Node" parent="." node_paths=PackedStringArray("timer")]
