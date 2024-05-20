@@ -36,6 +36,7 @@ func setup(player_input: PlayerInput, is_in_lobby: bool = false):
 	self.player_input = player_input
 	player_input.input_received.connect(on_input)
 	globInputManager.input_unlocked.connect(_on_input_unlocked)
+	self.is_in_lobby = is_in_lobby
 	if is_in_lobby:
 		gl = globGameManager.scene_root.current_scene as GameLobby
 	else:
@@ -85,8 +86,9 @@ func on_input(input_info: InputInfo):
 				try_to_impulse()
 		InputInfo.InputType.MENU:
 			if input_info.is_pressed:
-				if is_in_lobby and player_input.peer_id == 1:
-					pass
+				if is_in_lobby:
+					if player_input.peer_id == 1:
+						gl.request_game_start()
 				else:
 					mm.request_restart()
 		_:

@@ -37,6 +37,7 @@ func set_lobby_mode() -> void:
 		for child: CollisionShape2D in childs:
 			child.set_deferred("disabled", true)
 
+@rpc("authority", "call_local", "reliable")
 func disable_lobby_features() -> void:
 	for area in lobby_areas:
 		area.set_deferred("disabled", true)
@@ -52,12 +53,13 @@ func spawn_player(player_input: PlayerInput) -> PlayerBody:
 	new_player.pulse_emitted.connect(on_pulse_from)
 	new_player.impulse_emitted.connect(on_impulse_from)
 	players[0].append(new_player)
+	print("all player_inputs: ", globInputManager.get_all_player_inputs()[0].team)
 	return new_player
 	
 func setup(match_manager: MatchManager) -> void:
 	if not multiplayer.is_server():
 		return
-	disable_lobby_features()
+	disable_lobby_features.rpc()
 	im = globInputManager
 	mm = match_manager
 	var puck_body = globResourceManager.puck_scene
@@ -186,7 +188,15 @@ func get_team_count() -> int: return player_spawn_groups[0].size()
 func get_max_team_size() -> int: return player_spawn_groups.size()
 
 func on_player_entered_team_area(body: Node2D, team: int):
-	player_entered_team_area.emit(body.player_input, team)
+	if multiplayer.is_server():
+		player_entered_team_area.emit(body.player_input, team)
+		if body.is_in_group("PlayerBody"):
+			body.player_input.team = team
+			print("Player entered team area ", body.player_input.team)
 
 func on_player_left_team_area(body: Node2D, team: int):
-	player_left_team_area.emit(body.player_input, team)
+	if multiplayer.is_server():
+		if globGameManager.current_state == GameManager.State.LOBBY:
+			player_left_team_area.emit(body.player_input, team)
+			if body.is_in_group("PlayerBody"):
+				body.player_input.team = -1

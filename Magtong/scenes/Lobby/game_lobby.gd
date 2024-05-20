@@ -14,9 +14,10 @@ var curr_team_sizes: Array[int] = []
 signal all_ready_changed(all_ready: bool)
 
 func _ready():
-	globInputManager.player_input_registered.connect(on_player_input_registered)
-	map_pack = globResourceManager.standard_maps
-	_switch_map(0)
+	if multiplayer.is_server():
+		map_pack = globResourceManager.standard_maps
+		globInputManager.player_input_registered.connect(on_player_input_registered)
+		_switch_map(0)
 
 func _switch_map(id: int):
 	if current_map != null:
@@ -74,4 +75,7 @@ func _are_all_players_ready() -> bool:
 		if p_i.team == - 1:
 			return false
 	return true
-	
+
+func request_game_start():
+	if all_ready:
+		globGameManager.start_game()

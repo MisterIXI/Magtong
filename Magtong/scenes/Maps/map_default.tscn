@@ -31,7 +31,7 @@ size = Vector2(60, 260)
 script = ExtResource("1_wbm5i")
 player_spawn_groups = [NodePath("FieldCenter/SpawnPoints/CenterBackSpawns"), NodePath("FieldCenter/SpawnPoints/LeftBackSpawns"), NodePath("FieldCenter/SpawnPoints/RightBackSpawns")]
 ball_spawn_group = NodePath("FieldCenter/SpawnPoints/BallSpawns")
-spawner = NodePath("FieldCenter/MapSpawner")
+spawner = NodePath("FieldCenter/EntitySpawner")
 mp_root = NodePath("FieldCenter/MultiplayerRoot")
 team_indicator_groups = NodePath("FieldCenter/TeamIndicatorPoints")
 divider_collider = NodePath("FieldCenter/CenterLineCollider")
@@ -39,10 +39,6 @@ lobby_areas = [NodePath("FieldCenter/Team0_ready_area"), NodePath("FieldCenter/T
 lobby_labels = [NodePath("FieldCenter/Team0_ready_area/T0ReadyLabel"), NodePath("FieldCenter/Team1_ready_area/T1ReadyLabel"), NodePath("FieldCenter/Team2_ready_area/T2ReadyLabel")]
 
 [node name="FieldCenter" type="Node2D" parent="."]
-
-[node name="MapSpawner" type="MultiplayerSpawner" parent="FieldCenter"]
-_spawnable_scenes = PackedStringArray("res://scenes/Player/player_body.tscn")
-spawn_path = NodePath("../MultiplayerRoot")
 
 [node name="PlayFieldTex" type="Sprite2D" parent="FieldCenter"]
 modulate = Color(0.347817, 0.347817, 0.347817, 1)
@@ -110,7 +106,7 @@ scale = Vector2(0.25, 0.25)
 
 [node name="NinePatchRect" type="NinePatchRect" parent="FieldCenter/Team1_ready_area/DownScaler"]
 auto_translate_mode = 1
-modulate = Color(1, 0, 0, 0.451809)
+modulate = Color(1, 0, 0, 0.417221)
 offset_left = -500.0
 offset_top = -300.0
 offset_right = 500.0
@@ -146,7 +142,7 @@ shape = SubResource("RectangleShape2D_ilral")
 scale = Vector2(0.25, 0.25)
 
 [node name="NinePatchRect" type="NinePatchRect" parent="FieldCenter/Team2_ready_area/DownScaler"]
-modulate = Color(0, 0, 1, 0.451809)
+modulate = Color(0, 0, 1, 0.417221)
 offset_left = -500.0
 offset_top = -264.0
 offset_right = 500.0
@@ -185,7 +181,7 @@ scale = Vector2(0.25, 0.25)
 
 [node name="NinePatchRect" type="NinePatchRect" parent="FieldCenter/Team0_ready_area/DownScaler"]
 auto_translate_mode = 1
-modulate = Color(0.194349, 0.194349, 0.194349, 0.451809)
+modulate = Color(0.194349, 0.194349, 0.194349, 0.417221)
 offset_left = -240.0
 offset_top = -520.0
 offset_bottom = 520.0
@@ -210,6 +206,10 @@ offset_bottom = -130.0
 theme_override_font_sizes/font_size = 30
 text = "0"
 horizontal_alignment = 2
+
+[node name="EntitySpawner" type="MultiplayerSpawner" parent="FieldCenter"]
+_spawnable_scenes = PackedStringArray("res://scenes/Player/player_body.tscn", "res://scenes/Puck/puck.tscn")
+spawn_path = NodePath("../MultiplayerRoot")
 
 [node name="MultiplayerRoot" type="Node2D" parent="FieldCenter"]
 

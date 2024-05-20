@@ -22,6 +22,7 @@ script = ExtResource("2_ygmby")
 [node name="MapRoot" type="Node2D" parent="."]
 
 [node name="HostSettings" type="Control" parent="."]
+visible = false
 layout_mode = 3
 anchors_preset = 8
 anchor_left = 0.5
@@ -36,6 +37,14 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
+
+[node name="PanelContainer" type="PanelContainer" parent="HostSettings"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HostSettings/PanelContainer"]
+layout_mode = 2
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 

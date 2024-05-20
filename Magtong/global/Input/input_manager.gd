@@ -29,7 +29,7 @@ func _input(event: InputEvent) -> void:
 			if input:
 				send_input.rpc_id(1, -1, input.to_dict())
 		elif globGameManager.current_state == GameManager.State.LOBBY:
-			request_player_registration.rpc_id(1, - 1)
+			request_player_registration.rpc_id(1, -1)
 	# check for gamepad buttons
 	elif event is InputEventJoypadButton:
 		if player_mappings.has(event.device):
@@ -88,8 +88,8 @@ func request_player_registration(device_id: int) -> void:
 		# lobby.create_new_container()
 
 @rpc("authority", "call_local", "reliable")
-func register_player(device_id:int) -> void:
-	player_mappings[device_id] = PlayerMapping.new(multiplayer.get_unique_id(), true if device_id == -1 else false)
+func register_player(device_id: int) -> void:
+	player_mappings[device_id] = PlayerMapping.new(multiplayer.get_unique_id(), true if device_id == - 1 else false)
 	
 func get_all_player_inputs() -> Array:
 	var all_inputs = []

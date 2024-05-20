@@ -35,7 +35,10 @@ func _change_state(new_state: State):
 	var old_state = current_state
 	current_state = new_state
 	if new_state == State.LOBBY:
-		scene_root.change_scene(lobby_scene.instantiate())
+		if old_state == State.MENU:
+			scene_root.hide_menu()
+		if multiplayer.is_server():
+			scene_root.change_scene(lobby_scene.instantiate())
 	elif new_state == State.GAME:
 		#TODO: change to map select scene when implemented
 		# for now just set teams manually and load the default map
@@ -58,9 +61,6 @@ func _change_state(new_state: State):
 		if multiplayer.is_server():
 			scene_root.change_scene(default_map_scene.instantiate())
 	state_changed.emit(old_state, new_state)
-
-
-
 
 func host_game(is_local: bool):
 	assert(current_state == State.MENU)
@@ -90,7 +90,7 @@ func join_game(ip: String, port: int):
 	multiplayer.multiplayer_peer = peer
 	print("Client return val: ", returnval)
 	print("Client connected to ", ip, ":", port)
-	print_message("is_server "+ str(multiplayer.is_server()))
+	print_message("is_server " + str(multiplayer.is_server()))
 	print_message("Client return val: " + str(returnval))
 
 	_change_state(State.LOBBY)
@@ -98,8 +98,7 @@ func join_game(ip: String, port: int):
 func lobby_finished():
 	pass
 
-
-@rpc("any_peer", "call_local", "reliable" )
+@rpc("any_peer", "call_local", "reliable")
 func send_message(message: String):
 	print_message(message)
 
@@ -125,7 +124,7 @@ func cancel_countdown():
 
 func countdown_step():
 	if countdown > 0:
-		send_message.rpc(str(countdown)+ "...")
+		send_message.rpc(str(countdown) + "...")
 		countdown -= 1
 		timer.start()
 	elif countdown == 0:
@@ -133,6 +132,9 @@ func countdown_step():
 		if current_state == State.LOBBY:
 			#TODO: change to map select scene when implemented
 			_change_state.rpc(State.GAME)
+
+func start_game():
+	_change_state(State.GAME)
 
 func _on_peer_connected(peer_id: int):
 	player_ids[peer_id] = p_id_helper

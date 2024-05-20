@@ -17,5 +17,5 @@ script = ExtResource("2_m6h05")
 start_scene = NodePath("../MainMenu")
 
 [node name="SceneSpawner" type="MultiplayerSpawner" parent="."]
-_spawnable_scenes = PackedStringArray("res://scenes/Menu/main_menu.tscn", "res://scenes/Maps/match_manager.tscn")
+_spawnable_scenes = PackedStringArray("res://scenes/Menu/main_menu.tscn", "res://scenes/Lobby/game_lobby.tscn", "res://scenes/Maps/match_manager.tscn")
 spawn_path = NodePath("../SceneRoot")
