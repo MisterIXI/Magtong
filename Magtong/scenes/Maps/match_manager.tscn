@@ -44,10 +44,11 @@ ms = NodePath("MapDefault")
 
 [node name="CountdownTimer" type="Timer" parent="."]
 
-[node name="MapDefault" parent="." node_paths=PackedStringArray("player_spawn_groups", "ball_spawn_group", "mp_root", "team_indicator_groups", "divider_collider", "lobby_areas", "lobby_labels") instance=ExtResource("2_belxq")]
+[node name="MapDefault" parent="." node_paths=PackedStringArray("player_spawn_groups", "ball_spawn_group", "spawner", "mp_root", "team_indicator_groups", "divider_collider", "lobby_areas", "lobby_labels") instance=ExtResource("2_belxq")]
 position = Vector2(640, 360)
 player_spawn_groups = [NodePath("FieldCenter/SpawnPoints/CenterBackSpawns"), NodePath("FieldCenter/SpawnPoints/LeftBackSpawns"), NodePath("FieldCenter/SpawnPoints/RightBackSpawns")]
 ball_spawn_group = NodePath("FieldCenter/SpawnPoints/BallSpawns")
+spawner = NodePath("FieldCenter/EntitySpawner")
 mp_root = NodePath("FieldCenter/MultiplayerRoot")
 team_indicator_groups = NodePath("FieldCenter/TeamIndicatorPoints")
 divider_collider = NodePath("FieldCenter/CenterLineCollider")

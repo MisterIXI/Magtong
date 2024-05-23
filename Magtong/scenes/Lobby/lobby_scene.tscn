@@ -177,10 +177,11 @@ size_flags_stretch_ratio = 9.0
 [node name="Control" type="Control" parent="MapSelector/MarginContainer/HBoxContainer/Panel/HBoxContainer/CenterContainer2"]
 layout_mode = 2
 
-[node name="MapDefault" parent="MapSelector/MarginContainer/HBoxContainer/Panel/HBoxContainer/CenterContainer2/Control" node_paths=PackedStringArray("player_spawn_groups", "ball_spawn_group", "mp_root", "team_indicator_groups", "divider_collider", "lobby_areas", "lobby_labels") instance=ExtResource("4_qdq2x")]
+[node name="MapDefault" parent="MapSelector/MarginContainer/HBoxContainer/Panel/HBoxContainer/CenterContainer2/Control" node_paths=PackedStringArray("player_spawn_groups", "ball_spawn_group", "spawner", "mp_root", "team_indicator_groups", "divider_collider", "lobby_areas", "lobby_labels") instance=ExtResource("4_qdq2x")]
 scale = Vector2(0.489, 0.489)
 player_spawn_groups = [NodePath("FieldCenter/SpawnPoints/CenterBackSpawns"), NodePath("FieldCenter/SpawnPoints/LeftBackSpawns"), NodePath("FieldCenter/SpawnPoints/RightBackSpawns")]
 ball_spawn_group = NodePath("FieldCenter/SpawnPoints/BallSpawns")
+spawner = NodePath("FieldCenter/EntitySpawner")
 mp_root = NodePath("FieldCenter/MultiplayerRoot")
 team_indicator_groups = NodePath("FieldCenter/TeamIndicatorPoints")
 divider_collider = NodePath("FieldCenter/CenterLineCollider")
