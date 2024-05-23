@@ -40,24 +40,6 @@ func _change_state(new_state: State):
 		if multiplayer.is_server():
 			scene_root.change_scene(lobby_scene.instantiate())
 	elif new_state == State.GAME:
-		#TODO: change to map select scene when implemented
-		# for now just set teams manually and load the default map
-		if multiplayer.is_server():
-			var im = globInputManager
-			var p1 = im.get_child(0)
-			var p2 = im.get_child(1)
-			p1.team = 1
-			p2.team = 2
-			if im.get_children().size() > 2:
-				var p3 = im.get_child(2)
-				p3.team = 1
-			if im.get_children().size() > 3:
-				var p4 = im.get_child(3)
-				p4.team = 2
-		# else:
-		# 	await get_tree().physics_frame
-		# 	await get_tree().physics_frame
-		# 	await get_tree().physics_frame
 		if multiplayer.is_server():
 			scene_root.change_scene(default_map_scene.instantiate())
 	state_changed.emit(old_state, new_state)
