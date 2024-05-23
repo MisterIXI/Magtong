@@ -21,6 +21,10 @@ var j_minusB: JoyButton
 var j_primary: JoyButton
 var j_secondary: JoyButton
 var j_menu: JoyButton
+var j_d_left: JoyButton
+var j_d_right: JoyButton
+var j_b_left: JoyButton
+var j_b_right: JoyButton
 
 var k_right_pressed: bool = false
 var k_left_pressed: bool = false
@@ -30,6 +34,12 @@ var k_down_pressed: bool = false
 func _init(player_id: int, is_keyboard: bool):
 	self.player_id = player_id
 	self.is_keyboard = is_keyboard
+	if is_keyboard:
+		set_keyboard_mapping1()
+	else:
+		set_gamepad_mapping1()
+
+func set_gamepad_mapping1():
 	self.j_x_axis = JOY_AXIS_LEFT_X
 	self.j_y_axis = JOY_AXIS_LEFT_Y
 	self.j_plus = JOY_AXIS_TRIGGER_RIGHT
@@ -39,7 +49,10 @@ func _init(player_id: int, is_keyboard: bool):
 	self.j_primary = JOY_BUTTON_A
 	self.j_secondary = JOY_BUTTON_B
 	self.j_menu = JOY_BUTTON_START
-	set_keyboard_mapping1()
+	self.j_d_left = JOY_BUTTON_DPAD_LEFT
+	self.j_d_right = JOY_BUTTON_DPAD_RIGHT
+	self.j_b_left = JOY_BUTTON_LEFT_SHOULDER
+	self.j_b_right = JOY_BUTTON_RIGHT_SHOULDER
 
 func set_keyboard_mapping1():
 	self.k_up = KEY_W
@@ -134,6 +147,18 @@ func check_input(event: InputEvent) -> InputInfo:
 			input.is_pressed = joy_event.pressed
 		elif joy_event.button_index == self.j_menu:
 			input.input_type = InputInfo.InputType.MENU
+			input.is_pressed = joy_event.pressed
+		elif joy_event.button_index == self.j_d_left:
+			input.input_type = InputInfo.InputType.D_LEFT
+			input.is_pressed = joy_event.pressed
+		elif joy_event.button_index == self.j_d_right:
+			input.input_type = InputInfo.InputType.D_RIGHT
+			input.is_pressed = joy_event.pressed
+		elif joy_event.button_index == self.j_b_left:
+			input.input_type = InputInfo.InputType.B_LEFT
+			input.is_pressed = joy_event.pressed
+		elif joy_event.button_index == self.j_b_right:
+			input.input_type = InputInfo.InputType.B_RIGHT
 			input.is_pressed = joy_event.pressed
 
 	if input.input_type == InputInfo.InputType.EMPTY:

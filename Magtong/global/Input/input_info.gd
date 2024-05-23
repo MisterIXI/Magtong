@@ -41,4 +41,10 @@ enum InputType{
 	PRIMARY = 5,
 	SECONDARY = 6,
 	MENU = 7,
+	# DPAD
+	D_LEFT = 8,
+	D_RIGHT = 9,
+	# BUMPER
+	B_LEFT = 10,
+	B_RIGHT = 11,
 }

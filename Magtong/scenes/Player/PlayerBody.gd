@@ -91,6 +91,14 @@ func on_input(input_info: InputInfo):
 						gl.request_game_start()
 				else:
 					mm.request_restart()
+		InputInfo.InputType.D_LEFT:
+			if input_info.is_pressed:
+				if is_in_lobby:
+					cycle_skin(-1)
+		InputInfo.InputType.D_RIGHT:
+			if input_info.is_pressed:
+				if is_in_lobby:
+					cycle_skin(1)
 		_:
 			pass
 
@@ -170,6 +178,10 @@ func try_to_impulse():
 func impulse():
 	impulse_emitted.emit(global_position, state)
 
-@rpc("any_peer", "call_remote", "reliable")
+@rpc("any_peer", "call_local", "reliable")
 func set_skin(player_sprite_id: int):
 	player_skin.texture = globResourceManager.icons.player_sprites[player_sprite_id]
+
+func cycle_skin(dir: int):
+	player_input.player_sprite_id = (player_input.player_sprite_id + dir) % globResourceManager.icons.player_sprites.size()
+	set_skin.rpc(player_input.player_sprite_id)

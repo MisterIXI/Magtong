@@ -106,7 +106,7 @@ scale = Vector2(0.25, 0.25)
 
 [node name="NinePatchRect" type="NinePatchRect" parent="FieldCenter/Team1_ready_area/DownScaler"]
 auto_translate_mode = 1
-modulate = Color(1, 0, 0, 0.42064)
+modulate = Color(1, 0, 0, 0.467012)
 offset_left = -500.0
 offset_top = -300.0
 offset_right = 500.0
@@ -142,7 +142,7 @@ shape = SubResource("RectangleShape2D_ilral")
 scale = Vector2(0.25, 0.25)
 
 [node name="NinePatchRect" type="NinePatchRect" parent="FieldCenter/Team2_ready_area/DownScaler"]
-modulate = Color(0, 0, 1, 0.42064)
+modulate = Color(0, 0, 1, 0.467012)
 offset_left = -500.0
 offset_top = -264.0
 offset_right = 500.0
@@ -181,7 +181,7 @@ scale = Vector2(0.25, 0.25)
 
 [node name="NinePatchRect" type="NinePatchRect" parent="FieldCenter/Team0_ready_area/DownScaler"]
 auto_translate_mode = 1
-modulate = Color(0.194349, 0.194349, 0.194349, 0.42064)
+modulate = Color(0.194349, 0.194349, 0.194349, 0.467012)
 offset_left = -240.0
 offset_top = -520.0
 offset_bottom = 520.0
