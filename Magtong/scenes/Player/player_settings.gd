@@ -31,3 +31,7 @@ class_name PlayerSettings
 @export_group("Impulse")
 @export var impulse_cooldown: float = 1
 @export var impulse_mult: float = 1.0
+@export_group("OrbitLock")
+@export var orbitlock_cooldown: float = 1
+@export var orbitlock_max_duration: float = 0.5
+@export var orbitlock_max_dist: float = 150
