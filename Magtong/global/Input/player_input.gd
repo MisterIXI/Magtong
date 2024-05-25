@@ -10,6 +10,7 @@ var is_ready: bool = false
 var team: int = -1 # team 0 is spectator, actual teams count up from 1
 var player_sprite_id: int = 0
 var is_host: bool = false
+var selected_ability: int = -1
 
 func _init(peer_id: int = -1, device_id: int = -1, player_id: int = -1, is_host: bool = false) -> void:
 	self.peer_id = peer_id

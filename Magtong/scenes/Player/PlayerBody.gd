@@ -32,7 +32,11 @@ var gl: GameLobby
 var player_input: PlayerInput
 var is_in_lobby: bool = false
 
-func setup(player_input: PlayerInput, is_in_lobby: bool = false):
+var current_ability: AbilityBase
+var ability_id: int = -1
+@export var abilities: Array[AbilityBase]
+
+func setup_player( map: MapScript, player_input: PlayerInput, is_in_lobby: bool = false):
 	self.player_input = player_input
 	player_input.input_received.connect(on_input)
 	globInputManager.input_unlocked.connect(_on_input_unlocked)
@@ -43,8 +47,16 @@ func setup(player_input: PlayerInput, is_in_lobby: bool = false):
 		mm = globGameManager.scene_root.current_scene as MatchManager
 	player_skin.texture = globResourceManager.icons.player_sprites[player_input.player_sprite_id]
 	set_skin.rpc(player_input.player_sprite_id)
+	# set up ability
+	if player_input.selected_ability != -1:
+		ability_id = player_input.selected_ability
+	else:
+		ability_id = 0
+	current_ability = abilities[ability_id]
 	if not is_multiplayer_authority():
 		freeze = true
+	for x in abilities:
+		x.setup(map)
 	setup_completed.emit(self)
 
 # fixing MP flickering
@@ -82,8 +94,11 @@ func on_input(input_info: InputInfo):
 			if input_info.is_pressed and not im.input_locked:
 				try_to_pulse()
 		InputInfo.InputType.SECONDARY:
-			if input_info.is_pressed and not im.input_locked:
-				try_to_impulse()
+			if not im.input_locked:
+				if input_info.is_pressed:
+					current_ability._ability_button_down()
+				else:
+					current_ability._ability_button_up()
 		InputInfo.InputType.MENU:
 			if input_info.is_pressed:
 				if is_in_lobby:
@@ -168,15 +183,6 @@ func try_to_pulse():
 @rpc("authority", "call_local", "reliable")
 func pulse():
 	pulse_emitted.emit(global_position)
-
-func try_to_impulse():
-	if impulse_timer.is_stopped() and state != polarity.IDLE:
-		impulse_timer.start()
-		impulse.rpc()
-
-@rpc("authority", "call_local", "reliable")
-func impulse():
-	impulse_emitted.emit(global_position, state)
 
 @rpc("any_peer", "call_local", "reliable")
 func set_skin(player_sprite_id: int):

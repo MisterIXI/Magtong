@@ -32,6 +32,12 @@ func _ready():
 func set_lobby_mode() -> void:
 	players = [[]]
 	is_lobby_map = true
+	pucks = []
+	# spawn two pucks for players to play around with
+	pucks.append(spawn_puck())
+	pucks[0].global_position += Vector2.LEFT * 50
+	pucks.append(spawn_puck())
+	pucks[1].global_position += Vector2.RIGHT * 50
 	if divider_collider != null:
 		var childs = divider_collider.get_children()
 		for child: CollisionShape2D in childs:
@@ -49,25 +55,26 @@ func spawn_player(player_input: PlayerInput) -> PlayerBody:
 	var player_body = globResourceManager.player_scene
 	var new_player: PlayerBody = player_body.instantiate()
 	mp_root.add_child(new_player, true)
-	new_player.setup(player_input, is_lobby_map)
+	new_player.setup_player(self, player_input, is_lobby_map)
 	new_player.pulse_emitted.connect(on_pulse_from)
-	new_player.impulse_emitted.connect(on_impulse_from)
 	players[0].append(new_player)
 	print("all player_inputs: ", globInputManager.get_all_player_inputs()[0].team)
 	return new_player
-	
+
+func spawn_puck() -> Puck:
+	var puck_body = globResourceManager.puck_scene
+	var puck = puck_body.instantiate()
+	mp_root.add_child(puck, true)
+	return puck
+
 func setup(match_manager: MatchManager) -> void:
 	if not multiplayer.is_server():
 		return
 	disable_lobby_features.rpc()
 	im = globInputManager
 	mm = match_manager
-	var puck_body = globResourceManager.puck_scene
 	var player_body = globResourceManager.player_scene
-
-	var puck = puck_body.instantiate()
-	mp_root.add_child(puck, true)
-	pucks.append(puck)
+	pucks.append(spawn_puck())
 	players = [[],[]]
 	# TODO: get team num somehow to not hardcode this
 	# loop through all player inputs to build players double array (array of the teams, players[team_num][player_num])
@@ -79,11 +86,10 @@ func setup(match_manager: MatchManager) -> void:
 				continue # skip spectators and invalid team
 			var new_player: PlayerBody = player_body.instantiate()
 			mp_root.add_child(new_player, true)
-			new_player.setup(im.player_inputs[peer][player])
+			new_player.setup_player(self, im.player_inputs[peer][player]) 
 			players[team - 1].append(new_player)
 			team_counter[team] = team_counter.get(team, 0) + 1
 			new_player.pulse_emitted.connect(on_pulse_from)
-			new_player.impulse_emitted.connect(on_impulse_from)
 	
 func _on_goal_collision(body: Node, team: int) -> void:
 	if not multiplayer.is_server():
@@ -170,17 +176,6 @@ func on_pulse_from(pulse_pos: Vector2) -> void:
 		if dist < settings.pulse_range:
 			puck.receive_pulse.rpc(not puck.is_plus_pol)
 
-func on_impulse_from(impulse_pos: Vector2, polarity: PlayerBody.polarity) -> void:
-	for puck in pucks:
-		var puck_pol = PlayerBody.polarity.POS if puck.is_plus_pol else PlayerBody.polarity.NEG
-		var mult = 1 if puck_pol == polarity else - 1
-		var dist = puck.global_position.distance_to(impulse_pos)
-		var force = settings.magnet_dropoff.sample(dist / settings.magnet_range)
-		var scaled_force = (
-			(puck.global_position - impulse_pos).normalized() * force * settings.magnet_force * mult * settings.impulse_mult
-		)
-		puck.apply_impulse(scaled_force)
-
 func get_max_pucks() -> int: return ball_spawn_group.size()
 
 func get_team_count() -> int: return player_spawn_groups[0].size()
@@ -188,14 +183,14 @@ func get_team_count() -> int: return player_spawn_groups[0].size()
 func get_max_team_size() -> int: return player_spawn_groups.size()
 
 func on_player_entered_team_area(body: Node2D, team: int):
-	if multiplayer.is_server():
+	if multiplayer.is_server() and body.is_in_group("PlayerBody"):
 		player_entered_team_area.emit(body.player_input, team)
 		if body.is_in_group("PlayerBody"):
 			body.player_input.team = team
-			print("Player entered team area ", body.player_input.team)
+			# print("Player entered team area ", body.player_input.team)
 
 func on_player_left_team_area(body: Node2D, team: int):
-	if multiplayer.is_server():
+	if multiplayer.is_server() and body.is_in_group("PlayerBody"):
 		if globGameManager.current_state == GameManager.State.LOBBY:
 			player_left_team_area.emit(body.player_input, team)
 			if body.is_in_group("PlayerBody"):

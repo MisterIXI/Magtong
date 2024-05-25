@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://do0i7ixg4d7p1"]
+[gd_scene load_steps=16 format=3 uid="uid://do0i7ixg4d7p1"]
 
 [ext_resource type="Script" path="res://scenes/Player/PlayerVisuals.gd" id="1_31gdm"]
 [ext_resource type="PhysicsMaterial" uid="uid://b0b4nmkgg6odu" path="res://resources/Player_physics_mat.tres" id="1_o1307"]
@@ -10,6 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://d20d2kk22uqyt" path="res://assets/Textures/minus_sign.png" id="6_ipbde"]
 [ext_resource type="Material" uid="uid://df5q7yunlak58" path="res://scenes/Player/player_power_shader.tres" id="9_egiyc"]
 [ext_resource type="Texture2D" uid="uid://dt4t6l1gnn6bj" path="res://assets/Textures/blank pixels.png" id="10_mioy0"]
+[ext_resource type="Script" path="res://scenes/Player/Abilities/impulse.gd" id="11_qrj2s"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_smi2p"]
 radius = 15.0333
@@ -36,7 +37,7 @@ properties/3/path = NodePath(".:position")
 properties/3/spawn = false
 properties/3/replication_mode = 0
 
-[node name="PlayerBody" type="RigidBody2D" node_paths=PackedStringArray("pulse_timer", "impulse_timer", "player_skin") groups=["PlayerBody"]]
+[node name="PlayerBody" type="RigidBody2D" node_paths=PackedStringArray("pulse_timer", "impulse_timer", "player_skin", "abilities") groups=["PlayerBody"]]
 collision_layer = 3
 collision_mask = 3
 physics_material_override = ExtResource("1_o1307")
@@ -45,8 +46,9 @@ lock_rotation = true
 script = ExtResource("1_tqoy0")
 settings = ExtResource("3_4ulju")
 pulse_timer = NodePath("Pulse_CD")
-impulse_timer = NodePath("Impulse_CD")
+impulse_timer = NodePath("Abilities/Impulse/Impulse_CD")
 player_skin = NodePath("Graphics/PlayerCharacter")
+abilities = [NodePath("Abilities/Impulse")]
 
 [node name="TestSprite" type="Sprite2D" parent="."]
 visible = false
@@ -145,13 +147,21 @@ texture = ExtResource("10_mioy0")
 [node name="Pulse_CD" type="Timer" parent="."]
 one_shot = true
 
-[node name="Impulse_CD" type="Timer" parent="."]
-one_shot = true
-
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_i0q21")
 
-[connection signal="impulse_emitted" from="." to="Graphics" method="_on_player_impulse_emitted"]
+[node name="Abilities" type="Node" parent="."]
+
+[node name="Impulse" type="Node" parent="Abilities" node_paths=PackedStringArray("cd_timer", "player")]
+script = ExtResource("11_qrj2s")
+cd_timer = NodePath("Impulse_CD")
+ability_name = "Impulse"
+player = NodePath("../..")
+
+[node name="Impulse_CD" type="Timer" parent="Abilities/Impulse"]
+one_shot = true
+
 [connection signal="polarity_changed" from="." to="Graphics" method="on_polarity_changed"]
 [connection signal="pulse_emitted" from="." to="Graphics" method="_on_player_body_pulse_emitted"]
 [connection signal="setup_completed" from="." to="Graphics" method="_on_player_body_setup_completed"]
+[connection signal="impulse_emitted" from="Abilities/Impulse" to="Graphics" method="_on_player_impulse_emitted"]

@@ -7,7 +7,6 @@ class_name PlayerSettings
 @export var magnet_dropoff: Curve
 @export var magnet_range: float = 50 
 @export var pulse_range: float = 150
-@export var impulse_mult: float = 1.0
 # category: controller
 @export_group("Controller")
 @export var speed: float = 50
@@ -27,3 +26,8 @@ class_name PlayerSettings
 	Color(1,0,1),
 	Color(0,1,1),
 ]
+
+@export_category("Abilities")
+@export_group("Impulse")
+@export var impulse_cooldown: float = 1
+@export var impulse_mult: float = 1.0

@@ -47,19 +47,19 @@ func on_player_input_registered(player_input: PlayerInput):
 	ready_check()
 
 func on_player_entered_team_area(player_input: PlayerInput, team: int):
-	print("Player entered team area")
+	# print("Player entered team area")
 	player_input.team = team
 	curr_team_sizes[team] += 1
 	team_update()
 
 func on_player_exited_team_area(player_input: PlayerInput, team: int):
-	print("Player exited team area")
+	# print("Player exited team area")
 	player_input.team = -1
 	curr_team_sizes[team] -= 1
 	team_update()
 
 func team_update():
-	_update_lobby_labels. rpc (curr_team_sizes)
+	_update_lobby_labels.rpc(curr_team_sizes)
 	ready_check()
 
 @rpc("authority", "call_local", "reliable")
