@@ -26,6 +26,8 @@ func _ready():
 	recreate_tween()
 
 func recreate_tween():
+	if Engine.is_editor_hint():
+		return
 	if not is_inside_tree():
 		return
 	if tween != null:
