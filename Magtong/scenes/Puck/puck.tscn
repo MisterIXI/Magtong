@@ -16,7 +16,7 @@ properties/1/path = NodePath(".:rotation")
 properties/1/spawn = true
 properties/1/replication_mode = 1
 
-[node name="Puck" type="RigidBody2D" node_paths=PackedStringArray("plus_sprite", "minus_sprite") groups=["puck"]]
+[node name="Puck" type="RigidBody2D" node_paths=PackedStringArray("plus_sprite", "minus_sprite") groups=["Puck"]]
 physics_material_override = ExtResource("1_4dmue")
 script = ExtResource("1_00uo3")
 plus_sprite = NodePath("plus_sprite")

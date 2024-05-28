@@ -176,14 +176,14 @@ func _on_countdown_timer_timeout():
 	countdown_timer.start(1)
 
 func _on_goal_south_body_entered(body:Node2D):
-	if body.is_in_group("puck"):
+	if body.is_in_group("Puck"):
 		player2_score += 1
 		print("Player 2 scored!")
 		status_label.text = "Player 2 scored!"
 		score_for_team.rpc(2)
 
 func _on_goal_north_body_entered(body:Node2D):
-	if body.is_in_group("puck"):
+	if body.is_in_group("Puck"):
 		player1_score += 1
 		print("Player 1 scored!")
 		status_label.text = "Player 1 scored!"

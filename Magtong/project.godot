@@ -45,6 +45,7 @@ folder_colors={
 [global_group]
 
 PlayerBody=""
+Puck=""
 
 [input]
 

@@ -288,3 +288,4 @@ offset_bottom = 180.0
 [connection signal="body_exited" from="FieldCenter/Team2_ready_area" to="." method="on_player_left_team_area" binds= [2]]
 [connection signal="body_entered" from="FieldCenter/Team0_ready_area" to="." method="on_player_entered_team_area" binds= [0]]
 [connection signal="body_exited" from="FieldCenter/Team0_ready_area" to="." method="on_player_left_team_area" binds= [0]]
+[connection signal="child_entered_tree" from="FieldCenter/MultiplayerRoot" to="." method="on_node_spawned"]

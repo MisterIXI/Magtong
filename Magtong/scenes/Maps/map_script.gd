@@ -16,7 +16,10 @@ var player_sg_indices: Array[int] = []
 signal goal_scored(team: int)
 signal player_entered_team_area(player_input: PlayerInput, team: int)
 signal player_left_team_area(player_input: PlayerInput, team: int)
+signal player_puck_count_changed()
 
+var spawned_pucks: Array[Puck] = []
+var spawned_players: Array[PlayerBody] = []
 var settings: PlayerSettings
 var pucks: Array[Puck] = []
 var players: Array[Array] = []
@@ -90,13 +93,13 @@ func setup(match_manager: MatchManager) -> void:
 			players[team - 1].append(new_player)
 			team_counter[team] = team_counter.get(team, 0) + 1
 			new_player.pulse_emitted.connect(on_pulse_from)
-	
+
 func _on_goal_collision(body: Node, team: int) -> void:
 	if not multiplayer.is_server():
 		return
 	if is_lobby_map:
 		return
-	if body.is_in_group("puck"):
+	if body.is_in_group("Puck"):
 		goal_scored.emit(team)
 	
 func reset_field(keep_position: bool=false) -> void:
@@ -195,3 +198,10 @@ func on_player_left_team_area(body: Node2D, team: int):
 			player_left_team_area.emit(body.player_input, team)
 			if body.is_in_group("PlayerBody"):
 				body.player_input.team = -1
+
+func on_node_spawned(node: Node) -> void:
+	if node.is_in_group("PlayerBody"):
+		spawned_players.append(node)
+	elif node.is_in_group("Puck"):
+		spawned_pucks.append(node)
+
