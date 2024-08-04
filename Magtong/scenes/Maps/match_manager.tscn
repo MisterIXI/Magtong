@@ -40,20 +40,14 @@ game_timer = NodePath("GameTimer")
 countdown_timer = NodePath("CountdownTimer")
 ms = NodePath("MapDefault")
 
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(0.85, 0.85)
+
 [node name="GameTimer" type="Timer" parent="."]
 
 [node name="CountdownTimer" type="Timer" parent="."]
 
-[node name="MapDefault" parent="." node_paths=PackedStringArray("player_spawn_groups", "ball_spawn_group", "spawner", "mp_root", "team_indicator_groups", "divider_collider", "lobby_areas", "lobby_labels") instance=ExtResource("2_belxq")]
-position = Vector2(640, 360)
-player_spawn_groups = [NodePath("FieldCenter/SpawnPoints/CenterBackSpawns"), NodePath("FieldCenter/SpawnPoints/LeftBackSpawns"), NodePath("FieldCenter/SpawnPoints/RightBackSpawns")]
-ball_spawn_group = NodePath("FieldCenter/SpawnPoints/BallSpawns")
-spawner = NodePath("FieldCenter/EntitySpawner")
-mp_root = NodePath("FieldCenter/MultiplayerRoot")
-team_indicator_groups = NodePath("FieldCenter/TeamIndicatorPoints")
-divider_collider = NodePath("FieldCenter/CenterLineCollider")
-lobby_areas = [NodePath("FieldCenter/Team0_ready_area"), NodePath("FieldCenter/Team1_ready_area"), NodePath("FieldCenter/Team2_ready_area")]
-lobby_labels = [NodePath("FieldCenter/Team0_ready_area/T0ReadyLabel"), NodePath("FieldCenter/Team1_ready_area/T1ReadyLabel"), NodePath("FieldCenter/Team2_ready_area/T2ReadyLabel")]
+[node name="MapDefault" parent="." instance=ExtResource("2_belxq")]
 
 [node name="RichTextLabel" type="RichTextLabel" parent="."]
 auto_translate_mode = 1

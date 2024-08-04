@@ -1,6 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://1qy067e4ex88"]
+[gd_scene load_steps=5 format=3 uid="uid://1qy067e4ex88"]
 
 [ext_resource type="Script" path="res://scenes/Lobby/game_lobby.gd" id="1_xd21i"]
+[ext_resource type="Script" path="res://scenes/Lobby/set_camera_zoom.gd" id="2_kejge"]
 [ext_resource type="Script" path="res://scenes/Maps/MPs_map_adder.gd" id="2_ygmby"]
 [ext_resource type="Script" path="res://scenes/Lobby/ready_banner.gd" id="3_gc8kx"]
 
@@ -10,8 +11,12 @@ map_root = NodePath("MapRoot")
 player_game_banner = NodePath("CanvasLayer/ReadyBanner")
 
 [node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(0.87, 0.87)
 position_smoothing_enabled = true
 drag_horizontal_enabled = true
+
+[node name="Node" type="Node" parent="Camera2D"]
+script = ExtResource("2_kejge")
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
 spawn_path = NodePath("../MapRoot")
