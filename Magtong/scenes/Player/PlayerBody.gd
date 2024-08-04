@@ -51,7 +51,7 @@ func setup_player( map: MapScript, player_input: PlayerInput, is_in_lobby: bool 
 	if player_input.selected_ability != -1:
 		ability_id = player_input.selected_ability
 	else:
-		ability_id = 1
+		ability_id = 0
 	current_ability = abilities[ability_id]
 	if not is_multiplayer_authority():
 		freeze = true
