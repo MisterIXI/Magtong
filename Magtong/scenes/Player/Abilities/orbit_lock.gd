@@ -14,7 +14,7 @@ func _setup():
 			var joint = PinJoint2D.new()
 			joint.process_mode = Node.PROCESS_MODE_DISABLED
 			joint.disable_collision = false
-			joint.softness = 1
+			joint.softness = 50
 			joints.append(joint)
 			add_child(joint)
 		var line = Line2D.new()
