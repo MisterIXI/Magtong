@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="297.9335mm"
+   height="190.18007mm"
+   viewBox="0 0 297.9335 190.18007"
+   version="1.1"
+   id="svg1"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <g
+     id="layer1"
+     transform="translate(0.00474167,-14.903342)"
+     style="display:inline">
+    <rect
+       style="display:none;fill:#cdcdcd;fill-opacity:1;stroke:#000000;stroke-width:10.006"
+       id="rect77"
+       width="287.92752"
+       height="180.17406"
+       x="4.9982581"
+       y="19.906342"
+       ry="17.700441"
+       rx="17.700441" />
+    <g
+       id="g98"
+       style="display:none;fill:#fdfdfd;fill-opacity:1">
+      <path
+         id="path84"
+         style="color:#000000;fill:#fdfdfd;fill-opacity:1;-inkscape-stroke:none"
+         d="m 262.92561,205.08398 h 12.299 c 12.49113,0 22.70508,-10.21199 22.70508,-22.70312 l 1e-5,-12.38114 h -10.00783 v 12.38114 c 0,7.12088 -5.57638,12.69726 -12.69726,12.69726 h -12.299 z" />
+      <path
+         id="path97"
+         style="color:#000000;fill:#fdfdfd;fill-opacity:1;-inkscape-stroke:none"
+         d="M 34.999777,195.07812 H 22.699219 c -7.120893,0 -12.697266,-5.57638 -12.697266,-12.69726 V 169.99972 H -0.00390625 v 12.38114 c 0,12.49113 10.21200525,22.70312 22.70312525,22.70312 h 12.300553 z" />
+      <path
+         id="path95"
+         style="color:#000000;fill:#fdfdfd;fill-opacity:1;-inkscape-stroke:none"
+         d="M 297.92969,49.965825 V 37.607422 c 0,-12.491132 -10.21394,-22.703125 -22.70508,-22.703125 h -12.299 v 10.005859 h 12.299 c 7.12089,0 12.69726,5.576366 12.69726,12.697266 l 10e-6,12.331018 z" />
+      <path
+         id="path80"
+         style="color:#000000;fill:#fdfdfd;fill-opacity:1;-inkscape-stroke:none"
+         d="m 10.001953,49.971497 v -12.36409 c 0,-7.1209 5.576366,-12.697266 12.697266,-12.697266 v 0 h 12.300553 l 5e-6,-10.005844 H 22.699219 c -12.491132,0 -22.70312525,10.211993 -22.70312525,22.703125 v 12.372875 z" />
+    </g>
+    <rect
+       style="display:inline;fill:none;fill-opacity:1;stroke:#000000;stroke-width:10.006"
+       id="rect98"
+       width="287.92752"
+       height="180.17406"
+       x="4.9982581"
+       y="19.906342"
+       ry="17.700441"
+       rx="17.700441" />
+  </g>
+</svg>
