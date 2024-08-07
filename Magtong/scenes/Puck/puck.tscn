@@ -1,12 +1,14 @@
-[gd_scene load_steps=7 format=3 uid="uid://dlc283cvpl3eh"]
+[gd_scene load_steps=9 format=3 uid="uid://dlc283cvpl3eh"]
 
 [ext_resource type="Script" path="res://scenes/Puck/Puck.gd" id="1_00uo3"]
 [ext_resource type="PhysicsMaterial" uid="uid://dietc6j60tr6h" path="res://resources/Puck_physics_mat.tres" id="1_4dmue"]
 [ext_resource type="Texture2D" uid="uid://br4cd8nmno184" path="res://assets/Textures/puck_plus.png" id="2_dw57o"]
+[ext_resource type="Texture2D" uid="uid://ekdigtpneyr6" path="res://assets/Textures/Puck/puck_plus.png" id="3_2xae1"]
 [ext_resource type="Texture2D" uid="uid://c4bfjwroios8a" path="res://assets/Textures/puck_minus.png" id="3_dwqxq"]
+[ext_resource type="Texture2D" uid="uid://bha0k17vn7os0" path="res://assets/Textures/Puck/puck_minus.png" id="4_en3r1"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_0kl0c"]
-radius = 13.0384
+radius = 16.0
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_asgvy"]
 properties/0/path = NodePath(".:position")
@@ -19,19 +21,29 @@ properties/1/replication_mode = 1
 [node name="Puck" type="RigidBody2D" node_paths=PackedStringArray("plus_sprite", "minus_sprite") groups=["Puck"]]
 physics_material_override = ExtResource("1_4dmue")
 script = ExtResource("1_00uo3")
-plus_sprite = NodePath("plus_sprite")
-minus_sprite = NodePath("minus_sprite")
+plus_sprite = NodePath("PuckPlus")
+minus_sprite = NodePath("PuckMinus")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_0kl0c")
 
+[node name="PuckPlus" type="Sprite2D" parent="."]
+scale = Vector2(0.185, 0.185)
+texture = ExtResource("3_2xae1")
+
+[node name="PuckMinus" type="Sprite2D" parent="."]
+visible = false
+scale = Vector2(0.185, 0.185)
+texture = ExtResource("4_en3r1")
+
 [node name="plus_sprite" type="Sprite2D" parent="."]
-scale = Vector2(0.5, 0.5)
+visible = false
+scale = Vector2(0.57, 0.57)
 texture = ExtResource("2_dw57o")
 
 [node name="minus_sprite" type="Sprite2D" parent="."]
 visible = false
-scale = Vector2(0.5, 0.5)
+scale = Vector2(0.57, 0.57)
 texture = ExtResource("3_dwqxq")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
