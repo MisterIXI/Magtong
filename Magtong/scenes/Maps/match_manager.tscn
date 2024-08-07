@@ -1,7 +1,18 @@
-[gd_scene load_steps=9 format=3 uid="uid://b7yo5ed5gg50k"]
+[gd_scene load_steps=13 format=3 uid="uid://b7yo5ed5gg50k"]
 
 [ext_resource type="Script" path="res://scenes/match_manager.gd" id="1_ns4u8"]
 [ext_resource type="PackedScene" uid="uid://c8t5ekg5tbap3" path="res://scenes/Maps/map_default.tscn" id="2_belxq"]
+[ext_resource type="Script" path="res://scenes/Lobby/set_camera_zoom.gd" id="2_i8ydq"]
+[ext_resource type="Texture2D" uid="uid://baasaafcqr5jb" path="res://assets/Textures/PlayField/MatchClock.svg" id="3_6vxw0"]
+
+[sub_resource type="Gradient" id="Gradient_dcd0o"]
+colors = PackedColorArray(0, 0, 0, 0.27451, 0, 0, 0, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_tioop"]
+gradient = SubResource("Gradient_dcd0o")
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.85, 0.85)
 
 [sub_resource type="RichTextEffect" id="RichTextEffect_yy0li"]
 
@@ -30,24 +41,156 @@ font_size = 35
 font_color = Color(0, 0, 0, 1)
 outline_size = 5
 
-[node name="MatchManager" type="Node2D" node_paths=PackedStringArray("p1_score_label", "p2_score_label", "timer_label", "status_label", "game_timer", "countdown_timer", "ms")]
+[node name="MatchManager" type="Node2D" node_paths=PackedStringArray("p1_score_label", "p2_score_label", "timer_label", "status_label", "countdown_node", "countdown_label", "game_timer", "countdown_timer", "ms")]
 script = ExtResource("1_ns4u8")
-p1_score_label = NodePath("GameGUIBOX/Score_HBOX/P1_Label")
-p2_score_label = NodePath("GameGUIBOX/Score_HBOX/P2_Label")
-timer_label = NodePath("GameGUIBOX/Timer_HBOX/Timer_Label")
-status_label = NodePath("GameGUIBOX/HBoxContainer/State_label")
+p1_score_label = NodePath("Node/CanvasLayer/TextureRect/T1_Score_Label")
+p2_score_label = NodePath("Node/CanvasLayer/TextureRect/T2_Score_Label")
+timer_label = NodePath("Node/CanvasLayer/TextureRect/TimerLabel")
+status_label = NodePath("Node/CanvasLayer/TextureRect/StateLabel")
+countdown_node = NodePath("Node/CanvasLayer/CountdownGradient")
+countdown_label = NodePath("Node/CanvasLayer/CountdownGradient/CountdownLabel")
 game_timer = NodePath("GameTimer")
 countdown_timer = NodePath("CountdownTimer")
 ms = NodePath("MapDefault")
 
-[node name="Camera2D" type="Camera2D" parent="."]
-zoom = Vector2(0.85, 0.85)
+[node name="GameCamera" type="Camera2D" parent="."]
+scale = Vector2(1.145, 1.145)
+zoom = Vector2(1.145, 1.145)
+position_smoothing_enabled = true
+drag_horizontal_enabled = true
+
+[node name="CameraZoomer" type="Node" parent="GameCamera"]
+script = ExtResource("2_i8ydq")
+
+[node name="MapDefault" parent="." instance=ExtResource("2_belxq")]
 
 [node name="GameTimer" type="Timer" parent="."]
 
 [node name="CountdownTimer" type="Timer" parent="."]
 
-[node name="MapDefault" parent="." instance=ExtResource("2_belxq")]
+[node name="Node" type="Node" parent="."]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="Node"]
+
+[node name="TextureRect" type="TextureRect" parent="Node/CanvasLayer"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -189.0
+offset_right = 189.0
+offset_bottom = 76.0
+grow_horizontal = 2
+texture = ExtResource("3_6vxw0")
+
+[node name="T1_Score_Label" type="Label" parent="Node/CanvasLayer/TextureRect"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 23.165
+offset_top = -30.0
+offset_right = 71.165
+offset_bottom = 30.0
+grow_vertical = 2
+theme_override_font_sizes/font_size = 40
+text = "99"
+horizontal_alignment = 1
+
+[node name="T2_Score_Label" type="Label" parent="Node/CanvasLayer/TextureRect"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -68.77
+offset_top = -30.0
+offset_right = -20.77
+offset_bottom = 30.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_font_sizes/font_size = 40
+text = "13
+"
+horizontal_alignment = 1
+
+[node name="TimerLabel" type="Label" parent="Node/CanvasLayer/TextureRect"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -11.5
+offset_right = 20.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 60
+text = "99:99"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StateLabel" type="Label" parent="Node/CanvasLayer/TextureRect"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -70.5
+offset_right = 70.5
+offset_bottom = 44.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 31
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CountdownGradient" type="TextureRect" parent="Node/CanvasLayer"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -250.0
+offset_top = -250.0
+offset_right = 250.0
+offset_bottom = 250.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(250, 250)
+texture = SubResource("GradientTexture2D_tioop")
+
+[node name="CountdownLabel" type="Label" parent="Node/CanvasLayer/CountdownGradient"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -11.5
+offset_right = 20.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/outline_size = 25
+theme_override_font_sizes/font_size = 416
+text = "3"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Node2D" type="Node2D" parent="Node/CanvasLayer"]
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="RichTextLabel" type="RichTextLabel" parent="."]
 auto_translate_mode = 1
@@ -63,6 +206,7 @@ custom_effects = [SubResource("RichTextEffect_yy0li")]
 
 [node name="P1_Label" type="Label" parent="."]
 auto_translate_mode = 1
+visible = false
 offset_left = 318.0
 offset_top = 651.0
 offset_right = 449.0
@@ -72,6 +216,7 @@ label_settings = SubResource("LabelSettings_s4epw")
 
 [node name="P2_Label" type="Label" parent="."]
 auto_translate_mode = 1
+visible = false
 offset_left = 312.0
 offset_right = 443.0
 offset_bottom = 69.0
@@ -80,6 +225,7 @@ label_settings = SubResource("LabelSettings_hh5e6")
 
 [node name="GameGUIBOX" type="VBoxContainer" parent="."]
 auto_translate_mode = 1
+visible = false
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -131,6 +277,7 @@ layout_mode = 2
 [node name="State_label" type="Label" parent="GameGUIBOX/HBoxContainer"]
 auto_translate_mode = 1
 layout_mode = 2
+text = "uhoasuhfoeaufh"
 label_settings = SubResource("LabelSettings_ouugc")
 
 [connection signal="timeout" from="GameTimer" to="." method="_on_game_timeout"]

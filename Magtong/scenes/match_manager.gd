@@ -10,12 +10,14 @@ var gm: GameManager
 @export var timer_label: Label
 @export var status_label: Label
 
+@export var countdown_node: Control
+@export var countdown_label: Label
+
 var player1_score: int = 0
 var player2_score: int = 0
 
 @export var game_timer: Timer
 @export var countdown_timer: Timer
-var countdown 
 var game_running: bool = false
 @export var ms: MapScript
 var peer_ready_state: Dictionary = {}
@@ -67,13 +69,12 @@ func restart_match():
 	player1_score = 0
 	player2_score = 0
 	is_in_overtime = false
-	p1_score_label.text = "P1 " + str(player1_score).pad_zeros(2)
-	p2_score_label.text = str(player2_score).pad_zeros(2) + " P2"
+	p1_score_label.text = str(player1_score).pad_zeros(2)
+	p2_score_label.text = str(player2_score).pad_zeros(2)
 	ms.reset_field()
 	if multiplayer.is_server():
 		im.set_input_locked(true)
-		countdown = 4
-		_on_countdown_timer_timeout()
+		start_game_countdown()
 
 @rpc("authority", "call_local", "reliable")
 func score_for_team(team: int):
@@ -87,8 +88,8 @@ func score_for_team(team: int):
 		is_in_overtime = true
 		gm.print_message("Tie! Game will be decided with the next goal!")
 	gm.print_message("Score: " + str(player1_score) + " - " + str(player2_score))
-	p1_score_label.text = "P1 " + str(player1_score).pad_zeros(2)
-	p2_score_label.text = str(player2_score).pad_zeros(2) + " P2"
+	p1_score_label.text = str(player1_score).pad_zeros(2)
+	p2_score_label.text = str(player2_score).pad_zeros(2)
 	game_timer.paused = true
 	if multiplayer.is_server():
 		if is_in_overtime and team != 0:
@@ -96,8 +97,7 @@ func score_for_team(team: int):
 		else:
 			ms.reset_field()
 			im.set_input_locked(true)
-			countdown = 4
-			_on_countdown_timer_timeout()
+			start_game_countdown()
 
 @rpc("authority", "call_local", "reliable")
 func resume_game():
@@ -146,34 +146,45 @@ func _process(_delta):
 		# formate game_timer.time_left to MM:SS:MS
 		var minutes = int(time / 60)
 		var seconds = int(time) % 60
-		var milliseconds = int((time - int(time)) * 100)
-		timer_label.text = str(minutes).pad_zeros(2) + ":" + str(seconds).pad_zeros(2) + ":" + str(milliseconds).pad_zeros(2) + (" OT" if is_in_overtime else "")
+		timer_label.text = str(minutes).pad_zeros(2) + ":" + str(seconds).pad_zeros(2)
 
 func on_goal_scored(team_id: int):
 	score_for_team.rpc(team_id)
 
 func start_game_countdown():
-	countdown_timer.start()
-	countdown = 3
-	timer_label.text = str(countdown) + "..."
-
-func _on_countdown_timer_timeout():
-	countdown -= 1
-	timer_label.text = str(countdown) + "..."
-	if countdown == 0:
-		timer_label.text = "GO!"
+	countdown_node.show()
+	var loop_func = func(x):
+		countdown_node.scale = Vector2.ONE
+		countdown_label.text = str(3 - x)
+		gm.send_message.rpc(str(3-x) + "...")
+	loop_func.call(0)
+	var tween = countdown_node.create_tween()
+	tween.set_loops(3)
+	tween.tween_property(countdown_node,"scale",Vector2.ONE * 0.05,1.0)
+	tween.loop_finished.connect(loop_func)
+	tween.finished.connect(func():
+		# countdown finished, starting game
 		time_since_last_goal = Time.get_ticks_msec()
 		if game_running:
 			resume_game.rpc()
 		else:
 			game_timer.start()
 			game_running = true
-		status_label.text = ""
-		countdown_timer.stop()
-		im.set_input_locked(false)
-		return
-	gm.send_message.rpc(str(countdown) + "...")
-	countdown_timer.start(1)
+		countdown_node.hide()
+		)
+	client_game_countdown.rpc()
+
+@rpc("authority", "call_remote", "reliable")
+func client_game_countdown():
+	countdown_node.show()
+	var tween = countdown_node.create_tween()
+	tween.set_loops(3)
+	tween.tween_property(countdown_node,"scale",Vector2.ONE * 0.2,1.0)
+	tween.loop_finished.connect(func(x): 
+		countdown_node.scale = Vector2.ONE
+		countdown_label.text = str(3 - x)
+		)
+	tween.finished.connect(func(): countdown_node.hide())
 
 func _on_goal_south_body_entered(body:Node2D):
 	if body.is_in_group("Puck"):

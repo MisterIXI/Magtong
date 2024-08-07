@@ -14,7 +14,7 @@
 [ext_resource type="Script" path="res://scenes/Player/Abilities/orbit_lock.gd" id="12_0fqa4"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_smi2p"]
-radius = 15.0333
+radius = 22.0227
 
 [sub_resource type="Curve" id="Curve_ikk82"]
 _data = [Vector2(0, 0.0156175), 0.0, 8.96711, 0, 0, Vector2(0.226415, 0.987695), -1.03467, -1.03467, 0, 0, Vector2(0.833962, 0.575485), -0.221778, -0.221778, 0, 0, Vector2(0.97973, 0), -3.80947, 0.0, 0, 0]
@@ -63,6 +63,7 @@ texture = ExtResource("4_o87xm")
 shape = SubResource("CircleShape2D_smi2p")
 
 [node name="Graphics" type="Node2D" parent="." node_paths=PackedStringArray("sprite", "player", "plus_particles", "minus_particles", "plus_burst_particles", "minus_burst_particles", "pol_shader_sprite")]
+scale = Vector2(1.451, 1.451)
 script = ExtResource("1_31gdm")
 sprite = NodePath("PlayerCharacter")
 player = NodePath("..")
