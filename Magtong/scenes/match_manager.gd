@@ -86,15 +86,15 @@ func score_for_team(team: int):
 		# tween.tween_property(p1_score_label, "theme_override_colors/font_color", Color(0.5,0.5,0.5,1),0.5)
 		# tween.tween_property(p1_score_label, "theme_override_colors/font_color", Color(1,1,1,1),0.5)
 		var tween = overlay_left.create_tween()
-		tween.tween_property(overlay_left, "modulate", Color(1,1,1,0.5),0.5)
-		tween.tween_property(overlay_left, "modulate", Color(1,1,1,0),0.5)
+		tween.tween_property(overlay_left, "modulate", Color(1,1,1,0.5),0.25)
+		tween.tween_property(overlay_left, "modulate", Color(1,1,1,0),0.25)
 		tween.set_loops(3)
 		gm.print_message("Player 1 scored after " + str((Time.get_ticks_msec() - time_since_last_goal) / 1000) + " seconds!")
 	elif team == 2:
 		player2_score += 1
 		var tween = overlay_right.create_tween()
-		tween.tween_property(overlay_right, "modulate", Color(1,1,1,0.5),0.5)
-		tween.tween_property(overlay_right, "modulate", Color(1,1,1,0),0.5)
+		tween.tween_property(overlay_right, "modulate", Color(1,1,1,0.5),0.25)
+		tween.tween_property(overlay_right, "modulate", Color(1,1,1,0),0.25)
 		tween.set_loops(3)
 		gm.print_message("Player 2 scored after " + str((Time.get_ticks_msec() - time_since_last_goal) / 1000) + " seconds!")
 	elif team == 0:
@@ -189,6 +189,7 @@ func start_game_countdown():
 			game_running = true
 		countdown_node.hide()
 		)
+	_update_timer_label(game_timer.time_left)
 	client_game_countdown.rpc()
 
 @rpc("authority", "call_remote", "reliable")
@@ -202,6 +203,7 @@ func client_game_countdown():
 		countdown_label.text = str(3 - x)
 		)
 	tween.finished.connect(func(): countdown_node.hide())
+	_update_timer_label(game_timer.time_left)
 
 func _on_goal_south_body_entered(body: Node2D):
 	if body.is_in_group("Puck"):
