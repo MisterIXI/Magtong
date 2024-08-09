@@ -2,8 +2,11 @@ extends Node
 class_name MatchManager
 
 var match_time: float = 180
-var im : InputManager
+var im: InputManager
 var gm: GameManager
+
+@export var overlay_left: Control
+@export var overlay_right: Control
 
 @export var p1_score_label: Label
 @export var p2_score_label: Label
@@ -64,7 +67,6 @@ func restart_match():
 	game_timer.start(match_time)
 	game_timer.paused = true
 	gm.print_message("Starting new match!")
-	timer_label.text = "Get Ready!"
 	game_running = true
 	player1_score = 0
 	player2_score = 0
@@ -80,9 +82,20 @@ func restart_match():
 func score_for_team(team: int):
 	if team == 1:
 		player1_score += 1
+		# var tween = p1_score_label.create_tween()
+		# tween.tween_property(p1_score_label, "theme_override_colors/font_color", Color(0.5,0.5,0.5,1),0.5)
+		# tween.tween_property(p1_score_label, "theme_override_colors/font_color", Color(1,1,1,1),0.5)
+		var tween = overlay_left.create_tween()
+		tween.tween_property(overlay_left, "modulate", Color(1,1,1,0.5),0.5)
+		tween.tween_property(overlay_left, "modulate", Color(1,1,1,0),0.5)
+		tween.set_loops(3)
 		gm.print_message("Player 1 scored after " + str((Time.get_ticks_msec() - time_since_last_goal) / 1000) + " seconds!")
 	elif team == 2:
 		player2_score += 1
+		var tween = overlay_right.create_tween()
+		tween.tween_property(overlay_right, "modulate", Color(1,1,1,0.5),0.5)
+		tween.tween_property(overlay_right, "modulate", Color(1,1,1,0),0.5)
+		tween.set_loops(3)
 		gm.print_message("Player 2 scored after " + str((Time.get_ticks_msec() - time_since_last_goal) / 1000) + " seconds!")
 	elif team == 0:
 		is_in_overtime = true
@@ -117,13 +130,16 @@ func spawn_map(_map_id: int):
 func game_over(winning_team: int):
 	game_timer.stop()
 	game_running = false
-	timer_label.text = "Game Over!"
+	_update_timer_label(0)
+	countdown_label.text = "Game Over!"
+	countdown_node.show()
+	countdown_node.scale = Vector2.ONE * 0.5
 	if winning_team == 1:
-		status_label.text = "Player 1 Wins!"
+		countdown_label.text += "\nPlayer 1 Wins!"
 	elif winning_team == 2:
-		status_label.text = "Player 2 Wins!"
+		countdown_label.text += "\nPlayer 2 Wins!"
 	else:
-		status_label.text = "It's a tie!"
+		countdown_label.text += "\nIt's a tie!"
 	gm.print_message("Game Over!")
 	gm.print_message(status_label.text)
 	ms.reset_field(true)
@@ -138,15 +154,16 @@ func request_restart():
 
 func _process(_delta):
 	if game_running and countdown_timer.is_stopped() and (not game_timer.paused or is_in_overtime):
-		var time: float
 		if is_in_overtime:
-			time = (Time.get_ticks_msec() - overtime_start_time) / 1000
+			_update_timer_label((Time.get_ticks_msec() - overtime_start_time) / 1000)
 		else:
-			time = game_timer.time_left
-		# formate game_timer.time_left to MM:SS:MS
-		var minutes = int(time / 60)
-		var seconds = int(time) % 60
-		timer_label.text = str(minutes).pad_zeros(2) + ":" + str(seconds).pad_zeros(2)
+			_update_timer_label(game_timer.time_left)
+
+func _update_timer_label(time: float):
+	# formate game_timer.time_left to MM:SS:MS
+	var minutes = int(time / 60)
+	var seconds = int(time) % 60
+	timer_label.text = str(minutes).pad_zeros(2) + ":" + str(seconds).pad_zeros(2)
 
 func on_goal_scored(team_id: int):
 	score_for_team.rpc(team_id)
@@ -156,11 +173,11 @@ func start_game_countdown():
 	var loop_func = func(x):
 		countdown_node.scale = Vector2.ONE
 		countdown_label.text = str(3 - x)
-		gm.send_message.rpc(str(3-x) + "...")
+		gm.send_message.rpc(str(3 - x) + "...")
 	loop_func.call(0)
 	var tween = countdown_node.create_tween()
 	tween.set_loops(3)
-	tween.tween_property(countdown_node,"scale",Vector2.ONE * 0.05,1.0)
+	tween.tween_property(countdown_node, "scale", Vector2.ONE * 0.05, 1.0)
 	tween.loop_finished.connect(loop_func)
 	tween.finished.connect(func():
 		# countdown finished, starting game
@@ -179,21 +196,21 @@ func client_game_countdown():
 	countdown_node.show()
 	var tween = countdown_node.create_tween()
 	tween.set_loops(3)
-	tween.tween_property(countdown_node,"scale",Vector2.ONE * 0.2,1.0)
-	tween.loop_finished.connect(func(x): 
+	tween.tween_property(countdown_node, "scale", Vector2.ONE * 0.2, 1.0)
+	tween.loop_finished.connect(func(x):
 		countdown_node.scale = Vector2.ONE
 		countdown_label.text = str(3 - x)
 		)
 	tween.finished.connect(func(): countdown_node.hide())
 
-func _on_goal_south_body_entered(body:Node2D):
+func _on_goal_south_body_entered(body: Node2D):
 	if body.is_in_group("Puck"):
 		player2_score += 1
 		print("Player 2 scored!")
 		status_label.text = "Player 2 scored!"
 		score_for_team.rpc(2)
 
-func _on_goal_north_body_entered(body:Node2D):
+func _on_goal_north_body_entered(body: Node2D):
 	if body.is_in_group("Puck"):
 		player1_score += 1
 		print("Player 1 scored!")

@@ -9,7 +9,7 @@
    id="svg1"
    sodipodi:docname="MatchClock.svg"
    inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
-   inkscape:export-filename="MatchClock.png"
+   inkscape:export-filename="MatchClock_right_overlay.png"
    inkscape:export-xdpi="400"
    inkscape:export-ydpi="400"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
@@ -27,9 +27,9 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
-     inkscape:zoom="4.0970529"
-     inkscape:cx="127.89681"
-     inkscape:cy="83.10852"
+     inkscape:zoom="2.0485265"
+     inkscape:cx="149.37566"
+     inkscape:cy="142.78556"
      inkscape:window-width="1920"
      inkscape:window-height="1009"
      inkscape:window-x="-8"
@@ -111,19 +111,34 @@
      inkscape:groupmode="layer"
      id="layer1">
     <path
-       style="opacity:0.994253;fill:url(#linearGradient5);fill-opacity:1;stroke-width:1.81200008;stroke-opacity:1;paint-order:stroke markers fill;stroke:none;stroke-dasharray:none"
+       style="display:inline;opacity:0.994253;fill:url(#linearGradient5);fill-opacity:1;stroke:none;stroke-width:1.812;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke markers fill"
        d="M 0,0 5,20 H 25 L 20,0 Z"
        id="path2"
-       sodipodi:nodetypes="ccccc" />
+       sodipodi:nodetypes="ccccc"
+       inkscape:label="Left" />
     <path
-       style="opacity:0.994253;fill:url(#linearGradient7);fill-opacity:1;stroke-width:1.81200008;stroke-opacity:1;paint-order:stroke markers fill;stroke:none;stroke-dasharray:none"
+       style="display:inline;opacity:0.994253;fill:url(#linearGradient7);fill-opacity:1;stroke:none;stroke-width:1.812;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke markers fill"
        d="M 100,0 95,20 H 75 L 80,0 Z"
        id="path3"
-       sodipodi:nodetypes="ccccc" />
+       sodipodi:nodetypes="ccccc"
+       inkscape:label="Right" />
     <path
-       style="opacity:0.994253;fill:url(#linearGradient9);fill-opacity:1;stroke-width:1.81200008;stroke-opacity:1;paint-order:stroke markers fill;stroke:none;stroke-dasharray:none"
+       style="display:inline;opacity:0.994253;fill:url(#linearGradient9);fill-opacity:1;stroke:none;stroke-width:1.812;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke markers fill"
        d="m 20,0 5,20 H 75 L 80,0 Z"
        id="path4"
-       sodipodi:nodetypes="ccccc" />
+       sodipodi:nodetypes="ccccc"
+       inkscape:label="Middle" />
+    <path
+       style="display:none;opacity:0.994253;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1.812;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke markers fill"
+       d="M 100,0 95,20 H 75 L 80,0 Z"
+       id="path1"
+       sodipodi:nodetypes="ccccc"
+       inkscape:label="RightOverlay" />
+    <path
+       style="display:none;opacity:0.994253;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1.812;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke markers fill"
+       d="M 0,0 5,20 H 25 L 20,0 Z"
+       id="path5"
+       sodipodi:nodetypes="ccccc"
+       inkscape:label="LeftOverlay" />
   </g>
 </svg>
