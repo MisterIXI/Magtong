@@ -1,0 +1,22 @@
+[gd_scene load_steps=5 format=3 uid="uid://dsc2jpjqrch6h"]
+
+[ext_resource type="Script" path="res://scenes/Menu/Needles/magnetic_field.gd" id="1_0foho"]
+[ext_resource type="PackedScene" uid="uid://btbjkx33i6xdf" path="res://scenes/Menu/Needles/menu_needle.tscn" id="2_2pjv3"]
+[ext_resource type="Script" path="res://scenes/Menu/Needles/magnet_mouse_follower.gd" id="3_h3fbk"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_dein2"]
+size = Vector2(100, 50)
+
+[node name="MagneticField" type="Node2D" node_paths=PackedStringArray("magnet_pos")]
+script = ExtResource("1_0foho")
+dipole_moment = Vector2(1.4, 0)
+magnet_pos = NodePath("Node2D")
+menu_needle = ExtResource("2_2pjv3")
+
+[node name="Node2D" type="Node2D" parent="."]
+position = Vector2(292, 286)
+script = ExtResource("3_h3fbk")
+
+[node name="Sprite2D" type="Sprite2D" parent="Node2D"]
+scale = Vector2(0.178531, 0.178531)
+texture = SubResource("PlaceholderTexture2D_dein2")

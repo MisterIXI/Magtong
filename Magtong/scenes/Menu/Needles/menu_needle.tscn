@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://btbjkx33i6xdf"]
+
+[ext_resource type="Texture2D" uid="uid://bdks3h6oqo0tp" path="res://assets/Textures/Menu/MenuNeedle.png" id="1_3vxjr"]
+[ext_resource type="Script" path="res://scenes/Menu/Needles/menu_needle.gd" id="2_0ijx4"]
+
+[node name="MenuNeedle" type="Sprite2D"]
+position = Vector2(354, 304)
+scale = Vector2(0.074, 0.074)
+texture = ExtResource("1_3vxjr")
+script = ExtResource("2_0ijx4")

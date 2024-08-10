@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="180"
+   height="180"
+   viewBox="0 0 180 180"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   sodipodi:docname="MenuNeedle.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="px"
+     showguides="true"
+     inkscape:zoom="3.1937656"
+     inkscape:cx="125.87023"
+     inkscape:cy="114.44171"
+     inkscape:window-width="1920"
+     inkscape:window-height="1009"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1">
+    <sodipodi:guide
+       position="90,141.47601"
+       orientation="-1,0"
+       id="guide1"
+       inkscape:locked="false"
+       inkscape:label=""
+       inkscape:color="rgb(0,134,229)" />
+    <sodipodi:guide
+       position="-114.59826,120"
+       orientation="0,1"
+       id="guide2"
+       inkscape:locked="false"
+       inkscape:label=""
+       inkscape:color="rgb(0,134,229)" />
+    <sodipodi:guide
+       position="-95.185444,60"
+       orientation="0,1"
+       id="guide3"
+       inkscape:locked="false"
+       inkscape:label=""
+       inkscape:color="rgb(0,134,229)" />
+    <sodipodi:guide
+       position="-20.147601,120"
+       orientation="0,-1"
+       id="guide4"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="-20.811808,90"
+       orientation="0,1"
+       id="guide5"
+       inkscape:locked="false"
+       inkscape:label=""
+       inkscape:color="rgb(0,134,229)" />
+  </sodipodi:namedview>
+  <defs
+     id="defs1">
+    <linearGradient
+       id="linearGradient8"
+       inkscape:collect="always">
+      <stop
+         style="stop-color:#fafafa;stop-opacity:1;"
+         offset="0"
+         id="stop8" />
+      <stop
+         style="stop-color:#969696;stop-opacity:1;"
+         offset="1"
+         id="stop9" />
+    </linearGradient>
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient8"
+       id="radialGradient9"
+       cx="90"
+       cy="90"
+       fx="90"
+       fy="90"
+       r="13.700085"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       style="opacity:0.994253;fill:#ff0000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;paint-order:markers fill stroke;stroke:#000000;stroke-dasharray:none"
+       d="M 0,90 90,60 v 60 z"
+       id="path3" />
+    <path
+       style="opacity:0.994253;fill:#0000ff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;paint-order:markers fill stroke;stroke:#000000;stroke-dasharray:none"
+       d="m 90,120 c 9.409594,0 90,-30 90,-30 L 90,60 Z"
+       id="path4" />
+    <path
+       style="opacity:0.994253;fill:#0000ff;stroke:#ffffff;stroke-width:3;stroke-linecap:square;stroke-linejoin:round;stroke-dasharray:none;paint-order:markers fill stroke"
+       d="M 30,90 H 40"
+       id="path5"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="opacity:0.994253;fill:#0000ff;stroke:#ffffff;stroke-width:3;stroke-linecap:square;stroke-linejoin:round;stroke-dasharray:none;paint-order:markers fill stroke"
+       d="M 35,85 V 95"
+       id="path6"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="opacity:0.994253;fill:#0000ff;stroke:#ffffff;stroke-width:3;stroke-linecap:square;stroke-linejoin:round;stroke-dasharray:none;paint-order:markers fill stroke"
+       d="M 150,90 H 140"
+       id="path7"
+       sodipodi:nodetypes="cc" />
+    <circle
+       style="opacity:0.994253;fill:url(#radialGradient9);stroke:#000000;stroke-width:2;stroke-linecap:square;stroke-linejoin:round;stroke-dasharray:none;paint-order:markers fill stroke"
+       id="path8"
+       cx="90"
+       cy="90"
+       r="12.700085" />
+  </g>
+</svg>
