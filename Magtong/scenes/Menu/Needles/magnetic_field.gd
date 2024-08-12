@@ -8,12 +8,12 @@ class_name  MagneticField2D
 
 const GRID_COUNT = 30
 
-func _ready():
-	for i in range(GRID_COUNT):
-		for j in range(GRID_COUNT):
-			var needle = menu_needle.instantiate()
-			needle.position = Vector2(i, j) * 50 + Vector2.RIGHT * 32
-			add_child(needle)
+# func _ready():
+# 	for i in range(GRID_COUNT):
+# 		for j in range(GRID_COUNT):
+# 			var needle = menu_needle.instantiate()
+# 			needle.position = Vector2(i, j) * 50 + Vector2.RIGHT * 32
+# 			add_child(needle)
 
 
 func calculate_field_at_point(point: Vector2) -> Vector2:
