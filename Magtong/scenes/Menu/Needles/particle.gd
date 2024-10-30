@@ -4,4 +4,4 @@ extends Node2D
 
 func _physics_process(delta):
 	var magnet_force = magnet_field.calculate_field_at_point(position)
-	position += magnet_force.normalized() * delta * 1000
+	position += magnet_force * delta * 100000000

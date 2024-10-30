@@ -1,11 +1,15 @@
-[gd_scene load_steps=15 format=3 uid="uid://c8t5ekg5tbap3"]
+[gd_scene load_steps=19 format=3 uid="uid://c8t5ekg5tbap3"]
 
 [ext_resource type="Script" path="res://scenes/Maps/map_script.gd" id="1_wbm5i"]
 [ext_resource type="Texture2D" uid="uid://pthgonvw7edr" path="res://assets/Textures/PlayField/Field_default_v2.png" id="2_8n442"]
+[ext_resource type="Texture2D" uid="uid://r07u5sxbuum3" path="res://assets/Textures/test_background_2.png" id="2_8sq5b"]
+[ext_resource type="Texture2D" uid="uid://5bbmj4ydilt2" path="res://assets/Textures/test_background.png" id="2_c3b7r"]
+[ext_resource type="Texture2D" uid="uid://biylgjhthhti8" path="res://assets/Textures/test_background_3.png" id="2_cwfhe"]
 [ext_resource type="Texture2D" uid="uid://dt4t6l1gnn6bj" path="res://assets/Textures/blank pixels.png" id="3_0ppxq"]
 [ext_resource type="Texture2D" uid="uid://c3ltadrfcuk57" path="res://assets/Textures/PlayerSkins/9slice_box_round_border.png" id="4_70e28"]
 [ext_resource type="Script" path="res://scenes/Maps/spawn_point_group.gd" id="4_jds7q"]
 [ext_resource type="Script" path="res://scenes/visual_components/tween_modulate_alpha_blink.gd" id="5_e81lu"]
+[ext_resource type="Texture2D" uid="uid://cam0d4t2svx64" path="res://assets/Textures/test_corner.png" id="6_k3ouq"]
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_5nsau"]
 distance = 45.0
@@ -43,9 +47,37 @@ lobby_labels = [NodePath("FieldCenter/Team0_ready_area/T0ReadyLabel"), NodePath(
 [node name="FieldCenter" type="Node2D" parent="."]
 scale = Vector2(1.28, 1.28)
 
+[node name="TestBackground3" type="Sprite2D" parent="FieldCenter"]
+visible = false
+scale = Vector2(1.72034, 1.72034)
+texture = ExtResource("2_cwfhe")
+
+[node name="TestBackground2" type="Sprite2D" parent="FieldCenter"]
+visible = false
+scale = Vector2(0.909546, 0.909546)
+texture = ExtResource("2_8sq5b")
+
+[node name="TestBackground" type="Sprite2D" parent="FieldCenter"]
+visible = false
+modulate = Color(0.128344, 0.121207, 0.112144, 1)
+scale = Vector2(0.909546, 0.909546)
+texture = ExtResource("2_c3b7r")
+
 [node name="FieldDefault" type="Sprite2D" parent="FieldCenter"]
 scale = Vector2(0.171, 0.171)
 texture = ExtResource("2_8n442")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="FieldCenter"]
+position = Vector2(-511.719, -263.281)
+scale = Vector2(0.171, 0.171)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="FieldCenter/StaticBody2D"]
+position = Vector2(0.000278473, 4.56871)
+polygon = PackedVector2Array(-154.32, -151, -165.075, 140.1, -125, 38.3, -102, -7.5, -73, -46.3, -35, -83.1, -8, -101.9, 17, -115.8, 69, -136.3, 140, -151)
+
+[node name="Sprite2D" type="Sprite2D" parent="FieldCenter/StaticBody2D"]
+visible = false
+texture = ExtResource("6_k3ouq")
 
 [node name="BorderCollider" type="StaticBody2D" parent="FieldCenter"]
 
@@ -93,7 +125,7 @@ position = Vector2(534.866, 0)
 shape = SubResource("RectangleShape2D_rw2oh")
 
 [node name="Sprite2D" type="Sprite2D" parent="FieldCenter/GoalRight"]
-modulate = Color(0, 0, 1, 1)
+modulate = Color(0.0869751, 0.327561, 0.742188, 1)
 scale = Vector2(1.16, 18.8)
 texture = ExtResource("3_0ppxq")
 

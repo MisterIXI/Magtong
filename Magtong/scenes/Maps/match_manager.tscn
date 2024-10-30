@@ -59,7 +59,7 @@ ms = NodePath("MapDefault")
 
 [node name="GameCamera" type="Camera2D" parent="."]
 scale = Vector2(1.145, 1.145)
-zoom = Vector2(1.145, 1.145)
+zoom = Vector2(0.75, 0.75)
 position_smoothing_enabled = true
 drag_horizontal_enabled = true
 
