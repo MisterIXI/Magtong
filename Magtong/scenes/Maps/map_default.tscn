@@ -9,23 +9,23 @@
 [ext_resource type="Texture2D" uid="uid://c3ltadrfcuk57" path="res://assets/Textures/PlayerSkins/9slice_box_round_border.png" id="4_70e28"]
 [ext_resource type="Script" path="res://scenes/Maps/spawn_point_group.gd" id="4_jds7q"]
 [ext_resource type="Script" path="res://scenes/visual_components/tween_modulate_alpha_blink.gd" id="5_e81lu"]
+[ext_resource type="Texture2D" uid="uid://c023clfhq43lh" path="res://assets/Textures/PlayField/Field_default_v3.png" id="5_gm1x1"]
 [ext_resource type="Texture2D" uid="uid://cam0d4t2svx64" path="res://assets/Textures/test_corner.png" id="6_k3ouq"]
 
-[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_5nsau"]
-distance = 45.0
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_53t0d"]
+size = Vector2(250, 30)
 
-[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_f7hg0"]
-distance = 45.0
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_q586n"]
+size = Vector2(178.601, 47.8601)
 
-[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_me1nk"]
-
-[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_oflq2"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5c01j"]
+size = Vector2(1200, 30)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_2cnpn"]
 size = Vector2(2.45, 590)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_rw2oh"]
-size = Vector2(12, 188)
+size = Vector2(22.6956, 175)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ilral"]
 size = Vector2(145, 250)
@@ -45,7 +45,7 @@ lobby_areas = [NodePath("FieldCenter/Team0_ready_area"), NodePath("FieldCenter/T
 lobby_labels = [NodePath("FieldCenter/Team0_ready_area/T0ReadyLabel"), NodePath("FieldCenter/Team1_ready_area/T1ReadyLabel"), NodePath("FieldCenter/Team2_ready_area/T2ReadyLabel")]
 
 [node name="FieldCenter" type="Node2D" parent="."]
-scale = Vector2(1.28, 1.28)
+scale = Vector2(1.215, 1.215)
 
 [node name="TestBackground3" type="Sprite2D" parent="FieldCenter"]
 visible = false
@@ -63,17 +63,22 @@ modulate = Color(0.128344, 0.121207, 0.112144, 1)
 scale = Vector2(0.909546, 0.909546)
 texture = ExtResource("2_c3b7r")
 
+[node name="Image" type="Sprite2D" parent="FieldCenter"]
+scale = Vector2(0.604, 0.604)
+texture = ExtResource("5_gm1x1")
+
+[node name="Image2" type="Sprite2D" parent="FieldCenter"]
+scale = Vector2(0.604, 0.604)
+texture = ExtResource("5_gm1x1")
+
 [node name="FieldDefault" type="Sprite2D" parent="FieldCenter"]
+visible = false
 scale = Vector2(0.171, 0.171)
 texture = ExtResource("2_8n442")
 
 [node name="StaticBody2D" type="StaticBody2D" parent="FieldCenter"]
-position = Vector2(-511.719, -263.281)
+position = Vector2(-508.594, -236.719)
 scale = Vector2(0.171, 0.171)
-
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="FieldCenter/StaticBody2D"]
-position = Vector2(0.000278473, 4.56871)
-polygon = PackedVector2Array(-154.32, -151, -165.075, 140.1, -125, 38.3, -102, -7.5, -73, -46.3, -35, -83.1, -8, -101.9, 17, -115.8, 69, -136.3, 140, -151)
 
 [node name="Sprite2D" type="Sprite2D" parent="FieldCenter/StaticBody2D"]
 visible = false
@@ -81,24 +86,66 @@ texture = ExtResource("6_k3ouq")
 
 [node name="BorderCollider" type="StaticBody2D" parent="FieldCenter"]
 
-[node name="RightWallCollider" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
-position = Vector2(581.811, 0)
-rotation = -1.5708
-shape = SubResource("WorldBoundaryShape2D_5nsau")
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="FieldCenter/BorderCollider"]
+position = Vector2(-510.156, -202.344)
+scale = Vector2(0.171, 0.171)
+polygon = PackedVector2Array(-173.611, 137.061, -159.905, 82.2368, -146.199, 13.7062, -123.355, -63.9619, -82.2368, -150.767, -22.8438, -237.573, 36.5496, -306.104, 114.218, -370.066, 219.298, -424.89, 301.535, -456.871, 397.478, -479.715, 475.146, -488.852, -219.298, -639.62)
 
-[node name="LeftWallCollider" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
-position = Vector2(-581.847, 0)
-rotation = 1.5708
-shape = SubResource("WorldBoundaryShape2D_f7hg0")
+[node name="CollisionPolygon2D2" type="CollisionPolygon2D" parent="FieldCenter/BorderCollider"]
+position = Vector2(456.25, -256.25)
+rotation = 1.57079
+scale = Vector2(0.171, 0.171)
+polygon = PackedVector2Array(-173.611, 137.061, -159.905, 82.2368, -146.199, 13.7062, -123.355, -63.9619, -82.2368, -150.767, -22.8438, -237.573, 36.5496, -306.104, 114.218, -370.066, 219.298, -424.89, 301.535, -456.871, 397.478, -479.715, 475.146, -488.852, -219.298, -667.032)
 
-[node name="TopWallCollider" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
-position = Vector2(0, -287.58)
+[node name="CollisionPolygon2D3" type="CollisionPolygon2D" parent="FieldCenter/BorderCollider"]
+position = Vector2(-456.79, 255.967)
+rotation = -1.57079
+scale = Vector2(0.171, 0.171)
+polygon = PackedVector2Array(-173.611, 137.061, -159.905, 82.2368, -146.199, 13.7062, -123.355, -63.9619, -82.2368, -150.767, -22.8438, -237.573, 36.5496, -306.104, 114.218, -370.066, 219.298, -424.89, 301.535, -456.871, 397.478, -479.715, 475.146, -488.852, -219.298, -639.62)
+
+[node name="CollisionPolygon2D4" type="CollisionPolygon2D" parent="FieldCenter/BorderCollider"]
+position = Vector2(510.288, 201.646)
 rotation = 3.14159
-shape = SubResource("WorldBoundaryShape2D_me1nk")
+scale = Vector2(0.171, 0.171)
+polygon = PackedVector2Array(-173.611, 137.061, -159.905, 82.2368, -146.199, 13.7062, -123.355, -63.9619, -82.2368, -150.767, -22.8438, -237.573, 36.5496, -306.104, 114.218, -370.066, 219.298, -424.89, 301.535, -456.871, 397.478, -479.715, 475.146, -488.852, -219.298, -667.032)
 
-[node name="BottomWallCollider" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
-position = Vector2(0, 287.52)
-shape = SubResource("WorldBoundaryShape2D_oflq2")
+[node name="RightWallBack" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
+position = Vector2(586.008, 1.62559e-10)
+rotation = -1.5708
+shape = SubResource("RectangleShape2D_53t0d")
+
+[node name="RightWallTop" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
+position = Vector2(562.078, -176.543)
+rotation = -1.5708
+shape = SubResource("RectangleShape2D_q586n")
+
+[node name="RightWallBottom" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
+position = Vector2(562.14, 176.955)
+rotation = -1.5708
+shape = SubResource("RectangleShape2D_q586n")
+
+[node name="LeftWallBack" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
+position = Vector2(-586.008, -1.62559e-10)
+rotation = -1.5708
+shape = SubResource("RectangleShape2D_53t0d")
+
+[node name="LeftWallTop" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
+position = Vector2(-562.14, -176.955)
+rotation = -1.5708
+shape = SubResource("RectangleShape2D_q586n")
+
+[node name="LeftWallBottom" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
+position = Vector2(-562.14, 176.955)
+rotation = -1.5708
+shape = SubResource("RectangleShape2D_q586n")
+
+[node name="TopWall" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
+position = Vector2(0, -300)
+shape = SubResource("RectangleShape2D_5c01j")
+
+[node name="BottomWall" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
+position = Vector2(0, 300)
+shape = SubResource("RectangleShape2D_5c01j")
 
 [node name="CenterLineCollider" type="StaticBody2D" parent="FieldCenter"]
 collision_layer = 2
@@ -108,25 +155,29 @@ collision_mask = 2
 shape = SubResource("RectangleShape2D_2cnpn")
 
 [node name="GoalLeft" type="Area2D" parent="FieldCenter"]
-position = Vector2(-535.076, 0)
+position = Vector2(-564.844, 0)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="FieldCenter/GoalLeft"]
+position = Vector2(5.34778, 0)
 shape = SubResource("RectangleShape2D_rw2oh")
 
 [node name="Sprite2D" type="Sprite2D" parent="FieldCenter/GoalLeft"]
 modulate = Color(1, 0, 0, 1)
-scale = Vector2(1.16, 18.8)
+position = Vector2(5.99601, 0)
+scale = Vector2(2.31625, 17.5187)
 texture = ExtResource("3_0ppxq")
 
 [node name="GoalRight" type="Area2D" parent="FieldCenter"]
 position = Vector2(534.866, 0)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="FieldCenter/GoalRight"]
+position = Vector2(23.9817, 0)
 shape = SubResource("RectangleShape2D_rw2oh")
 
 [node name="Sprite2D" type="Sprite2D" parent="FieldCenter/GoalRight"]
 modulate = Color(0.0869751, 0.327561, 0.742188, 1)
-scale = Vector2(1.16, 18.8)
+position = Vector2(23.9817, 0)
+scale = Vector2(2.31625, 17.5187)
 texture = ExtResource("3_0ppxq")
 
 [node name="Team1_ready_area" type="Area2D" parent="FieldCenter"]
