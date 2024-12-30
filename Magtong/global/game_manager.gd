@@ -44,7 +44,7 @@ func _change_state(new_state: State):
 			scene_root.change_scene(default_map_scene.instantiate())
 	state_changed.emit(old_state, new_state)
 
-func host_game(is_local: bool):
+func host_game(is_local: bool, suppress_state_change: bool = false):
 	assert(current_state == State.MENU)
 	multiplayer.peer_connected.connect(_on_peer_connected)
 	var peer = ENetMultiplayerPeer.new()
@@ -59,8 +59,9 @@ func host_game(is_local: bool):
 		print("Server error: ", retval)
 	else:
 		print("Server created on port 12345")
-	_change_state.rpc(State.LOBBY)
 	multiplayer.multiplayer_peer = peer
+	if not suppress_state_change:
+		_change_state.rpc(State.LOBBY)
 	_on_peer_connected(1)
 
 func join_game(ip: String, port: int):
