@@ -5,12 +5,7 @@
 
 [node name="MainScene" type="Node"]
 
-[node name="MainMenu" parent="." node_paths=PackedStringArray("start_menu", "start_entry_focus", "settings_menu", "settings_entry_focus", "ip_edit_field") instance=ExtResource("1_p8hr5")]
-start_menu = NodePath("StartMenu")
-start_entry_focus = NodePath("StartMenu/VBoxContainer/Start_local")
-settings_menu = NodePath("Settings")
-settings_entry_focus = NodePath("Settings/Panel/MarginContainer/GridContainer/MasterSlider")
-ip_edit_field = NodePath("StartMenu/VBoxContainer/IP_Edit_Field")
+[node name="MainMenu" parent="." instance=ExtResource("1_p8hr5")]
 
 [node name="SceneRoot" type="Node" parent="." node_paths=PackedStringArray("start_scene")]
 script = ExtResource("2_m6h05")

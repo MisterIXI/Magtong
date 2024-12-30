@@ -20,9 +20,9 @@ signal player_puck_count_changed()
 
 var spawned_pucks: Array[Puck] = []
 var spawned_players: Array[PlayerBody] = []
-var settings: PlayerSettings
 var pucks: Array[Puck] = []
 var players: Array[Array] = []
+var settings: PlayerSettings
 var mm: MatchManager
 var im: InputManager
 func _ready():
