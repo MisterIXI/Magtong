@@ -10,7 +10,7 @@ var is_active: bool = false
 
 func _setup():
 	for i in range(map.spawned_pucks.size()):
-		if multiplayer.is_server():
+		if multiplayer == null or multiplayer.is_server():
 			var joint = PinJoint2D.new()
 			joint.process_mode = Node.PROCESS_MODE_DISABLED
 			joint.disable_collision = false
