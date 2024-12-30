@@ -6,7 +6,7 @@ class_name PlayerBody
 enum polarity {IDLE, POS, NEG}
 signal polarity_changed(new_pol: polarity)
 signal pulse_emitted(pulse_position: Vector2)
-signal impulse_emitted(pulse_position: Vector2, pol: polarity)
+# signal impulse_emitted(pulse_position: Vector2, pol: polarity)
 signal setup_completed(player_body: PlayerBody)
 @export var opponent: PlayerBody
 @export var puck: Puck
