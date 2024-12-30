@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://c8t5ekg5tbap3"]
+[gd_scene load_steps=18 format=3 uid="uid://dfrx78wg8rqmp"]
 
 [ext_resource type="Script" path="res://scenes/Maps/map_script.gd" id="1_wbm5i"]
 [ext_resource type="Texture2D" uid="uid://pthgonvw7edr" path="res://assets/Textures/PlayField/Field_default_v2.png" id="2_8n442"]
@@ -10,7 +10,6 @@
 [ext_resource type="Script" path="res://scenes/Maps/spawn_point_group.gd" id="4_jds7q"]
 [ext_resource type="Script" path="res://scenes/visual_components/tween_modulate_alpha_blink.gd" id="5_e81lu"]
 [ext_resource type="Texture2D" uid="uid://c023clfhq43lh" path="res://assets/Textures/PlayField/Field_default_v3.png" id="5_gm1x1"]
-[ext_resource type="Texture2D" uid="uid://cam0d4t2svx64" path="res://assets/Textures/test_corner.png" id="6_k3ouq"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_53t0d"]
 size = Vector2(250, 30)
@@ -75,14 +74,6 @@ texture = ExtResource("5_gm1x1")
 visible = false
 scale = Vector2(0.171, 0.171)
 texture = ExtResource("2_8n442")
-
-[node name="StaticBody2D" type="StaticBody2D" parent="FieldCenter"]
-position = Vector2(-508.594, -236.719)
-scale = Vector2(0.171, 0.171)
-
-[node name="Sprite2D" type="Sprite2D" parent="FieldCenter/StaticBody2D"]
-visible = false
-texture = ExtResource("6_k3ouq")
 
 [node name="BorderCollider" type="StaticBody2D" parent="FieldCenter"]
 
