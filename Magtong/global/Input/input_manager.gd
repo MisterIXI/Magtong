@@ -16,12 +16,12 @@ func total_player_count() -> int:
 	return count
 
 func _input(event: InputEvent) -> void:
-	if multiplayer.is_server():
-		if event is InputEventKey and event.is_pressed():
-			if event.keycode == KEY_P:
-				var node = globGameManager.scene_root.current_scene
-				if node is MatchManager:
-					node.restart_match.rpc()
+	# if multiplayer.is_server():
+	# 	if event is InputEventKey and event.is_pressed():
+	# 		if event.keycode == KEY_P:
+	# 			var node = globGameManager.scene_root.current_scene
+	# 			if node is MatchManager:
+	# 				node.restart_match.rpc()
 	# check for keyboard
 	if event is InputEventKey:
 		if player_mappings.has( - 1):
