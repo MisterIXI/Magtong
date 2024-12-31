@@ -103,9 +103,9 @@ func _on_goal_collision(body: Node, team: int) -> void:
 		goal_scored.emit(team)
 	
 func reset_field(keep_position: bool=false) -> void:
-	if not multiplayer.is_server():
-		return
-	await get_tree().physics_frame
+	# if not multiplayer.is_server():
+	# 	return
+	# await get_tree().physics_frame
 	reset_balls(keep_position)
 	reset_players(keep_position)
 	# TODO: countdown for start
