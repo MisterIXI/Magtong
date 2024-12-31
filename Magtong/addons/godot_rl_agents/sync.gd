@@ -1,5 +1,5 @@
 extends Node
-
+class_name Sync
 # --fixed-fps 2000 --disable-render-loop
 
 enum ControlModes { HUMAN, TRAINING, ONNX_INFERENCE }
@@ -52,6 +52,7 @@ var _obs_space_training: Array[Dictionary] = []
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	await get_tree().root.ready
+	await get_tree().create_timer(1.0).timeout
 	get_tree().set_pause(true)
 	_initialize()
 	await get_tree().create_timer(1.0).timeout
