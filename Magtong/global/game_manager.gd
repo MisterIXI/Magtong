@@ -25,6 +25,7 @@ signal state_changed(old_state: State, new_state: State)
 
 @export var message_vbox: VBoxContainer
 @export var message_scrollbox: ScrollContainer
+@export var message_panel: PanelContainer
 
 var player_ids: Dictionary = {}
 var p_id_helper: int = 1
@@ -115,6 +116,14 @@ func countdown_step():
 		if current_state == State.LOBBY:
 			#TODO: change to map select scene when implemented
 			_change_state.rpc(State.GAME)
+
+func _input(event):
+	# check if F12 is pressed
+	if event is InputEventKey and event.pressed and event.keycode == KEY_F12:
+		toggle_message_panel()
+
+func toggle_message_panel():
+	message_panel.visible = not message_panel.visible
 
 func start_game():
 	_change_state(State.GAME)
