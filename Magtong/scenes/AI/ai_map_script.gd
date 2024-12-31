@@ -22,11 +22,11 @@ func _ready():
 	disable_lobby_features()
 	pucks.append(spawn_puck())
 	# spawn players
-	setup_ai_players()
+	setup_ai_players(true)
 	reset_field()
 	goal_scored.connect(on_goal_scored)
 
-func setup_ai_players():
+func setup_ai_players(only_one: bool):
 	var p1_input = PlayerInput.new(-1, -1, 0, true)
 	p1_input.team = 1
 	var p1 = pb_scene.instantiate() as PlayerBody
@@ -42,12 +42,20 @@ func setup_ai_players():
 	p2.setup_player(self, p2_input)
 	p1_aic = AIController.new()
 	p1.add_child(p1_aic)
-	p2_aic = AIController.new()
-	p2.add_child(p2_aic)
+	if not only_one:
+		p2_aic = AIController.new()
+		p2.add_child(p2_aic)
+	else:
+		p2.add_child(RandomInputController.new())
 	# var sync_node = Sync.new()
 	# p1.add_child(sync_node)
 	p1.pulse_emitted.connect(on_pulse_from)
 	p2.pulse_emitted.connect(on_pulse_from)
+	info_label_1.text = "0.00 | 0G"
+	if p2_aic:
+		info_label_2.text = "0G | 0.00"
+	else:
+		info_label_2.text = "0G | Random"
 
 func p1_rewards_received(reward: float):
 	p1_rewards.append(reward)
@@ -63,23 +71,34 @@ func p2_rewards_received(reward: float):
 	var sum = p2_rewards.reduce(func(acc, x): return acc + x, 0) / 60
 	info_label_2.text = str(p2_goals) + "G" + " | " + str("%.2f" % sum)
 
+func update_rand_p2_goals():
+	info_label_2.text = str(p2_goals) + "G" + " | Random"
+
 func reset_all():
 	# print("P1: ", p1_aic.needs_reset, ";  P2: ", p2_aic.needs_reset)
 	reset_field()
 	p1_aic.reset()
-	p2_aic.reset()
+	if p2_aic:
+		p2_aic.reset()
 
 func on_goal_scored(team: int):
 	if team == 1:
 		p1_goals += 1
 		p1_aic.reward += GOAL_REWARD
-		p2_aic.reward -= GOAL_REWARD
+		if p2_aic:
+			p2_aic.reward -= GOAL_REWARD
 	else:
 		p2_goals += 1
-		p2_aic.reward += GOAL_REWARD
+		if p2_aic:
+			p2_aic.reward += GOAL_REWARD
+		else:
+			update_rand_p2_goals()
 		p1_aic.reward -= GOAL_REWARD
+	p1_aic.done = true
 	p1_aic.needs_reset = true
-	p2_aic.needs_reset = true
+	if p2_aic:
+		p2_aic.done = true
+		p2_aic.needs_reset = true
 
 # func _physics_process(delta):
 # 	super._physics_process(delta)
