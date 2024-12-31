@@ -1,0 +1,31 @@
+[gd_scene load_steps=6 format=3 uid="uid://cac57io57le25"]
+
+[ext_resource type="PackedScene" uid="uid://c3ev5o6ua0dou" path="res://scenes/Menu/main_menu.tscn" id="1_iufc0"]
+[ext_resource type="Script" path="res://scenes/main/scene_root.gd" id="2_sscsq"]
+[ext_resource type="PackedScene" uid="uid://dflo3wro8vgbu" path="res://scenes/Maps/ai_map_default.tscn" id="3_vhnmk"]
+[ext_resource type="Script" path="res://scenes/AI/ai_root.gd" id="4_likvo"]
+[ext_resource type="Script" path="res://addons/godot_rl_agents/sync.gd" id="5_kav3y"]
+
+[node name="MainScene" type="Node"]
+
+[node name="MainMenu" parent="." instance=ExtResource("1_iufc0")]
+visible = false
+
+[node name="SceneRoot" type="Node" parent="." node_paths=PackedStringArray("start_scene")]
+script = ExtResource("2_sscsq")
+start_scene = NodePath("../MainMenu")
+
+[node name="AI_Root" type="Node2D" parent="SceneRoot" node_paths=PackedStringArray("env_root")]
+script = ExtResource("4_likvo")
+ai_map_scene = ExtResource("3_vhnmk")
+env_root = NodePath("Env_root")
+env_size = Vector2(1600, 1000)
+scene_count = Vector2i(3, 3)
+
+[node name="Env_root" type="Node2D" parent="SceneRoot/AI_Root"]
+
+[node name="Sync" type="Node" parent="SceneRoot/AI_Root"]
+script = ExtResource("5_kav3y")
+
+[node name="Camera2D" type="Camera2D" parent="SceneRoot"]
+zoom = Vector2(0.38, 0.38)

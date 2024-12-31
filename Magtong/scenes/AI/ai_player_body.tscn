@@ -1,0 +1,191 @@
+[gd_scene load_steps=18 format=3 uid="uid://dl5r8mfuoy34g"]
+
+[ext_resource type="PhysicsMaterial" uid="uid://b0b4nmkgg6odu" path="res://resources/Player_physics_mat.tres" id="1_amu5m"]
+[ext_resource type="Script" path="res://scenes/Player/PlayerBody.gd" id="2_5whk8"]
+[ext_resource type="Resource" uid="uid://cmntx6lne4hft" path="res://resources/player_settings.tres" id="3_vdy21"]
+[ext_resource type="Texture2D" uid="uid://cmy6u5rwg4j0f" path="res://icon.svg" id="4_sqdqo"]
+[ext_resource type="Script" path="res://scenes/Player/PlayerVisuals.gd" id="5_73sw4"]
+[ext_resource type="Texture2D" uid="uid://ci8l6erft2vsr" path="res://assets/Textures/PlayerSkins/01_skin_stripes.png" id="6_nlebf"]
+[ext_resource type="Texture2D" uid="uid://dkusv4cnx2ij0" path="res://assets/Textures/plus_sign.png" id="7_jhn1a"]
+[ext_resource type="Texture2D" uid="uid://d20d2kk22uqyt" path="res://assets/Textures/minus_sign.png" id="8_q8h26"]
+[ext_resource type="Material" uid="uid://df5q7yunlak58" path="res://scenes/Player/player_power_shader.tres" id="9_x3v1t"]
+[ext_resource type="Texture2D" uid="uid://dt4t6l1gnn6bj" path="res://assets/Textures/blank pixels.png" id="10_6t8jj"]
+[ext_resource type="Script" path="res://scenes/Player/Abilities/impulse.gd" id="11_d8fu2"]
+[ext_resource type="Script" path="res://scenes/Player/Abilities/orbit_lock.gd" id="12_md38v"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_smi2p"]
+radius = 22.0227
+
+[sub_resource type="Curve" id="Curve_ikk82"]
+_data = [Vector2(0, 0.0156175), 0.0, 8.96711, 0, 0, Vector2(0.226415, 0.987695), -1.03467, -1.03467, 0, 0, Vector2(0.833962, 0.575485), -0.221778, -0.221778, 0, 0, Vector2(0.97973, 0), -3.80947, 0.0, 0, 0]
+point_count = 4
+
+[sub_resource type="Curve" id="Curve_a04ll"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.718468, 0.797802), -0.798401, -0.798401, 0, 0, Vector2(1, 0), -3.20139, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_i0q21"]
+properties/0/path = NodePath(".:sync_pos")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:sync_rot")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath(".:rotation")
+properties/2/spawn = false
+properties/2/replication_mode = 0
+properties/3/path = NodePath(".:position")
+properties/3/spawn = false
+properties/3/replication_mode = 0
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_xje1m"]
+
+[node name="PlayerBody" type="RigidBody2D" node_paths=PackedStringArray("pulse_timer", "impulse_timer", "player_skin", "abilities") groups=["PlayerBody"]]
+collision_layer = 3
+collision_mask = 3
+mass = 5.0
+physics_material_override = ExtResource("1_amu5m")
+can_sleep = false
+angular_damp = 2.0
+script = ExtResource("2_5whk8")
+settings = ExtResource("3_vdy21")
+pulse_timer = NodePath("Pulse_CD")
+impulse_timer = NodePath("Abilities/Impulse/Impulse_CD")
+player_skin = NodePath("Graphics/PlayerCharacter")
+abilities = [NodePath("Abilities/Impulse"), NodePath("Abilities/OrbitLock")]
+
+[node name="TestSprite" type="Sprite2D" parent="."]
+visible = false
+scale = Vector2(3.39, 3.39)
+texture = ExtResource("4_sqdqo")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_smi2p")
+
+[node name="Graphics" type="Node2D" parent="." node_paths=PackedStringArray("sprite", "player", "plus_particles", "minus_particles", "plus_burst_particles", "minus_burst_particles", "pol_shader_sprite")]
+scale = Vector2(1.451, 1.451)
+script = ExtResource("5_73sw4")
+sprite = NodePath("PlayerCharacter")
+player = NodePath("..")
+plus_particles = NodePath("PlusParticles")
+minus_particles = NodePath("MinusParticles")
+plus_burst_particles = NodePath("PlusBurst")
+minus_burst_particles = NodePath("MinusBurst")
+settings = ExtResource("3_vdy21")
+pol_shader_sprite = NodePath("BackBufferCopy/PlayerShader")
+
+[node name="PlayerCharacter" type="Sprite2D" parent="Graphics"]
+z_index = 1
+scale = Vector2(0.06, 0.06)
+texture = ExtResource("6_nlebf")
+
+[node name="PlusParticles" type="CPUParticles2D" parent="Graphics"]
+emitting = false
+amount = 100
+lifetime = 0.3
+texture = ExtResource("7_jhn1a")
+emission_shape = 1
+emission_sphere_radius = 128.0
+spread = 180.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 6.76
+initial_velocity_max = 20.27
+scale_amount_min = 0.3
+scale_amount_max = 0.3
+scale_amount_curve = SubResource("Curve_ikk82")
+color = Color(1, 0, 0, 0.498039)
+
+[node name="MinusParticles" type="CPUParticles2D" parent="Graphics"]
+emitting = false
+amount = 100
+lifetime = 0.3
+texture = ExtResource("8_q8h26")
+emission_shape = 1
+emission_sphere_radius = 128.0
+spread = 180.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 6.76
+initial_velocity_max = 20.27
+scale_amount_min = 0.3
+scale_amount_max = 0.3
+scale_amount_curve = SubResource("Curve_ikk82")
+color = Color(0, 0, 1, 0.498039)
+
+[node name="PlusBurst" type="CPUParticles2D" parent="Graphics"]
+emitting = false
+amount = 30
+lifetime = 0.3
+one_shot = true
+explosiveness = 1.0
+texture = ExtResource("7_jhn1a")
+spread = 180.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 500.0
+initial_velocity_max = 500.0
+scale_amount_curve = SubResource("Curve_a04ll")
+color = Color(1, 0, 0, 1)
+
+[node name="MinusBurst" type="CPUParticles2D" parent="Graphics"]
+emitting = false
+amount = 30
+lifetime = 0.3
+one_shot = true
+explosiveness = 1.0
+texture = ExtResource("8_q8h26")
+spread = 180.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 500.0
+initial_velocity_max = 500.0
+scale_amount_curve = SubResource("Curve_a04ll")
+color = Color(0, 0, 1, 1)
+
+[node name="BackBufferCopy" type="BackBufferCopy" parent="Graphics"]
+copy_mode = 2
+
+[node name="PlayerShader" type="Sprite2D" parent="Graphics/BackBufferCopy"]
+material = ExtResource("9_x3v1t")
+scale = Vector2(28.985, 28.985)
+texture = ExtResource("10_6t8jj")
+
+[node name="FieldManager" type="Node2D" parent="."]
+
+[node name="Pulse_CD" type="Timer" parent="."]
+one_shot = true
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_i0q21")
+
+[node name="Abilities" type="Node2D" parent="."]
+
+[node name="Impulse" type="Node2D" parent="Abilities" node_paths=PackedStringArray("cd_timer", "player")]
+script = ExtResource("11_d8fu2")
+cd_timer = NodePath("Impulse_CD")
+ability_name = "Impulse"
+player = NodePath("../..")
+
+[node name="Impulse_CD" type="Timer" parent="Abilities/Impulse"]
+one_shot = true
+
+[node name="OrbitLock" type="Node2D" parent="Abilities" node_paths=PackedStringArray("max_orbit_timer", "orbit_cd", "player")]
+script = ExtResource("12_md38v")
+max_orbit_timer = NodePath("OrbitLimiter")
+orbit_cd = NodePath("Orbit_CD")
+ability_name = "OrbitLock"
+player = NodePath("../..")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="Abilities/OrbitLock"]
+replication_config = SubResource("SceneReplicationConfig_xje1m")
+
+[node name="Orbit_CD" type="Timer" parent="Abilities/OrbitLock"]
+one_shot = true
+
+[node name="OrbitLimiter" type="Timer" parent="Abilities/OrbitLock"]
+one_shot = true
+
+[node name="PinJoint2D" type="PinJoint2D" parent="Abilities/OrbitLock"]
+
+[connection signal="polarity_changed" from="." to="Graphics" method="on_polarity_changed"]
+[connection signal="pulse_emitted" from="." to="Graphics" method="_on_player_body_pulse_emitted"]
+[connection signal="setup_completed" from="." to="Graphics" method="_on_player_body_setup_completed"]
+[connection signal="impulse_emitted" from="Abilities/Impulse" to="Graphics" method="_on_player_impulse_emitted"]
+[connection signal="timeout" from="Abilities/OrbitLock/OrbitLimiter" to="Abilities/OrbitLock" method="_on_max_orbit_timer_timeout"]
