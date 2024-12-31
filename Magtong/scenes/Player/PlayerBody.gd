@@ -31,12 +31,13 @@ var mm: MatchManager
 var gl: GameLobby
 var player_input: PlayerInput
 var is_in_lobby: bool = false
-
+var map: MapScript
 var current_ability: AbilityBase
 var ability_id: int = -1
 @export var abilities: Array[AbilityBase]
 
 func setup_player( map: MapScript, player_input: PlayerInput, is_in_lobby: bool = false):
+	self.map = map
 	self.player_input = player_input
 	player_input.input_received.connect(on_input)
 	globInputManager.input_unlocked.connect(_on_input_unlocked)
