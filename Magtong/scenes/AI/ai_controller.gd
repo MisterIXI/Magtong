@@ -10,6 +10,7 @@ var own_goal: Area2D
 var other_goal: Area2D
 var attempt_start_time: int = 0
 const MAP_MULT: float = 600.0
+var is_success := false
 
 func _ready():
 	reset_after = 500
@@ -108,6 +109,7 @@ func _physics_process(_delta):
 	if n_steps > reset_after:
 		# print("N_steps: ", n_steps)
 		needs_reset = true
+		is_success = false
 	if needs_reset:
 		# print("Needs_reset: ", needs_reset)
 		map_script.reset_all()
@@ -118,5 +120,8 @@ func reset():
 	attempt_start_time = Time.get_ticks_msec()
 	pass
 
-
-
+func get_info() -> Dictionary:
+	print("INFO CALLED WHOOP WHOOP")
+	if done: 
+		return {"is_success": is_success}
+	return {}

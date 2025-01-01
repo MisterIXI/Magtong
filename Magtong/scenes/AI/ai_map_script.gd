@@ -12,7 +12,7 @@ var p1_rewards: Array[float] = []
 var p2_rewards: Array[float] = []
 var p1_goals: int = 0
 var p2_goals: int = 0
-const GOAL_REWARD = 5.0
+const GOAL_REWARD = 50.0
 
 func _ready():
 	super._ready()
@@ -85,15 +85,22 @@ func on_goal_scored(team: int):
 	if team == 1:
 		p1_goals += 1
 		p1_aic.reward += GOAL_REWARD
+		p1_aic.is_success = true
 		if p2_aic:
 			p2_aic.reward -= GOAL_REWARD
+			p2_aic.is_success = false
+		else:
+			update_rand_p2_goals()
 	else:
 		p2_goals += 1
 		if p2_aic:
 			p2_aic.reward += GOAL_REWARD
+			p2_aic.is_success = true
 		else:
 			update_rand_p2_goals()
 		p1_aic.reward -= GOAL_REWARD
+		p1_aic.is_success = false
+
 	p1_aic.done = true
 	p1_aic.needs_reset = true
 	if p2_aic:
