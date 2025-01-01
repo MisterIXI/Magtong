@@ -28,4 +28,5 @@ scene_count = Vector2i(3, 3)
 script = ExtResource("5_kav3y")
 
 [node name="Camera2D" type="Camera2D" parent="SceneRoot"]
+position = Vector2(0, 50)
 zoom = Vector2(0.38, 0.38)
