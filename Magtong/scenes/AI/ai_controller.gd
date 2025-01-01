@@ -8,6 +8,7 @@ var puck: Puck
 var other_player: PlayerBody
 var own_goal: Area2D
 var other_goal: Area2D
+var attempt_start_time: int = 0
 const MAP_MULT: float = 600.0
 
 func _ready():
@@ -58,6 +59,8 @@ func get_reward() -> float:
 		map_script.p1_rewards_received(result)
 	else:
 		map_script.p2_rewards_received(result)
+	# time penalty
+	result += -(Time.get_ticks_msec() - attempt_start_time) / 1000.0 + 1
 	return result
 
 
@@ -111,6 +114,7 @@ func _physics_process(_delta):
 func reset():
 	n_steps = 0
 	needs_reset = false
+	attempt_start_time = Time.get_ticks_msec()
 	pass
 
 
