@@ -154,7 +154,10 @@ if args.env_path is None and args.viz:
 env = StableBaselinesGodotEnv(
     env_path=args.env_path, show_window=args.viz, seed=args.seed, n_parallel=args.n_parallel, speedup=args.speedup
 )
-env = VecMonitor(env, info_keywords=("is_success",))
+env = VecMonitor(
+    env,
+    info_keywords=("is_success", "goal_p1", "goal_p2"),
+)
 
 
 # LR schedule code snippet from:

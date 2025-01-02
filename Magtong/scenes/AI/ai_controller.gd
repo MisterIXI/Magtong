@@ -121,7 +121,10 @@ func reset():
 	pass
 
 func get_info() -> Dictionary:
-	print("INFO CALLED WHOOP WHOOP")
-	if done: 
-		return {"is_success": is_success}
+	if done:
+		return {
+			"is_success": is_success,
+			"goal_p1": map_script.p1_goals,
+			"goal_p2": map_script.p2_goals,
+		}
 	return {}
