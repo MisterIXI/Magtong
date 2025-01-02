@@ -65,6 +65,8 @@ func p1_rewards_received(reward: float):
 	info_label_1.text = str("%.2f" % sum) + " | " + str(p1_goals) + "G"
 
 func p2_rewards_received(reward: float):
+	if p2_aic:
+		return
 	p2_rewards.append(reward)
 	if p2_rewards.size() > 60:
 		p2_rewards.pop_front()
@@ -82,30 +84,35 @@ func reset_all():
 		p2_aic.reset()
 
 func on_goal_scored(team: int):
+	var p1_reward = 0.0
+	var p2_reward = 0.0
 	if team == 1:
 		p1_goals += 1
-		p1_aic.reward += GOAL_REWARD
+		p1_reward += GOAL_REWARD
 		p1_aic.is_success = true
 		if p2_aic:
-			p2_aic.reward -= GOAL_REWARD
+			p2_reward -= GOAL_REWARD
 			p2_aic.is_success = false
 		else:
 			update_rand_p2_goals()
 	else:
 		p2_goals += 1
 		if p2_aic:
-			p2_aic.reward += GOAL_REWARD
+			p1_reward += GOAL_REWARD
 			p2_aic.is_success = true
 		else:
 			update_rand_p2_goals()
-		p1_aic.reward -= GOAL_REWARD
+		p2_reward -= GOAL_REWARD
 		p1_aic.is_success = false
 
 	p1_aic.done = true
 	p1_aic.needs_reset = true
+	p1_aic.reward += p1_reward
 	if p2_aic:
 		p2_aic.done = true
 		p2_aic.needs_reset = true
-
+		p2_aic.reward += p2_reward
+	p1_rewards_received(p1_reward)
+	p2_rewards_received(p2_reward)
 # func _physics_process(delta):
 # 	super._physics_process(delta)

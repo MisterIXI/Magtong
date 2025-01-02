@@ -110,6 +110,12 @@ func _physics_process(_delta):
 		# print("N_steps: ", n_steps)
 		needs_reset = true
 		is_success = false
+		done = true
+		reward += -5
+		if player.player_input.team == 1:
+			map_script.p1_rewards_received(-5)
+		else:
+			map_script.p2_rewards_received(-5)
 	if needs_reset:
 		# print("Needs_reset: ", needs_reset)
 		map_script.reset_all()
