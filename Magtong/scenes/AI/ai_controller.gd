@@ -13,7 +13,7 @@ const MAP_MULT: float = 600.0
 var is_success := false
 
 func _ready():
-	reset_after = 500
+	reset_after = 1500
 	super._ready()
 	mult = 1.0 if player.player_input.team == 1 else -1.0
 	puck = map_script.pucks[0]
@@ -55,14 +55,14 @@ func get_reward() -> float:
 	# set rewards for player
 	var result = reward
 	zero_reward()
-	# reward for ball close to enemy goal
-	result += (1 - ((puck.position * mult).distance_to(other_goal.position * mult) / MAP_MULT)) * 10
-	if player.player_input.team == 1:
-		map_script.p1_rewards_received(result)
-	else:
-		map_script.p2_rewards_received(result)
-	# time penalty
-	result += -(Time.get_ticks_msec() - attempt_start_time) / 1000.0 + 1
+	# # reward for ball close to enemy goal
+	# result += (1 - ((puck.position * mult).distance_to(other_goal.position * mult) / MAP_MULT)) * 10
+	# if player.player_input.team == 1:
+	# 	map_script.p1_receive_reward(result)
+	# else:
+	# 	map_script.p2_receive_reward(result)
+	# # time penalty
+	# result += -(Time.get_ticks_msec() - attempt_start_time) / 1000.0 + 1
 	return result
 
 
