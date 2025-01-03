@@ -13,6 +13,11 @@ var p2_rewards: Array[float] = []
 var p1_goals: int = 0
 var p2_goals: int = 0
 const GOAL_REWARD = 50.0
+var puck_pos_times_p1: Array[int] = []
+var puck_pos_times_p2: Array[int] = []
+const PUCK_STEP_SIZE = 100
+const PUCK_STEP_MAX_TIME = 1000.0
+const PUCK_STEP_REWARD = 3
 
 func _ready():
 	super._ready()
@@ -26,6 +31,41 @@ func _ready():
 	reset_field()
 	goal_scored.connect(on_goal_scored)
 
+
+func _physics_process(delta):
+	super._physics_process(delta)
+	# check if ball has progressed for any player
+	check_puck_rewards()
+
+func check_puck_rewards():
+	if puck_pos_times_p1.size() == 0:
+		return
+	var size = puck_pos_times_p1.size()
+	var _time_spent = 0
+	var _reward = 0.0
+	if pucks[0].position.x > size * PUCK_STEP_SIZE:
+		puck_pos_times_p1.append(Time.get_ticks_msec())
+		# time_spent = (puck_pos_times_p1[-1] - puck_pos_times_p1[-2])
+		# # reward variable as percentage of max reward per step
+		# reward = time_spent / PUCK_STEP_MAX_TIME * PUCK_STEP_REWARD
+		# # cap reward at max reward per step
+		# reward = min(PUCK_STEP_REWARD, reward)
+		# # cap reward at 10% min of max reward per step
+		# reward = max(PUCK_STEP_REWARD * 0.1, reward)
+		# p1_receive_reward(reward)
+		p1_receive_reward(PUCK_STEP_REWARD)
+	if p2_aic:
+		size = puck_pos_times_p2.size()
+		if pucks[0].position.x < -size * PUCK_STEP_SIZE:
+			puck_pos_times_p2.append(Time.get_ticks_msec())
+			# time_spent = (puck_pos_times_p2[-1] - puck_pos_times_p2[-2])
+			# reward = time_spent / PUCK_STEP_MAX_TIME * PUCK_STEP_REWARD
+			# reward = min(PUCK_STEP_REWARD, reward)
+			# reward = max(PUCK_STEP_REWARD * 0.1, reward)
+			# p2_receive_reward(reward)
+			p2_receive_reward(PUCK_STEP_REWARD)
+
+	
 func setup_ai_players(only_one: bool):
 	var p1_input = PlayerInput.new(-1, -1, 0, true)
 	p1_input.team = 1
@@ -57,16 +97,19 @@ func setup_ai_players(only_one: bool):
 	else:
 		info_label_2.text = "0G | Random"
 
-func p1_rewards_received(reward: float):
+func p1_receive_reward(reward: float):
+	p1_aic.reward += reward
 	p1_rewards.append(reward)
 	if p1_rewards.size() > 60:
 		p1_rewards.pop_front()
 	var sum = p1_rewards.reduce(func(acc, x): return acc + x, 0) / 60
 	info_label_1.text = str("%.2f" % sum) + " | " + str(p1_goals) + "G"
 
-func p2_rewards_received(reward: float):
-	if p2_aic:
+func p2_receive_reward(reward: float):
+	if not p2_aic:
+		update_rand_p2_goals()
 		return
+	p2_aic.reward += reward
 	p2_rewards.append(reward)
 	if p2_rewards.size() > 60:
 		p2_rewards.pop_front()
@@ -79,6 +122,10 @@ func update_rand_p2_goals():
 func reset_all():
 	# print("P1: ", p1_aic.needs_reset, ";  P2: ", p2_aic.needs_reset)
 	reset_field()
+	puck_pos_times_p1.clear()
+	puck_pos_times_p1.append(Time.get_ticks_msec())
+	puck_pos_times_p2.clear()
+	puck_pos_times_p2.append(Time.get_ticks_msec())
 	p1_aic.reset()
 	if p2_aic:
 		p2_aic.reset()
@@ -107,12 +154,10 @@ func on_goal_scored(team: int):
 
 	p1_aic.done = true
 	p1_aic.needs_reset = true
-	p1_aic.reward += p1_reward
 	if p2_aic:
 		p2_aic.done = true
 		p2_aic.needs_reset = true
-		p2_aic.reward += p2_reward
-	p1_rewards_received(p1_reward)
-	p2_rewards_received(p2_reward)
+	p1_receive_reward(p1_reward)
+	p2_receive_reward(p2_reward)
 # func _physics_process(delta):
 # 	super._physics_process(delta)
