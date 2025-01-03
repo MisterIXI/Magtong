@@ -20,7 +20,7 @@ script = ExtResource("4_likvo")
 ai_map_scene = ExtResource("3_vhnmk")
 env_root = NodePath("Env_root")
 env_size = Vector2(1600, 1000)
-scene_count = Vector2i(3, 3)
+scene_count = Vector2i(8, 8)
 
 [node name="Env_root" type="Node2D" parent="SceneRoot/AI_Root"]
 
