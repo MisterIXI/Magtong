@@ -35,6 +35,7 @@ var map: MapScript
 var current_ability: AbilityBase
 var ability_id: int = -1
 @export var abilities: Array[AbilityBase]
+@export var collider: CollisionShape2D
 
 func setup_player( map: MapScript, player_input: PlayerInput, is_in_lobby: bool = false):
 	self.map = map
@@ -180,6 +181,20 @@ func try_to_pulse():
 		pulse_timer.start()
 		pulse.rpc()
 
+func disable_and_hide():
+	hide()
+	collider.set_deferred("disabled", true)
+	linear_velocity = Vector2()
+	angular_velocity = 0
+	change_polarity(polarity.IDLE)
+	target_vel = Vector2()
+	forced_pos = global_position
+	force_move_flag = true
+	PhysicsServer2D.body_set_state(
+		get_rid(),
+		PhysicsServer2D.BODY_STATE_TRANSFORM,
+		Transform2D.IDENTITY.translated(global_position)
+	)
 
 @rpc("authority", "call_local", "reliable")
 func pulse():

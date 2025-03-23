@@ -1,6 +1,6 @@
 [gd_scene load_steps=9 format=3 uid="uid://dlc283cvpl3eh"]
 
-[ext_resource type="Script" path="res://scenes/Puck/Puck.gd" id="1_00uo3"]
+[ext_resource type="Script" uid="uid://c0ap0elyv8tlb" path="res://scenes/Puck/Puck.gd" id="1_00uo3"]
 [ext_resource type="PhysicsMaterial" uid="uid://dietc6j60tr6h" path="res://resources/Puck_physics_mat.tres" id="1_4dmue"]
 [ext_resource type="Texture2D" uid="uid://br4cd8nmno184" path="res://assets/Textures/puck_plus.png" id="2_dw57o"]
 [ext_resource type="Texture2D" uid="uid://ekdigtpneyr6" path="res://assets/Textures/Puck/puck_plus.png" id="3_2xae1"]

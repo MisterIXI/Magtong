@@ -1,10 +1,10 @@
 [gd_scene load_steps=6 format=3 uid="uid://dtbob5x5gnibc"]
 
-[ext_resource type="Script" path="res://global/game_manager.gd" id="1_s7x7p"]
+[ext_resource type="Script" uid="uid://bwn8bcwq1kwey" path="res://global/game_manager.gd" id="1_s7x7p"]
 [ext_resource type="PackedScene" uid="uid://c3ev5o6ua0dou" path="res://scenes/Menu/main_menu.tscn" id="2_1lq6v"]
 [ext_resource type="PackedScene" uid="uid://1qy067e4ex88" path="res://scenes/Lobby/game_lobby.tscn" id="3_sr1ib"]
 [ext_resource type="PackedScene" uid="uid://b7yo5ed5gg50k" path="res://scenes/Maps/match_manager.tscn" id="4_5jak3"]
-[ext_resource type="Script" path="res://global/ping_tester.gd" id="5_eaeoo"]
+[ext_resource type="Script" uid="uid://b3e6etwo4lo8f" path="res://global/ping_tester.gd" id="5_eaeoo"]
 
 [node name="GameManager" type="Node" node_paths=PackedStringArray("timer", "message_vbox", "message_scrollbox", "message_panel")]
 script = ExtResource("1_s7x7p")

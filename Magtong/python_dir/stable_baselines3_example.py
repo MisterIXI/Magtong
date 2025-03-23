@@ -156,7 +156,7 @@ env = StableBaselinesGodotEnv(
 )
 env = VecMonitor(
     env,
-    info_keywords=("is_success", "goal_p1", "goal_p2"),
+    # info_keywords=("is_success"),
 )
 
 

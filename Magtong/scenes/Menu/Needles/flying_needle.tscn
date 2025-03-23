@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://7eo4wxwqfc70"]
 
-[ext_resource type="Script" path="res://scenes/Menu/Needles/menu_needle_flying.gd" id="1_qv4gw"]
+[ext_resource type="Script" uid="uid://do4owwag4kj6g" path="res://scenes/Menu/Needles/menu_needle_flying.gd" id="1_qv4gw"]
 [ext_resource type="Texture2D" uid="uid://bdks3h6oqo0tp" path="res://assets/Textures/Menu/MenuNeedle.png" id="2_0xndn"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0kmgr"]

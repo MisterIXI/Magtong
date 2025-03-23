@@ -1,9 +1,9 @@
 [gd_scene load_steps=5 format=3 uid="uid://1qy067e4ex88"]
 
-[ext_resource type="Script" path="res://scenes/Lobby/game_lobby.gd" id="1_xd21i"]
-[ext_resource type="Script" path="res://scenes/Lobby/set_camera_zoom.gd" id="2_kejge"]
-[ext_resource type="Script" path="res://scenes/Maps/MPs_map_adder.gd" id="2_ygmby"]
-[ext_resource type="Script" path="res://scenes/Lobby/ready_banner.gd" id="3_gc8kx"]
+[ext_resource type="Script" uid="uid://cn2d0fhroc7yi" path="res://scenes/Lobby/game_lobby.gd" id="1_xd21i"]
+[ext_resource type="Script" uid="uid://bbhgwhrp31n5x" path="res://scenes/Lobby/set_camera_zoom.gd" id="2_kejge"]
+[ext_resource type="Script" uid="uid://d1hxwte20dv82" path="res://scenes/Maps/MPs_map_adder.gd" id="2_ygmby"]
+[ext_resource type="Script" uid="uid://bqkxaul8111cv" path="res://scenes/Lobby/ready_banner.gd" id="3_gc8kx"]
 
 [node name="GameLobby" type="Node2D" node_paths=PackedStringArray("map_root", "player_game_banner")]
 script = ExtResource("1_xd21i")

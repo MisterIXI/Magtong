@@ -1,9 +1,9 @@
 [gd_scene load_steps=6 format=3 uid="uid://dsc2jpjqrch6h"]
 
-[ext_resource type="Script" path="res://scenes/Menu/Needles/magnetic_field.gd" id="1_0foho"]
+[ext_resource type="Script" uid="uid://uqj8jrbxiooy" path="res://scenes/Menu/Needles/magnetic_field.gd" id="1_0foho"]
 [ext_resource type="PackedScene" uid="uid://btbjkx33i6xdf" path="res://scenes/Menu/Needles/menu_needle.tscn" id="2_2pjv3"]
 [ext_resource type="PackedScene" uid="uid://00414y0wieil" path="res://scenes/Menu/Needles/particle.tscn" id="3_cs5li"]
-[ext_resource type="Script" path="res://scenes/Menu/Needles/magnet_mouse_follower.gd" id="3_h3fbk"]
+[ext_resource type="Script" uid="uid://cfqugun3tfqxa" path="res://scenes/Menu/Needles/magnet_mouse_follower.gd" id="3_h3fbk"]
 
 [sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_dein2"]
 size = Vector2(100, 50)

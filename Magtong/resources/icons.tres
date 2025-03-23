@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="IconPack" load_steps=9 format=3 uid="uid://cnnrd1bk50cii"]
 
-[ext_resource type="Script" path="res://resources/icon_pack.gd" id="1_bts6i"]
+[ext_resource type="Script" uid="uid://b4rr4sij1sbpj" path="res://resources/icon_pack.gd" id="1_bts6i"]
 [ext_resource type="Texture2D" uid="uid://ci8l6erft2vsr" path="res://assets/Textures/PlayerSkins/01_skin_stripes.png" id="1_l3mlm"]
 [ext_resource type="Texture2D" uid="uid://bsf2w26s7ek5f" path="res://assets/Textures/PlayerSkins/02_skin_happy.png" id="2_gnrqn"]
 [ext_resource type="Texture2D" uid="uid://dl30scovigfb7" path="res://assets/Textures/PlayerSkins/03_skin_uwu.png" id="3_f7hma"]

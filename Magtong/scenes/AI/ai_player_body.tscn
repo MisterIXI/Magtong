@@ -1,17 +1,17 @@
 [gd_scene load_steps=18 format=3 uid="uid://dl5r8mfuoy34g"]
 
 [ext_resource type="PhysicsMaterial" uid="uid://b0b4nmkgg6odu" path="res://resources/Player_physics_mat.tres" id="1_amu5m"]
-[ext_resource type="Script" path="res://scenes/Player/PlayerBody.gd" id="2_5whk8"]
+[ext_resource type="Script" uid="uid://dw3dosg1jvu4y" path="res://scenes/Player/PlayerBody.gd" id="2_5whk8"]
 [ext_resource type="Resource" uid="uid://cmntx6lne4hft" path="res://resources/player_settings.tres" id="3_vdy21"]
 [ext_resource type="Texture2D" uid="uid://cmy6u5rwg4j0f" path="res://icon.svg" id="4_sqdqo"]
-[ext_resource type="Script" path="res://scenes/Player/PlayerVisuals.gd" id="5_73sw4"]
+[ext_resource type="Script" uid="uid://ckl5efhgnjjk5" path="res://scenes/Player/PlayerVisuals.gd" id="5_73sw4"]
 [ext_resource type="Texture2D" uid="uid://ci8l6erft2vsr" path="res://assets/Textures/PlayerSkins/01_skin_stripes.png" id="6_nlebf"]
 [ext_resource type="Texture2D" uid="uid://dkusv4cnx2ij0" path="res://assets/Textures/plus_sign.png" id="7_jhn1a"]
 [ext_resource type="Texture2D" uid="uid://d20d2kk22uqyt" path="res://assets/Textures/minus_sign.png" id="8_q8h26"]
 [ext_resource type="Material" uid="uid://df5q7yunlak58" path="res://scenes/Player/player_power_shader.tres" id="9_x3v1t"]
 [ext_resource type="Texture2D" uid="uid://dt4t6l1gnn6bj" path="res://assets/Textures/blank pixels.png" id="10_6t8jj"]
-[ext_resource type="Script" path="res://scenes/Player/Abilities/impulse.gd" id="11_d8fu2"]
-[ext_resource type="Script" path="res://scenes/Player/Abilities/orbit_lock.gd" id="12_md38v"]
+[ext_resource type="Script" uid="uid://bv0frw24fkere" path="res://scenes/Player/Abilities/impulse.gd" id="11_d8fu2"]
+[ext_resource type="Script" uid="uid://dw6nfyd0kxs1h" path="res://scenes/Player/Abilities/orbit_lock.gd" id="12_md38v"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_smi2p"]
 radius = 22.0227
@@ -40,7 +40,7 @@ properties/3/replication_mode = 0
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_xje1m"]
 
-[node name="PlayerBody" type="RigidBody2D" node_paths=PackedStringArray("pulse_timer", "impulse_timer", "player_skin", "abilities") groups=["PlayerBody"]]
+[node name="PlayerBody" type="RigidBody2D" node_paths=PackedStringArray("pulse_timer", "impulse_timer", "player_skin", "abilities", "collider") groups=["PlayerBody"]]
 collision_layer = 3
 collision_mask = 3
 mass = 5.0
@@ -53,6 +53,7 @@ pulse_timer = NodePath("Pulse_CD")
 impulse_timer = NodePath("Abilities/Impulse/Impulse_CD")
 player_skin = NodePath("Graphics/PlayerCharacter")
 abilities = [NodePath("Abilities/Impulse"), NodePath("Abilities/OrbitLock")]
+collider = NodePath("CollisionShape2D")
 
 [node name="TestSprite" type="Sprite2D" parent="."]
 visible = false

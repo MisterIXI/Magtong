@@ -1,10 +1,12 @@
 [gd_scene load_steps=16 format=3 uid="uid://l7a1a0utyxrb"]
 
-[ext_resource type="Script" path="res://scenes/Environment/game_field.gd" id="1_jd02v"]
 [ext_resource type="Texture2D" uid="uid://djiliwe7gmlcb" path="res://assets/Textures/PlayField/PlayFieldTex.png" id="2_fwiwj"]
 [ext_resource type="PackedScene" uid="uid://do0i7ixg4d7p1" path="res://scenes/Player/player_body.tscn" id="2_s3ej5"]
 [ext_resource type="PackedScene" uid="uid://dlc283cvpl3eh" path="res://scenes/Puck/puck.tscn" id="3_102ka"]
 [ext_resource type="Texture2D" uid="uid://dt4t6l1gnn6bj" path="res://assets/Textures/blank pixels.png" id="3_54136"]
+
+[sub_resource type="Resource" id="Resource_bw6k5"]
+metadata/__load_path__ = "res://scenes/Environment/game_field.gd"
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_r56b0"]
 size = Vector2(500, 720)
@@ -50,7 +52,7 @@ metadata/_edit_horizontal_guides_ = [360.0]
 metadata/_edit_vertical_guides_ = [640.0]
 
 [node name="GameField" type="Node2D" parent="." node_paths=PackedStringArray("player1", "player2", "puck", "goalSouth", "goalNorth", "p1_score_label", "p2_score_label", "timer_label", "status_label", "game_timer", "countdown_timer", "center_point")]
-script = ExtResource("1_jd02v")
+script = SubResource("Resource_bw6k5")
 player1 = NodePath("../Player1Body")
 player2 = NodePath("../Player2Body")
 puck = NodePath("../Puck")

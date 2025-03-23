@@ -21,7 +21,6 @@ const PUCK_STEP_REWARD = 3
 
 func _ready():
 	super._ready()
-	globGameManager.toggle_message_panel()
 	# local server setup
 	# globGameManager.host_game(true)
 	disable_lobby_features()
@@ -29,7 +28,7 @@ func _ready():
 	# spawn players
 	setup_ai_players(true)
 	reset_field()
-	goal_scored.connect(on_goal_scored)
+	# goal_scored.connect(on_goal_scored)
 
 
 func _physics_process(delta):
@@ -38,32 +37,36 @@ func _physics_process(delta):
 	check_puck_rewards()
 
 func check_puck_rewards():
-	if puck_pos_times_p1.size() == 0:
-		return
-	var size = puck_pos_times_p1.size()
-	var _time_spent = 0
-	var _reward = 0.0
-	if pucks[0].position.x > size * PUCK_STEP_SIZE:
-		puck_pos_times_p1.append(Time.get_ticks_msec())
-		# time_spent = (puck_pos_times_p1[-1] - puck_pos_times_p1[-2])
-		# # reward variable as percentage of max reward per step
-		# reward = time_spent / PUCK_STEP_MAX_TIME * PUCK_STEP_REWARD
-		# # cap reward at max reward per step
-		# reward = min(PUCK_STEP_REWARD, reward)
-		# # cap reward at 10% min of max reward per step
-		# reward = max(PUCK_STEP_REWARD * 0.1, reward)
-		# p1_receive_reward(reward)
-		p1_receive_reward(PUCK_STEP_REWARD)
-	if p2_aic:
-		size = puck_pos_times_p2.size()
-		if pucks[0].position.x < -size * PUCK_STEP_SIZE:
-			puck_pos_times_p2.append(Time.get_ticks_msec())
-			# time_spent = (puck_pos_times_p2[-1] - puck_pos_times_p2[-2])
-			# reward = time_spent / PUCK_STEP_MAX_TIME * PUCK_STEP_REWARD
-			# reward = min(PUCK_STEP_REWARD, reward)
-			# reward = max(PUCK_STEP_REWARD * 0.1, reward)
-			# p2_receive_reward(reward)
-			p2_receive_reward(PUCK_STEP_REWARD)
+	# give reward to p1 based on puck velocity with quadratic growth for velocity
+	var reward = pucks[0].linear_velocity.length_squared() * 0.00001
+	p1_receive_reward(reward)
+	pass
+	# if puck_pos_times_p1.size() == 0:
+	# 	return
+	# var size = puck_pos_times_p1.size()
+	# var _time_spent = 0
+	# var _reward = 0.0
+	# if pucks[0].position.x > size * PUCK_STEP_SIZE:
+	# 	puck_pos_times_p1.append(Time.get_ticks_msec())
+	# 	# time_spent = (puck_pos_times_p1[-1] - puck_pos_times_p1[-2])
+	# 	# # reward variable as percentage of max reward per step
+	# 	# reward = time_spent / PUCK_STEP_MAX_TIME * PUCK_STEP_REWARD
+	# 	# # cap reward at max reward per step
+	# 	# reward = min(PUCK_STEP_REWARD, reward)
+	# 	# # cap reward at 10% min of max reward per step
+	# 	# reward = max(PUCK_STEP_REWARD * 0.1, reward)
+	# 	# p1_receive_reward(reward)
+	# 	p1_receive_reward(PUCK_STEP_REWARD)
+	# if p2_aic:
+	# 	size = puck_pos_times_p2.size()
+	# 	if pucks[0].position.x < -size * PUCK_STEP_SIZE:
+	# 		puck_pos_times_p2.append(Time.get_ticks_msec())
+	# 		# time_spent = (puck_pos_times_p2[-1] - puck_pos_times_p2[-2])
+	# 		# reward = time_spent / PUCK_STEP_MAX_TIME * PUCK_STEP_REWARD
+	# 		# reward = min(PUCK_STEP_REWARD, reward)
+	# 		# reward = max(PUCK_STEP_REWARD * 0.1, reward)
+	# 		# p2_receive_reward(reward)
+	# 		p2_receive_reward(PUCK_STEP_REWARD)
 
 	
 func setup_ai_players(only_one: bool):
@@ -86,7 +89,9 @@ func setup_ai_players(only_one: bool):
 		p2_aic = AIController.new()
 		p2.add_child(p2_aic)
 	else:
-		p2.add_child(RandomInputController.new())
+		# p2.add_child(RandomInputController.new())
+		p2.disable_and_hide()
+		pass
 	# var sync_node = Sync.new()
 	# p1.add_child(sync_node)
 	p1.pulse_emitted.connect(on_pulse_from)
@@ -95,7 +100,9 @@ func setup_ai_players(only_one: bool):
 	if p2_aic:
 		info_label_2.text = "0G | 0.00"
 	else:
-		info_label_2.text = "0G | Random"
+		# info_label_2.text = "0G | Random"
+		info_label_2.text = "0G | Disabled"
+
 
 func p1_receive_reward(reward: float):
 	p1_aic.reward += reward
@@ -103,7 +110,7 @@ func p1_receive_reward(reward: float):
 	if p1_rewards.size() > 60:
 		p1_rewards.pop_front()
 	var sum = p1_rewards.reduce(func(acc, x): return acc + x, 0) / 60
-	info_label_1.text = str("%.2f" % sum) + " | " + str(p1_goals) + "G"
+	info_label_1.text = str("%.2f" % sum) + " | " + str(p1_goals) + "G" + " | " + "%.4f" % pucks[0].linear_velocity.length() + "m/s"
 
 func p2_receive_reward(reward: float):
 	if not p2_aic:
@@ -151,7 +158,6 @@ func on_goal_scored(team: int):
 			update_rand_p2_goals()
 		p2_reward -= GOAL_REWARD
 		p1_aic.is_success = false
-
 	p1_aic.done = true
 	p1_aic.needs_reset = true
 	if p2_aic:

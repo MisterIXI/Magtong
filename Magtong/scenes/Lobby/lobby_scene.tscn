@@ -1,8 +1,8 @@
 [gd_scene load_steps=5 format=3 uid="uid://bve1syav3fq1b"]
 
-[ext_resource type="Script" path="res://scenes/Lobby/lobby.gd" id="1_7jl7p"]
+[ext_resource type="Script" uid="uid://cnxo2y1a38rg0" path="res://scenes/Lobby/lobby.gd" id="1_7jl7p"]
 [ext_resource type="PackedScene" uid="uid://7a0tqfpd7xb5" path="res://scenes/Lobby/player_container.tscn" id="2_hqkbe"]
-[ext_resource type="PackedScene" uid="uid://c8t5ekg5tbap3" path="res://scenes/Maps/map_default.tscn" id="4_qdq2x"]
+[ext_resource type="PackedScene" uid="uid://dfrx78wg8rqmp" path="res://scenes/Maps/map_default.tscn" id="4_qdq2x"]
 [ext_resource type="PackedScene" uid="uid://b8f3iuixb8vj3" path="res://scenes/Lobby/player_team_selector.tscn" id="4_xtut1"]
 
 [node name="Lobby" type="Control" node_paths=PackedStringArray("lobby_container")]

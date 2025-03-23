@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://c5frjx223gmi7"]
 
-[ext_resource type="Script" path="res://scenes/Player/Abilities/impulse.gd" id="1_prcri"]
+[ext_resource type="Script" uid="uid://bv0frw24fkere" path="res://scenes/Player/Abilities/impulse.gd" id="1_prcri"]
 
 [node name="Impulse" type="Node"]
 script = ExtResource("1_prcri")

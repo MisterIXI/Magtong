@@ -1,6 +1,6 @@
 [gd_scene load_steps=19 format=3 uid="uid://dflo3wro8vgbu"]
 
-[ext_resource type="Script" path="res://scenes/AI/ai_map_script.gd" id="1_ewaur"]
+[ext_resource type="Script" uid="uid://do75e47knuhbm" path="res://scenes/AI/ai_map_script.gd" id="1_ewaur"]
 [ext_resource type="Texture2D" uid="uid://pthgonvw7edr" path="res://assets/Textures/PlayField/Field_default_v2.png" id="2_8n442"]
 [ext_resource type="Texture2D" uid="uid://r07u5sxbuum3" path="res://assets/Textures/test_background_2.png" id="2_8sq5b"]
 [ext_resource type="Texture2D" uid="uid://5bbmj4ydilt2" path="res://assets/Textures/test_background.png" id="2_c3b7r"]
@@ -8,8 +8,8 @@
 [ext_resource type="PackedScene" uid="uid://dl5r8mfuoy34g" path="res://scenes/AI/ai_player_body.tscn" id="2_jwuxw"]
 [ext_resource type="Texture2D" uid="uid://dt4t6l1gnn6bj" path="res://assets/Textures/blank pixels.png" id="3_0ppxq"]
 [ext_resource type="Texture2D" uid="uid://c3ltadrfcuk57" path="res://assets/Textures/PlayerSkins/9slice_box_round_border.png" id="4_70e28"]
-[ext_resource type="Script" path="res://scenes/Maps/spawn_point_group.gd" id="4_jds7q"]
-[ext_resource type="Script" path="res://scenes/visual_components/tween_modulate_alpha_blink.gd" id="5_e81lu"]
+[ext_resource type="Script" uid="uid://b1xrsvxdwgo35" path="res://scenes/Maps/spawn_point_group.gd" id="4_jds7q"]
+[ext_resource type="Script" uid="uid://ebrdju6fmb3p" path="res://scenes/visual_components/tween_modulate_alpha_blink.gd" id="5_e81lu"]
 [ext_resource type="Texture2D" uid="uid://c023clfhq43lh" path="res://assets/Textures/PlayField/Field_default_v3.png" id="5_gm1x1"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_53t0d"]
@@ -121,6 +121,12 @@ position = Vector2(562.14, 176.955)
 rotation = -1.5708
 shape = SubResource("RectangleShape2D_q586n")
 
+[node name="RightGoalBlocker" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
+position = Vector2(562.078, -0.411346)
+rotation = -1.5708
+scale = Vector2(1, 1)
+shape = SubResource("RectangleShape2D_q586n")
+
 [node name="LeftWallBack" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
 position = Vector2(-586.008, -1.62559e-10)
 rotation = -1.5708
@@ -136,6 +142,12 @@ position = Vector2(-562.14, 176.955)
 rotation = -1.5708
 shape = SubResource("RectangleShape2D_q586n")
 
+[node name="LeftGoalBlocker" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
+position = Vector2(-562.14, -0.823349)
+rotation = -1.5708
+scale = Vector2(1, 1)
+shape = SubResource("RectangleShape2D_q586n")
+
 [node name="TopWall" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
 position = Vector2(0, -300)
 shape = SubResource("RectangleShape2D_5c01j")
@@ -145,6 +157,7 @@ position = Vector2(0, 300)
 shape = SubResource("RectangleShape2D_5c01j")
 
 [node name="CenterLineCollider" type="StaticBody2D" parent="FieldCenter"]
+process_mode = 4
 collision_layer = 2
 collision_mask = 2
 

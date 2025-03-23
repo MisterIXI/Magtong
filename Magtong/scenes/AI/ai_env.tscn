@@ -1,10 +1,10 @@
 [gd_scene load_steps=6 format=3 uid="uid://cac57io57le25"]
 
 [ext_resource type="PackedScene" uid="uid://c3ev5o6ua0dou" path="res://scenes/Menu/main_menu.tscn" id="1_iufc0"]
-[ext_resource type="Script" path="res://scenes/main/scene_root.gd" id="2_sscsq"]
+[ext_resource type="Script" uid="uid://1i2m14vj70hf" path="res://scenes/main/scene_root.gd" id="2_sscsq"]
 [ext_resource type="PackedScene" uid="uid://dflo3wro8vgbu" path="res://scenes/Maps/ai_map_default.tscn" id="3_vhnmk"]
-[ext_resource type="Script" path="res://scenes/AI/ai_root.gd" id="4_likvo"]
-[ext_resource type="Script" path="res://addons/godot_rl_agents/sync.gd" id="5_kav3y"]
+[ext_resource type="Script" uid="uid://fe4q5abxukhq" path="res://scenes/AI/ai_root.gd" id="4_likvo"]
+[ext_resource type="Script" uid="uid://bhb150h88i1fw" path="res://addons/godot_rl_agents/sync.gd" id="5_kav3y"]
 
 [node name="MainScene" type="Node"]
 

@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="MapPack" load_steps=3 format=3 uid="uid://c6jbqja1eqltu"]
 
-[ext_resource type="Script" path="res://resources/maps/map_pack.gd" id="1_1ibup"]
+[ext_resource type="Script" uid="uid://df6mjf6vuhvrj" path="res://resources/maps/map_pack.gd" id="1_1ibup"]
 [ext_resource type="PackedScene" uid="uid://dfrx78wg8rqmp" path="res://scenes/Maps/map_default.tscn" id="1_ibgp8"]
 
 [resource]

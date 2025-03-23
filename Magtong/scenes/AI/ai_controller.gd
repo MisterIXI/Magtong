@@ -22,33 +22,56 @@ func _ready():
 	other_goal = map_script.goal_t2 if player.player_input.team == 1 else map_script.goal_t1
 
 func get_obs() -> Dictionary:
-	# division by 600 to scale positions roughly to -1 to 1
+	var other_player_pos = player.to_local(other_player.global_position)
+	var puck_pos = player.to_local(puck.global_position)
 	return {"obs": [
 		# own pos
-		player.position.x * mult / MAP_MULT,
-		player.position.y * mult / MAP_MULT,
+		player.position.x / MAP_MULT,
+		player.position.y / MAP_MULT,
 		# own vel
-		player.linear_velocity.x * mult,
-		player.linear_velocity.y * mult,
-		# enemy pos
-		other_player.position.x * mult / MAP_MULT,
-		other_player.position.y * mult / MAP_MULT,
-		# enemy vel
-		other_player.linear_velocity.x * mult,
-		other_player.linear_velocity.y * mult,
+		player.linear_velocity.x,
+		player.linear_velocity.y,
 		# puck pos
-		puck.position.x * mult / MAP_MULT,
-		puck.position.y * mult / MAP_MULT,
+		puck_pos.x / MAP_MULT,
+		puck_pos.y / MAP_MULT,
 		# puck vel
-		puck.linear_velocity.x * mult,
-		puck.linear_velocity.y * mult,
+		puck.linear_velocity.x,
+		puck.linear_velocity.y,
 		# pulse cooldown
-		player.pulse_timer.time_left,
+		# player.pulse_timer.time_left,
 		# skill cooldown
-		player.current_ability.cd_timer.time_left,
+		# player.current_ability.cd_timer.time_left,
 		# puck polarity
-		1 if puck.is_plus_pol else -1
+		# 1 if puck.is_plus_pol else -1
 	]}
+	# division by 600 to scale positions roughly to -1 to 1
+	# return {"obs": [
+	# 	# own pos
+	# 	player.position.x * mult / MAP_MULT,
+	# 	player.position.y * mult / MAP_MULT,
+	# 	# own vel
+	# 	player.linear_velocity.x * mult,
+	# 	player.linear_velocity.y * mult,
+	# 	# enemy pos
+	# 	other_player_pos.x * mult / MAP_MULT,
+	# 	other_player_pos.y * mult / MAP_MULT,
+	# 	# enemy vel
+	# 	other_player.linear_velocity.x * mult,
+	# 	other_player.linear_velocity.y * mult,
+	# 	# puck pos
+	# 	puck_pos.x * mult / MAP_MULT,
+	# 	puck_pos.y * mult / MAP_MULT,
+	# 	# puck vel
+	# 	puck.linear_velocity.x * mult,
+	# 	puck.linear_velocity.y * mult,
+	# 	# pulse cooldown
+	# 	player.pulse_timer.time_left,
+	# 	# skill cooldown
+	# 	player.current_ability.cd_timer.time_left,
+	# 	# puck polarity
+	# 	1 if puck.is_plus_pol else -1
+	# ]}
+
 
 
 func get_reward() -> float:
@@ -70,7 +93,7 @@ func get_action_space() -> Dictionary:
 	return {
 		"move": {"size": 2, "action_type": "continuous"},
 		"magnetism": {"size": 2, "action_type": "continuous"},
-		"switch": {"size": 1, "action_type": "discrete"},
+		# "switch": {"size": 1, "action_type": "discrete"},
 		"ability": {"size": 1, "action_type": "discrete"},
 	}
 
@@ -95,10 +118,10 @@ func set_action(action) -> void:
 	player.on_input(input_info)
 
 	input_info.axis_value = 0.0
-	# switch
-	input_info.input_type = InputInfo.InputType.PRIMARY
-	input_info.is_pressed = action["switch"] == 1
-	player.on_input(input_info)
+	# # switch
+	# input_info.input_type = InputInfo.InputType.PRIMARY
+	# input_info.is_pressed = action["switch"] == 1
+	# player.on_input(input_info)
 	# ability
 	input_info.input_type = InputInfo.InputType.SECONDARY
 	input_info.is_pressed = action["ability"] == 1
@@ -108,14 +131,14 @@ func _physics_process(_delta):
 	n_steps += 1
 	if n_steps > reset_after:
 		# print("N_steps: ", n_steps)
-		needs_reset = true
-		is_success = false
+		# needs_reset = true
+		# is_success = false
 		done = true
-		reward += -5
-		if player.player_input.team == 1:
-			map_script.p1_receive_reward(-5)
-		else:
-			map_script.p2_receive_reward(-5)
+	# 	reward += -5
+	# 	if player.player_input.team == 1:
+	# 		map_script.p1_receive_reward(-5)
+	# 	else:
+	# 		map_script.p2_receive_reward(-5)
 	if needs_reset:
 		# print("Needs_reset: ", needs_reset)
 		map_script.reset_all()
@@ -130,7 +153,7 @@ func get_info() -> Dictionary:
 	if done:
 		return {
 			"is_success": is_success,
-			"goal_p1": map_script.p1_goals,
-			"goal_p2": map_script.p2_goals,
+			# "goal_p1": map_script.p1_goals,
+			# "goal_p2": map_script.p2_goals,
 		}
 	return {}

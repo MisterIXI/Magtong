@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://00414y0wieil"]
 
-[ext_resource type="Script" path="res://scenes/Menu/Needles/particle.gd" id="1_whbsh"]
+[ext_resource type="Script" uid="uid://bqxctf1fwo56s" path="res://scenes/Menu/Needles/particle.gd" id="1_whbsh"]
 [ext_resource type="Texture2D" uid="uid://dkusv4cnx2ij0" path="res://assets/Textures/plus_sign.png" id="2_du10j"]
 
 [node name="Particle" type="Node2D"]

@@ -1,8 +1,8 @@
 [gd_scene load_steps=15 format=3 uid="uid://b7yo5ed5gg50k"]
 
-[ext_resource type="Script" path="res://scenes/match_manager.gd" id="1_ns4u8"]
-[ext_resource type="PackedScene" uid="uid://c8t5ekg5tbap3" path="res://scenes/Maps/map_default.tscn" id="2_belxq"]
-[ext_resource type="Script" path="res://scenes/Lobby/set_camera_zoom.gd" id="2_i8ydq"]
+[ext_resource type="Script" uid="uid://c0raeqsjijhf3" path="res://scenes/match_manager.gd" id="1_ns4u8"]
+[ext_resource type="PackedScene" uid="uid://dfrx78wg8rqmp" path="res://scenes/Maps/map_default.tscn" id="2_belxq"]
+[ext_resource type="Script" uid="uid://bbhgwhrp31n5x" path="res://scenes/Lobby/set_camera_zoom.gd" id="2_i8ydq"]
 [ext_resource type="Texture2D" uid="uid://baasaafcqr5jb" path="res://assets/Textures/PlayField/MatchClock.svg" id="3_6vxw0"]
 [ext_resource type="Texture2D" uid="uid://s1kx6pib27dw" path="res://assets/Textures/PlayField/MatchClock_left_overlay.png" id="5_81vys"]
 [ext_resource type="Texture2D" uid="uid://6663lk1qnny3" path="res://assets/Textures/PlayField/MatchClock_right_overlay.png" id="6_1o0ui"]

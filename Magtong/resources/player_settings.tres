@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="PlayerSettings" load_steps=3 format=3 uid="uid://cmntx6lne4hft"]
 
-[ext_resource type="Script" path="res://scenes/Player/player_settings.gd" id="1_081nq"]
+[ext_resource type="Script" uid="uid://diu4aanwoj8dd" path="res://scenes/Player/player_settings.gd" id="1_081nq"]
 
 [sub_resource type="Curve" id="Curve_x41yb"]
 _data = [Vector2(0, 1), 0.0, -3.44261, 0, 0, Vector2(1, 0), -0.20487, 0.0, 0, 0]
