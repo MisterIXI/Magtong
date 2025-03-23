@@ -4,3 +4,4 @@ Build/
 *.tmp
 .vscode
 *.kra~
+python_dir/logs
