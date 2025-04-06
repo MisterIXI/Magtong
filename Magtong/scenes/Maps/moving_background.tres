@@ -1,0 +1,28 @@
+[gd_resource type="ShaderMaterial" load_steps=5 format=3 uid="uid://b6kdhahtxkbxl"]
+
+[ext_resource type="Shader" uid="uid://kx1crdiabsen" path="res://scenes/Maps/moving_background.gdshader" id="1_balcx"]
+
+[sub_resource type="Gradient" id="Gradient_balcx"]
+colors = PackedColorArray(0.00469971, 0, 0.0859375, 1, 0.210938, 0, 0, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_balcx"]
+noise_type = 0
+seed = 100
+frequency = 0.0186
+offset = Vector3(14.8, 0, 0)
+fractal_lacunarity = 1.52
+fractal_gain = 0.86
+fractal_weighted_strength = 0.78
+domain_warp_amplitude = 30.375
+domain_warp_frequency = -4.29
+domain_warp_fractal_octaves = 1
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_kl3na"]
+seamless = true
+color_ramp = SubResource("Gradient_balcx")
+noise = SubResource("FastNoiseLite_balcx")
+
+[resource]
+shader = ExtResource("1_balcx")
+shader_parameter/noise_texture = SubResource("NoiseTexture2D_kl3na")
+shader_parameter/scroll_speed = Vector2(0.01, 0.01)
