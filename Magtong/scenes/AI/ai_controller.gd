@@ -11,6 +11,7 @@ var other_goal: Area2D
 var attempt_start_time: int = 0
 const MAP_MULT: float = 600.0
 var is_success := false
+var memory: Array[Dictionary] = []
 
 func _ready():
 	reset_after = 1500
@@ -24,7 +25,7 @@ func _ready():
 func get_obs() -> Dictionary:
 	var other_player_pos = player.to_local(other_player.global_position)
 	var puck_pos = player.to_local(puck.global_position)
-	return {"obs": [
+	var obs = {"obs": [
 		# own pos
 		player.position.x / MAP_MULT,
 		player.position.y / MAP_MULT,
@@ -44,6 +45,21 @@ func get_obs() -> Dictionary:
 		# puck polarity
 		# 1 if puck.is_plus_pol else -1
 	]}
+	if memory.is_empty():
+		for i in range(20):
+			memory.append(obs.duplicate(false))
+	else:
+		memory.pop_front()
+		memory.append(obs)
+	# create obs with memory
+	var result = {}
+	var result_arr = []
+	for i in range(20):
+		var arr = memory[i]["obs"]
+		for j in range(len(arr)):
+			result_arr.append(arr[j])
+	result["obs"] = result_arr
+	return result
 	# division by 600 to scale positions roughly to -1 to 1
 	# return {"obs": [
 	# 	# own pos
