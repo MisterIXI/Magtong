@@ -1,7 +1,7 @@
 # meta-name: AI Controller Logic
 # meta-description: Methods that need implementing for AI controllers
 # meta-default: true
-extends _BASE_
+# extends _BASE_
 
 #-- Methods that need implementing using the "extend script" option in Godot --#
 
@@ -26,7 +26,7 @@ func get_action_space() -> Dictionary:
 		},
 		}
 	
-func set_action(action) -> void:	
+func set_action(_action) -> void:	
 	assert(false, "the get set_action method is not implemented when extending from ai_controller") 	
 # -----------------------------------------------------------------------------#
 
