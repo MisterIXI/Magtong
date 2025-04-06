@@ -124,7 +124,6 @@ shape = SubResource("RectangleShape2D_q586n")
 [node name="RightGoalBlocker" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
 position = Vector2(562.078, -0.411346)
 rotation = -1.5708
-scale = Vector2(1, 1)
 shape = SubResource("RectangleShape2D_q586n")
 
 [node name="LeftWallBack" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
@@ -145,7 +144,6 @@ shape = SubResource("RectangleShape2D_q586n")
 [node name="LeftGoalBlocker" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
 position = Vector2(-562.14, -0.823349)
 rotation = -1.5708
-scale = Vector2(1, 1)
 shape = SubResource("RectangleShape2D_q586n")
 
 [node name="TopWall" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
@@ -304,7 +302,7 @@ text = "0"
 horizontal_alignment = 2
 
 [node name="EntitySpawner" type="MultiplayerSpawner" parent="FieldCenter"]
-_spawnable_scenes = PackedStringArray("res://scenes/Player/player_body.tscn", "res://scenes/Puck/puck.tscn")
+_spawnable_scenes = PackedStringArray("uid://do0i7ixg4d7p1", "uid://dlc283cvpl3eh")
 spawn_path = NodePath("../MultiplayerRoot")
 
 [node name="MultiplayerRoot" type="Node2D" parent="FieldCenter"]
