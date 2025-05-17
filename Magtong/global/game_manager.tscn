@@ -22,6 +22,7 @@ one_shot = true
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="MessagePanel" type="PanelContainer" parent="CanvasLayer"]
+visible = false
 offset_right = 380.0
 offset_bottom = 180.0
 size_flags_horizontal = 0
