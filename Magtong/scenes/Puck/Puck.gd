@@ -15,6 +15,7 @@ func reset(new_forced_pos: Vector2, reset_state: bool):
 		receive_pulse.rpc(true)
 	linear_velocity = Vector2(0, 0)
 	angular_velocity = 0
+	global_position = new_forced_pos
 	PhysicsServer2D.body_set_state(
 		get_rid(),
 		PhysicsServer2D.BODY_STATE_TRANSFORM,
