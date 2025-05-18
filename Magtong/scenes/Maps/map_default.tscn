@@ -52,10 +52,19 @@ scale = Vector2(1.215, 1.215)
 [node name="ColorRect" type="ColorRect" parent="FieldCenter"]
 texture_repeat = 2
 material = ExtResource("2_mw83u")
-offset_left = -719.0
-offset_top = -697.0
-offset_right = 670.0
-offset_bottom = 714.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -741.453
+offset_top = -741.787
+offset_right = 741.453
+offset_bottom = 741.787
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 
 [node name="Image" type="Sprite2D" parent="FieldCenter"]
 modulate = Color(2, 2, 2, 1)
