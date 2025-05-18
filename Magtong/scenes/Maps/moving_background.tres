@@ -1,10 +1,8 @@
 [gd_resource type="ShaderMaterial" load_steps=10 format=3 uid="uid://b6kdhahtxkbxl"]
 
-[ext_resource type="Shader" uid="uid://kx1crdiabsen" path="res://scenes/Maps/moving_background.gdshader" id="1_balcx"]
+[ext_resource type="Shader" uid="uid://kx1crdiabsen" path="res://assets/Textures/Shaders/moving_background.gdshader" id="1_balcx"]
 
 [sub_resource type="Gradient" id="Gradient_balcx"]
-offsets = PackedFloat32Array(0.00909091, 1)
-colors = PackedColorArray(0.33, 0.33, 0.33, 1, 1, 1, 1, 1)
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_kl3na"]
 seed = 245
@@ -21,21 +19,21 @@ colors = PackedColorArray(1, 0, 0, 1, 0, 0, 1, 1)
 [sub_resource type="GradientTexture1D" id="GradientTexture1D_wmn42"]
 gradient = SubResource("Gradient_hhlt6")
 
-[sub_resource type="Gradient" id="Gradient_kl3na"]
-colors = PackedColorArray(1, 1, 1, 1, 0.34, 0.34, 0.34, 1)
+[sub_resource type="Gradient" id="Gradient_wmn42"]
+colors = PackedColorArray(1, 1, 1, 1, 0.49, 0.49, 0.49, 1)
 
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_hhlt6"]
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_4h1es"]
 seed = 400
 frequency = 0.0135
 
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_wmn42"]
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_owne1"]
 seamless = true
-color_ramp = SubResource("Gradient_kl3na")
-noise = SubResource("FastNoiseLite_hhlt6")
+color_ramp = SubResource("Gradient_wmn42")
+noise = SubResource("FastNoiseLite_4h1es")
 
 [resource]
 shader = ExtResource("1_balcx")
 shader_parameter/base_texture = SubResource("NoiseTexture2D_hhlt6")
-shader_parameter/noise_texture = SubResource("NoiseTexture2D_wmn42")
+shader_parameter/noise_texture = SubResource("NoiseTexture2D_owne1")
 shader_parameter/gradient = SubResource("GradientTexture1D_wmn42")
-shader_parameter/scroll_speed = Vector2(0.01, 0.01)
+shader_parameter/scroll_speed = Vector2(0.02, 0.01)

@@ -1,7 +1,17 @@
-[gd_scene load_steps=4 format=3 uid="uid://c3ev5o6ua0dou"]
+[gd_scene load_steps=10 format=3 uid="uid://c3ev5o6ua0dou"]
 
 [ext_resource type="Script" uid="uid://f2kfb374alxr" path="res://scenes/Menu/main_menu.gd" id="1_2slre"]
 [ext_resource type="StyleBox" uid="uid://de7p8np7j7h43" path="res://resources/Default_Box.tres" id="1_sw55l"]
+[ext_resource type="Theme" uid="uid://06fpobwh5q7a" path="res://scenes/Menu/main_menu_theme.tres" id="2_8mcyk"]
+[ext_resource type="Script" uid="uid://cl2mdp8ppvo73" path="res://scenes/Menu/mm_background.gd" id="4_2itis"]
+[ext_resource type="Texture2D" uid="uid://dcymw3v6t2x63" path="res://assets/Textures/PlayField/Field_default_v3_no_lines.png" id="4_evs2v"]
+[ext_resource type="Resource" uid="uid://ua78q2387d0m" path="res://resources/player_settings_menu.tres" id="5_2itis"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_akboc"]
+size = Vector2(2300, 100)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xvd5r"]
+size = Vector2(100, 1400)
 
 [sub_resource type="Theme" id="Theme_i6drp"]
 GridContainer/constants/h_separation = 50
@@ -21,6 +31,36 @@ settings_menu = NodePath("Settings")
 settings_entry_focus = NodePath("Settings/Panel/MarginContainer/GridContainer/MasterSlider")
 ip_edit_field = NodePath("StartMenu/VBoxContainer/IP_Edit_Field")
 
+[node name="MMBackground" type="Node2D" parent="."]
+script = ExtResource("4_2itis")
+settings = ExtResource("5_2itis")
+
+[node name="Sprite2D" type="Sprite2D" parent="MMBackground"]
+modulate = Color(2, 2, 2, 1)
+scale = Vector2(1.34851, 1.34851)
+texture = ExtResource("4_evs2v")
+
+[node name="Camera2D" type="Camera2D" parent="MMBackground"]
+zoom = Vector2(0.64, 0.64)
+
+[node name="PlaygroundBounds" type="StaticBody2D" parent="MMBackground"]
+
+[node name="TopWall" type="CollisionShape2D" parent="MMBackground/PlaygroundBounds"]
+position = Vector2(0, -700)
+shape = SubResource("RectangleShape2D_akboc")
+
+[node name="BottomWall" type="CollisionShape2D" parent="MMBackground/PlaygroundBounds"]
+position = Vector2(0, 700)
+shape = SubResource("RectangleShape2D_akboc")
+
+[node name="LeftWall" type="CollisionShape2D" parent="MMBackground/PlaygroundBounds"]
+position = Vector2(-1200, 0)
+shape = SubResource("RectangleShape2D_xvd5r")
+
+[node name="RightWall" type="CollisionShape2D" parent="MMBackground/PlaygroundBounds"]
+position = Vector2(1200, 0)
+shape = SubResource("RectangleShape2D_xvd5r")
+
 [node name="StartMenu" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 8
@@ -38,16 +78,17 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -20.0
-offset_top = -20.0
-offset_right = 20.0
-offset_bottom = 20.0
+offset_left = -150.0
+offset_top = -200.0
+offset_right = 150.0
+offset_bottom = 200.0
 grow_horizontal = 2
 grow_vertical = 2
 
 [node name="Start_local" type="Button" parent="StartMenu/VBoxContainer"]
 layout_mode = 2
 focus_neighbor_bottom = NodePath("../Host_online")
+theme = ExtResource("2_8mcyk")
 text = "Play Local"
 
 [node name="Host_online" type="Button" parent="StartMenu/VBoxContainer"]
@@ -55,6 +96,7 @@ auto_translate_mode = 1
 layout_mode = 2
 focus_neighbor_top = NodePath("../Start_local")
 focus_neighbor_bottom = NodePath("../Join_online")
+theme = ExtResource("2_8mcyk")
 text = "Host game"
 
 [node name="Join_online" type="Button" parent="StartMenu/VBoxContainer"]
@@ -62,18 +104,20 @@ auto_translate_mode = 1
 layout_mode = 2
 focus_neighbor_top = NodePath("../Host_online")
 focus_neighbor_bottom = NodePath("../Settings")
+theme = ExtResource("2_8mcyk")
 text = "Join Online game"
 
 [node name="IP_Edit_Field" type="TextEdit" parent="StartMenu/VBoxContainer"]
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
-text = "79.241.87.169"
+text = "79.241.92.24"
 
 [node name="Join_local" type="Button" parent="StartMenu/VBoxContainer"]
 auto_translate_mode = 1
 layout_mode = 2
 focus_neighbor_top = NodePath("../Host_online")
 focus_neighbor_bottom = NodePath("../Settings")
+theme = ExtResource("2_8mcyk")
 text = "Join Localhost"
 
 [node name="Settings" type="Button" parent="StartMenu/VBoxContainer"]
@@ -81,11 +125,13 @@ auto_translate_mode = 1
 layout_mode = 2
 focus_neighbor_top = NodePath("../Join_online")
 focus_neighbor_bottom = NodePath("../Quit")
+theme = ExtResource("2_8mcyk")
 text = "Settings"
 
 [node name="Quit" type="Button" parent="StartMenu/VBoxContainer"]
 layout_mode = 2
 focus_neighbor_top = NodePath("../Settings")
+theme = ExtResource("2_8mcyk")
 text = "Quit"
 
 [node name="PanelContainer" type="PanelContainer" parent="StartMenu"]
