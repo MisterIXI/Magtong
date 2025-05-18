@@ -26,12 +26,12 @@ func _process(delta):
 
 # Called when the player's polarity changes
 func on_polarity_changed(new_pol):
-	if new_pol == player.polarity.POS:
+	if new_pol == player.Polarity.POS:
 		target_speed = settings.viz_max_speed
 		plus_particles.emitting = true
 		minus_particles.emitting = false
 
-	elif new_pol == player.polarity.NEG:
+	elif new_pol == player.Polarity.NEG:
 		target_speed = -settings.viz_max_speed
 		plus_particles.emitting = false
 		minus_particles.emitting = true
@@ -50,7 +50,7 @@ func on_polarity_changed(new_pol):
 	shader_tweener.tween_method(
 		func(val): pol_shader_sprite.material.set_shader_parameter("polarity", val),
 		pol_initial,
-		0.5 if new_pol == player.polarity.POS else -0.5 if new_pol == player.polarity.NEG else 0.0,
+		0.5 if new_pol == player.Polarity.POS else -0.5 if new_pol == player.Polarity.NEG else 0.0,
 		0.2
 	)
 	shader_tweener.play()
@@ -63,8 +63,8 @@ func _on_player_body_pulse_emitted(_pos: Vector2):
 	pulse_tweener()
 
 
-func _on_player_impulse_emitted(_pos: Vector2, _pol: PlayerBody.polarity):
-	if _pol == player.polarity.POS:
+func _on_player_impulse_emitted(_pos: Vector2, _pol: PlayerBody.Polarity):
+	if _pol == player.Polarity.POS:
 		plus_burst_particles.emitting = true
 	else:
 		minus_burst_particles.emitting = true

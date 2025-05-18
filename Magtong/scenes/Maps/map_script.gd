@@ -136,7 +136,7 @@ func _physics_process(delta):
 	# step through all players and check if they are emitting magnetic field
 	for team in players:
 		for player in team:
-			if player.state != PlayerBody.polarity.IDLE:
+			if player.state != PlayerBody.Polarity.IDLE:
 				# if not idle, affect all pucks
 				for puck in pucks:
 					var is_repelling = puck.is_plus_pol == (player.state == player.polarity.POS)

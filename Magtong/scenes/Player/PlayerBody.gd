@@ -1,16 +1,13 @@
 extends RigidBody2D
 class_name PlayerBody
 
-@export var player: int = 0
 @export var settings: PlayerSettings
-enum polarity {IDLE, POS, NEG}
-signal polarity_changed(new_pol: polarity)
+enum Polarity {IDLE, POS, NEG}
+signal polarity_changed(new_pol: Polarity)
 signal pulse_emitted(pulse_position: Vector2)
-# signal impulse_emitted(pulse_position: Vector2, pol: polarity)
+# signal impulse_emitted(pulse_position: Vector2, pol: Polarity)
 signal setup_completed(player_body: PlayerBody)
-@export var opponent: PlayerBody
-@export var puck: Puck
-var state = polarity.IDLE
+var state : Polarity = Polarity.IDLE
 
 var target_vel: Vector2 = Vector2()
 @export var pulse_timer: Timer
@@ -73,8 +70,9 @@ func _integrate_forces(_state):
 		global_position = sync_pos
 		rotation = sync_rot
 
-func on_input(input_info: InputInfo):
-	assert(multiplayer.is_server())
+func on_input(input_info: InputInfo, ignore_server_check: bool = false):
+	if not ignore_server_check:
+		assert(multiplayer.is_server())
 	match input_info.input_type:
 		InputInfo.InputType.MOVE_X:
 			x_input = input_info.axis_value
@@ -130,18 +128,18 @@ func update_target_vel(new_vel: Vector2):
 
 func update_polarity():
 	if plus_input == 0.0 and minus_input == 0.0:
-		if state != polarity.IDLE:
-			change_polarity.rpc(polarity.IDLE)
+		if state != Polarity.IDLE:
+			change_polarity.rpc(Polarity.IDLE)
 	elif plus_input > 0.0: # use plus with priority
-		if state != polarity.POS:
-			change_polarity.rpc(polarity.POS)
+		if state != Polarity.POS:
+			change_polarity.rpc(Polarity.POS)
 	else:
-		if state != polarity.NEG:
-			change_polarity.rpc(polarity.NEG)
+		if state != Polarity.NEG:
+			change_polarity.rpc(Polarity.NEG)
 
-## If the polarity is different from the current state, update the state and emit signal
+## If the Polarity is different from the current state, update the state and emit signal
 @rpc("any_peer", "call_local", "reliable")
-func change_polarity(new_pol: polarity):
+func change_polarity(new_pol: Polarity):
 	if new_pol != state:
 		state = new_pol
 		polarity_changed.emit(state)
@@ -164,7 +162,7 @@ func reset_input_state(retain_input: bool = true):
 func reset(new_pos: Vector2):
 	linear_velocity = Vector2()
 	angular_velocity = 0
-	change_polarity(polarity.IDLE)
+	change_polarity(Polarity.IDLE)
 	target_vel = Vector2()
 	global_position = new_pos
 	forced_pos = new_pos
@@ -175,6 +173,9 @@ func reset(new_pos: Vector2):
 		Transform2D.IDENTITY.translated(new_pos)
 	)
 
+func reset_once(new_pos: Vector2):
+	reset(new_pos)
+	force_move_flag = false
 
 func try_to_pulse():
 	if pulse_timer.is_stopped():
@@ -186,7 +187,7 @@ func disable_and_hide():
 	collider.set_deferred("disabled", true)
 	linear_velocity = Vector2()
 	angular_velocity = 0
-	change_polarity(polarity.IDLE)
+	change_polarity(Polarity.IDLE)
 	target_vel = Vector2()
 	forced_pos = global_position
 	force_move_flag = true
