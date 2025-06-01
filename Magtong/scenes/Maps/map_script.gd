@@ -139,7 +139,7 @@ func _physics_process(delta):
 			if player.state != PlayerBody.Polarity.IDLE:
 				# if not idle, affect all pucks
 				for puck in pucks:
-					var is_repelling = puck.is_plus_pol == (player.state == player.polarity.POS)
+					var is_repelling = puck.is_plus_pol == (player.state == player.Polarity.POS)
 					var dist = puck.global_position.distance_to(player.global_position)
 					var force = settings.magnet_dropoff.sample(dist / settings.magnet_range)
 					if not is_repelling:
