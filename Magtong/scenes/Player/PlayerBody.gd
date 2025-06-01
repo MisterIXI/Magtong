@@ -106,11 +106,11 @@ func on_input(input_info: InputInfo, ignore_server_check: bool = false):
 						gl.request_game_start()
 				else:
 					mm.request_restart()
-		InputInfo.InputType.D_LEFT:
+		InputInfo.InputType.AUX_LEFT:
 			if input_info.is_pressed:
 				if is_in_lobby:
 					cycle_skin(-1)
-		InputInfo.InputType.D_RIGHT:
+		InputInfo.InputType.AUX_RIGHT:
 			if input_info.is_pressed:
 				if is_in_lobby:
 					cycle_skin(1)

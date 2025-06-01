@@ -12,6 +12,8 @@ var k_minus: Key
 var k_primary: Key
 var k_secondary: Key
 var k_menu: Key
+var k_aux_left: Key
+var k_aux_right: Key
 var j_x_axis: JoyAxis
 var j_y_axis: JoyAxis
 var j_plus: JoyAxis
@@ -25,6 +27,8 @@ var j_d_left: JoyButton
 var j_d_right: JoyButton
 var j_b_left: JoyButton
 var j_b_right: JoyButton
+var j_aux_left: JoyButton
+var j_aux_right: JoyButton
 
 var k_right_pressed: bool = false
 var k_left_pressed: bool = false
@@ -49,8 +53,8 @@ func set_gamepad_mapping1():
 	self.j_primary = JOY_BUTTON_A
 	self.j_secondary = JOY_BUTTON_B
 	self.j_menu = JOY_BUTTON_START
-	self.j_d_left = JOY_BUTTON_DPAD_LEFT
-	self.j_d_right = JOY_BUTTON_DPAD_RIGHT
+	self.j_aux_left = JOY_BUTTON_DPAD_LEFT
+	self.j_aux_right = JOY_BUTTON_DPAD_RIGHT
 	self.j_b_left = JOY_BUTTON_LEFT_SHOULDER
 	self.j_b_right = JOY_BUTTON_RIGHT_SHOULDER
 
@@ -64,6 +68,8 @@ func set_keyboard_mapping1():
 	self.k_primary = KEY_SPACE
 	self.k_secondary = KEY_L
 	self.k_menu = KEY_ESCAPE
+	self.k_aux_left = KEY_U
+	self.k_aux_right = KEY_O
 
 func set_keyboard_mapping2():
 	self.k_up = KEY_UP
@@ -75,6 +81,8 @@ func set_keyboard_mapping2():
 	self.k_primary = KEY_J
 	self.k_secondary = KEY_I
 	self.k_menu = KEY_NUMBERSIGN
+	self.k_aux_left = KEY_COMMA
+	self.k_aux_right = KEY_PERIOD
 
 func check_input(event: InputEvent) -> InputInfo:
 	# check keyboard
@@ -115,6 +123,18 @@ func check_input(event: InputEvent) -> InputInfo:
 		elif key_event.keycode == self.k_menu:
 			input.input_type = InputInfo.InputType.MENU
 			input.is_pressed = key_event.pressed
+		elif key_event.keycode == self.k_aux_left:
+			input.input_type = InputInfo.InputType.AUX_LEFT
+			input.is_pressed = key_event.pressed
+		elif key_event.keycode == self.k_aux_right:
+			input.input_type = InputInfo.InputType.AUX_RIGHT
+			input.is_pressed = key_event.pressed
+		# elif key_event.keycode == self.k_b_left:
+		# 	input.input_type = InputInfo.InputType.B_LEFT
+		# 	input.is_pressed = key_event.pressed
+		# elif key_event.keycode == self.k_b_right:
+		# 	input.input_type = InputInfo.InputType.B_RIGHT
+		# 	input.is_pressed = key_event.pressed
 	# check joystick axis
 	elif not self.is_keyboard and event is InputEventJoypadMotion:
 		var joy_event = event as InputEventJoypadMotion
@@ -148,11 +168,11 @@ func check_input(event: InputEvent) -> InputInfo:
 		elif joy_event.button_index == self.j_menu:
 			input.input_type = InputInfo.InputType.MENU
 			input.is_pressed = joy_event.pressed
-		elif joy_event.button_index == self.j_d_left:
-			input.input_type = InputInfo.InputType.D_LEFT
+		elif joy_event.button_index == self.j_aux_left:
+			input.input_type = InputInfo.InputType.AUX_LEFT
 			input.is_pressed = joy_event.pressed
-		elif joy_event.button_index == self.j_d_right:
-			input.input_type = InputInfo.InputType.D_RIGHT
+		elif joy_event.button_index == self.j_aux_right:
+			input.input_type = InputInfo.InputType.AUX_RIGHT
 			input.is_pressed = joy_event.pressed
 		elif joy_event.button_index == self.j_b_left:
 			input.input_type = InputInfo.InputType.B_LEFT
