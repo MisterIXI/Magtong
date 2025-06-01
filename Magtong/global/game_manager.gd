@@ -30,6 +30,7 @@ signal state_changed(old_state: State, new_state: State)
 var player_ids: Dictionary = {}
 var p_id_helper: int = 1
 @onready var scene_root: SceneRoot = get_node("/root/MainScene/SceneRoot")
+@onready var main_menu: MainMenu = get_node("/root/MainScene/MainMenu")
 
 @rpc("authority", "call_local", "reliable")
 func _change_state(new_state: State):
@@ -37,7 +38,7 @@ func _change_state(new_state: State):
 	current_state = new_state
 	if new_state == State.LOBBY:
 		if old_state == State.MENU:
-			scene_root.hide_menu()
+			main_menu.hide_all()
 		if multiplayer.is_server():
 			scene_root.change_scene(lobby_scene.instantiate())
 	elif new_state == State.GAME:

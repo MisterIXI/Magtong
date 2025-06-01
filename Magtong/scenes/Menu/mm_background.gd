@@ -147,28 +147,28 @@ func start_tweens():
 	tween2.play()
 
 	# simple loops for p3 and p4
-	# # p3 up and down
-	# var p3 = players[2]
-	# p3.on_input(input_info_axis_minus(1.0), true)
-	# p3.on_input(input_info_axis_y(0.3), true)
-	# tween3 = create_tween()
-	# # tween3.tween_callback(p3.on_input.bind(input_info_axis_y(0.3)))
-	# tween3.tween_interval(1.75)
-	# tween3.tween_method(
-	# 	func (x): p3.on_input(input_info_axis_y(x)),
-	# 	0.3,
-	# 	-0.3,
-	# 	1.0,
-	# )
-	# tween3.tween_interval(3.5)
-	# tween3.tween_method(
-	# 	func (x): p3.on_input(input_info_axis_y(x)),
-	# 	-0.3,
-	# 	0.3,
-	# 	1.0,
-	# )
-	# tween3.tween_interval(1.75)
-	# tween3.set_loops()
+	# p3 up and down
+	var p3 = players[2]
+	p3.on_input(input_info_axis_minus(1.0), true)
+	p3.on_input(input_info_axis_y(0.3), true)
+	tween3 = create_tween()
+	# tween3.tween_callback(p3.on_input.bind(input_info_axis_y(0.3)))
+	tween3.tween_interval(1.75)
+	tween3.tween_method(
+		func (x): p3.on_input(input_info_axis_y(x)),
+		0.3,
+		-0.3,
+		1.0,
+	)
+	tween3.tween_interval(3.5)
+	tween3.tween_method(
+		func (x): p3.on_input(input_info_axis_y(x)),
+		-0.3,
+		0.3,
+		1.0,
+	)
+	tween3.tween_interval(1.75)
+	tween3.set_loops()
 	
 func _physics_process(delta):
 	if not multiplayer.is_server():

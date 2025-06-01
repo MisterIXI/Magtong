@@ -1,0 +1,41 @@
+[gd_scene load_steps=6 format=3 uid="uid://52s0ncdku17p"]
+
+[ext_resource type="Script" uid="uid://cl2mdp8ppvo73" path="res://scenes/Menu/mm_background.gd" id="1_bfadv"]
+[ext_resource type="Resource" uid="uid://ua78q2387d0m" path="res://resources/player_settings_menu.tres" id="2_bpibh"]
+[ext_resource type="Texture2D" uid="uid://dcymw3v6t2x63" path="res://assets/Textures/PlayField/Field_default_v3_no_lines.png" id="3_6gjy1"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_akboc"]
+size = Vector2(2300, 100)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xvd5r"]
+size = Vector2(100, 1400)
+
+[node name="MMBackground" type="Node2D"]
+script = ExtResource("1_bfadv")
+settings = ExtResource("2_bpibh")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(2, 2, 2, 1)
+scale = Vector2(1.34851, 1.34851)
+texture = ExtResource("3_6gjy1")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(0.64, 0.64)
+
+[node name="PlaygroundBounds" type="StaticBody2D" parent="."]
+
+[node name="TopWall" type="CollisionShape2D" parent="PlaygroundBounds"]
+position = Vector2(0, -700)
+shape = SubResource("RectangleShape2D_akboc")
+
+[node name="BottomWall" type="CollisionShape2D" parent="PlaygroundBounds"]
+position = Vector2(0, 700)
+shape = SubResource("RectangleShape2D_akboc")
+
+[node name="LeftWall" type="CollisionShape2D" parent="PlaygroundBounds"]
+position = Vector2(-1200, 0)
+shape = SubResource("RectangleShape2D_xvd5r")
+
+[node name="RightWall" type="CollisionShape2D" parent="PlaygroundBounds"]
+position = Vector2(1200, 0)
+shape = SubResource("RectangleShape2D_xvd5r")
