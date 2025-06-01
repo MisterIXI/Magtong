@@ -1,5 +1,5 @@
 extends Node
-const start_zoom: float = 0.755
+const start_zoom: float = 0.855
 const default_size: Vector2i = Vector2i(1280,720)
 
 # func _ready():
