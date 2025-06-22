@@ -46,10 +46,10 @@ func _init(player_id: int, is_keyboard: bool):
 func set_gamepad_mapping1():
 	self.j_x_axis = JOY_AXIS_LEFT_X
 	self.j_y_axis = JOY_AXIS_LEFT_Y
-	self.j_plus = JOY_AXIS_TRIGGER_RIGHT
-	self.j_plusB = JOY_BUTTON_RIGHT_SHOULDER
-	self.j_minus = JOY_AXIS_TRIGGER_LEFT
-	self.j_minusB = JOY_BUTTON_LEFT_SHOULDER
+	self.j_plus = JOY_AXIS_TRIGGER_LEFT
+	self.j_plusB = JOY_BUTTON_LEFT_SHOULDER
+	self.j_minus = JOY_AXIS_TRIGGER_RIGHT
+	self.j_minusB = JOY_BUTTON_RIGHT_SHOULDER
 	self.j_primary = JOY_BUTTON_A
 	self.j_secondary = JOY_BUTTON_B
 	self.j_menu = JOY_BUTTON_START
