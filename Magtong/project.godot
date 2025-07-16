@@ -21,18 +21,21 @@ config/icon="res://assets/Textures/PlayerSkins/PlayerCharacter.png"
 globInputManager="*res://global/Input/input_manager.gd"
 globResourceManager="*res://global/resource_manager.tscn"
 globGameManager="*res://global/game_manager.tscn"
+globSteamHandler="*res://global/steam/steam_handler.tscn"
 
 [debug]
 
+file_logging/enable_file_logging=true
 gdscript/warnings/shadowed_variable=0
 
 [display]
 
 window/size/viewport_width=1280
 window/size/viewport_height=720
-window/size/mode=4
+window/size/mode=3
 window/stretch/mode="canvas_items"
 window/canvas_textures/default_texture_filter=0
+window/size/mode.editor=0
 
 [dotnet]
 
