@@ -1,0 +1,88 @@
+[gd_scene load_steps=10 format=3 uid="uid://2dbcptjxrdcn"]
+
+[ext_resource type="Script" uid="uid://l10utul52iv6" path="res://scenes/trailer/trailer_scene.gd" id="1_y203o"]
+[ext_resource type="Resource" uid="uid://dihjwejvr4qko" path="res://resources/p_settings_trailer.tres" id="2_h5tgp"]
+[ext_resource type="Texture2D" uid="uid://dcymw3v6t2x63" path="res://assets/Textures/PlayField/Field_default_v3_no_lines.png" id="3_4vjvv"]
+[ext_resource type="AudioStream" uid="uid://c3pn5d6hy1ata" path="res://assets/sounds/music/trailer1_swinging-electro-swing-funny-catchy-151280.mp3" id="4_t5d1l"]
+[ext_resource type="PackedScene" uid="uid://do0i7ixg4d7p1" path="res://scenes/Player/player_body.tscn" id="5_h5tgp"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_akboc"]
+size = Vector2(2300, 100)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xvd5r"]
+size = Vector2(100, 1400)
+
+[sub_resource type="Animation" id="Animation_fc3kk"]
+resource_name = "trailer_choreo"
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_t5d1l"]
+_data = {
+&"trailer_choreo": SubResource("Animation_fc3kk")
+}
+
+[node name="TailerScene" type="Node2D" node_paths=PackedStringArray("spawns", "audio_player")]
+script = ExtResource("1_y203o")
+spawns = [NodePath("Spawns/P1Spawn"), NodePath("Spawns/P2Spawn"), NodePath("Spawns/P3Spawn"), NodePath("Spawns/PuckSpawn1"), NodePath("Spawns/PuckSpawn2"), NodePath("Spawns/PuckSpawn3"), NodePath("Spawns/PuckSpawn4")]
+audio_player = NodePath("AudioStreamPlayer2D")
+settings = ExtResource("2_h5tgp")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(2, 2, 2, 1)
+scale = Vector2(1.34851, 1.34851)
+texture = ExtResource("3_4vjvv")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(2.515, 2.515)
+
+[node name="PlaygroundBounds" type="StaticBody2D" parent="."]
+
+[node name="TopWall" type="CollisionShape2D" parent="PlaygroundBounds"]
+position = Vector2(0, -700)
+shape = SubResource("RectangleShape2D_akboc")
+
+[node name="BottomWall" type="CollisionShape2D" parent="PlaygroundBounds"]
+position = Vector2(0, 700)
+shape = SubResource("RectangleShape2D_akboc")
+
+[node name="LeftWall" type="CollisionShape2D" parent="PlaygroundBounds"]
+position = Vector2(-1200, 0)
+shape = SubResource("RectangleShape2D_xvd5r")
+
+[node name="RightWall" type="CollisionShape2D" parent="PlaygroundBounds"]
+position = Vector2(1200, 0)
+shape = SubResource("RectangleShape2D_xvd5r")
+
+[node name="Spawns" type="Node2D" parent="."]
+
+[node name="P1Spawn" type="Node2D" parent="Spawns"]
+position = Vector2(-283, -76)
+
+[node name="P2Spawn" type="Node2D" parent="Spawns"]
+position = Vector2(296, -18)
+
+[node name="P3Spawn" type="Node2D" parent="Spawns"]
+position = Vector2(-287, 77)
+
+[node name="PuckSpawn1" type="Node2D" parent="Spawns"]
+position = Vector2(-192, 233)
+
+[node name="PuckSpawn2" type="Node2D" parent="Spawns"]
+position = Vector2(-153, -214)
+
+[node name="PuckSpawn3" type="Node2D" parent="Spawns"]
+position = Vector2(94, 220)
+
+[node name="PuckSpawn4" type="Node2D" parent="Spawns"]
+position = Vector2(98, -221)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_t5d1l")
+}
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("4_t5d1l")
+volume_db = -25.478
+
+[node name="PlayerBody" parent="." instance=ExtResource("5_h5tgp")]
+position = Vector2(-282, -77)

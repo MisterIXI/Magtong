@@ -34,6 +34,12 @@ var ability_id: int = -1
 @export var abilities: Array[AbilityBase]
 @export var collider: CollisionShape2D
 
+func _ready():
+	if abilities and abilities.size() > 0:
+		if not current_ability:
+			current_ability = abilities[0]
+			current_ability.setup(map)
+
 func setup_player( map: MapScript, player_input: PlayerInput, is_in_lobby: bool = false):
 	self.map = map
 	self.player_input = player_input
@@ -43,7 +49,10 @@ func setup_player( map: MapScript, player_input: PlayerInput, is_in_lobby: bool 
 	if is_in_lobby:
 		gl = globGameManager.scene_root.current_scene as GameLobby
 	else:
-		mm = globGameManager.scene_root.current_scene as MatchManager
+		if globGameManager.scene_root: 
+			mm = globGameManager.scene_root.current_scene as MatchManager
+		else:
+			push_warning("No scene root found. setting mm as null...")
 	player_skin.texture = globResourceManager.icons.player_sprites[player_input.player_sprite_id]
 	set_skin.rpc(player_input.player_sprite_id)
 	# set up ability

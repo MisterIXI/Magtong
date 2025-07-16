@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="PlayerSettings" load_steps=3 format=3 uid="uid://dihjwejvr4qko"]
+
+[ext_resource type="Script" uid="uid://diu4aanwoj8dd" path="res://scenes/Player/player_settings.gd" id="1_hwqw0"]
+
+[sub_resource type="Curve" id="Curve_x41yb"]
+_data = [Vector2(0, 1), 0.0, -3.44261, 0, 0, Vector2(1, 0), -0.20487, 0.0, 0, 0]
+point_count = 2
+
+[resource]
+script = ExtResource("1_hwqw0")
+magnet_force = 4000.0
+magnet_dropoff = SubResource("Curve_x41yb")
+magnet_range = 900.0
+pulse_range = 200.0
+speed = 600.0
+accell = 6000.0
+viz_idle_speed = 2.0
+viz_acc = 150.0
+viz_max_speed = 40.0
+pol_shader_change_dur = 0.3
+team_colors = [Color(1, 0, 0, 1), Color(0, 0, 1, 1), Color(0, 1, 0, 1), Color(1, 1, 0, 1), Color(1, 0, 1, 1), Color(0, 1, 1, 1)]
+impulse_cooldown = 0.05
+impulse_mult = 0.2
+orbitlock_cooldown = 1.0
+orbitlock_max_duration = 0.5
+orbitlock_max_dist = 150.0
