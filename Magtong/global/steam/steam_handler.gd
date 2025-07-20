@@ -2,6 +2,7 @@ class_name SteamHandler
 extends Node
 
 var lobby_id: int = 0
+var lobbies: Array = []
 
 func _ready():
 	initilize_steam()
@@ -43,8 +44,13 @@ func create_debug_lobby() -> void:
 	Steam.createLobby(Steam.LOBBY_TYPE_PUBLIC, 4)
 
 func print_lobby_members() -> void:
-	print(Steam.getAllLobbyData(lobby_id))
-	print("Lobby members requested for lobby ID: ", lobby_id)
+	Steam.sendLobbyChatMsg(lobbies[0], "Hello from the lobby!")
+
+func join_first_lobby() -> void:
+	if lobbies.is_empty():
+		print("No lobbies available to join.")
+		return
+	Steam.joinLobby(lobbies[0])
 
 func _on_join_requested(lobby_id: int, steam_id: int) -> void:
 	print("Join requested for lobby ID: ", lobby_id, " by Steam ID: ", steam_id)
