@@ -43,7 +43,10 @@ func create_debug_lobby() -> void:
 	print("Creating debug lobby...")
 	Steam.createLobby(Steam.LOBBY_TYPE_PUBLIC, 4)
 
-func print_lobby_members() -> void:
+func send_lobby_chat() -> void:
+	if lobbies.is_empty():
+		print("No lobbies available to send chat message.")
+		return
 	Steam.sendLobbyChatMsg(lobbies[0], "Hello from the lobby!")
 
 func join_first_lobby() -> void:

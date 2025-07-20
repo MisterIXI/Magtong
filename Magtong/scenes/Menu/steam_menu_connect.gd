@@ -15,5 +15,5 @@ func _on_join_btn_pressed():
 
 
 func _on_list_members_pressed():
-	globSteamHandler.print_lobby_members()
+	globSteamHandler.send_lobby_chat()
 
