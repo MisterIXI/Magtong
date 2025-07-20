@@ -53,7 +53,7 @@ func join_first_lobby() -> void:
 	if lobby_id == 0:
 		print("No lobbies available to join.")
 		return
-	Steam.joinLobby(lobbies[0])
+	Steam.joinLobby(lobby_id)
 
 func _on_join_requested(lobby_id: int, steam_id: int) -> void:
 	print("Join requested for lobby ID: ", lobby_id, " by Steam ID: ", steam_id)
@@ -87,6 +87,7 @@ func _on_lobby_joined(lobby: int, permissions: int, locked: bool, response: int)
 func _on_lobby_match_list(lobbies: Array) -> void:
 	print("Lobby match list received with ", lobbies.size(), " lobbies.")
 	print("Lobbies: ", lobbies)
+	lobby_id = lobbies[0] if lobbies.size() > 0 else 0
 
 func _on_lobby_message(lobby_id: int, user: int, message: String, chat_type: int) -> void:
 	print("Lobby message received in lobby ID: ", lobby_id, " from user ID: ", user, " with message: ", message, " of type: ", chat_type)
