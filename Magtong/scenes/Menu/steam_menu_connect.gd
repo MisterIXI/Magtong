@@ -9,9 +9,8 @@ func _on_create_lobby_btn_pressed():
 func _on_list_btn_pressed():
 	globSteamHandler.get_lobby_list()
 
-
 func _on_join_btn_pressed():
-	pass
+	globSteamHandler.join_first_lobby()
 
 
 func _on_list_members_pressed():
