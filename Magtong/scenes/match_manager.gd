@@ -29,8 +29,23 @@ var is_in_overtime: bool = false
 var overtime_start_time: float = 0
 var time_since_last_goal: float = 0
 
+# func setup(match_time: float):
+# 	# if steam
+# 		# call setup_steam
+# 	# else
+# 		# call setup_rpc
+
 @rpc("authority", "call_local", "reliable")
-func setup(match_time: float):
+func setup_rpc(match_time: float):
+	self.match_time = match_time
+	im = globInputManager
+	gm = globGameManager
+	ms.setup(self)
+	if multiplayer.is_server():
+		ms.goal_scored.connect(on_goal_scored)
+
+
+func setup_steam_received(match_time: float):
 	self.match_time = match_time
 	im = globInputManager
 	gm = globGameManager
@@ -57,7 +72,7 @@ func _ready_to_play():
 			break
 	if all_ready:
 		self.all_ready = true
-		setup.rpc(match_time)
+		setup_rpc.rpc(match_time)
 		restart_match.rpc()
 
 @rpc("authority", "call_local", "reliable")

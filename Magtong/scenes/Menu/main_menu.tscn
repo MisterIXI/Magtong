@@ -1,10 +1,11 @@
-[gd_scene load_steps=7 format=3 uid="uid://c3ev5o6ua0dou"]
+[gd_scene load_steps=8 format=3 uid="uid://c3ev5o6ua0dou"]
 
 [ext_resource type="Script" uid="uid://f2kfb374alxr" path="res://scenes/Menu/main_menu.gd" id="1_2slre"]
 [ext_resource type="StyleBox" uid="uid://de7p8np7j7h43" path="res://resources/Default_Box.tres" id="1_sw55l"]
 [ext_resource type="Theme" uid="uid://06fpobwh5q7a" path="res://scenes/Menu/main_menu_theme.tres" id="2_8mcyk"]
 [ext_resource type="PackedScene" uid="uid://52s0ncdku17p" path="res://scenes/Menu/mm_background.tscn" id="2_evs2v"]
 [ext_resource type="Script" uid="uid://bjdvv08bvckys" path="res://scenes/Menu/steam_menu_connect.gd" id="4_4q1m5"]
+[ext_resource type="Script" uid="uid://cbfu4okvj4lth" path="res://scenes/Menu/test.gd" id="6_2itis"]
 
 [sub_resource type="Theme" id="Theme_i6drp"]
 GridContainer/constants/h_separation = 50
@@ -24,6 +25,18 @@ settings_menu = NodePath("Settings")
 settings_entry_focus = NodePath("Settings/Panel/MarginContainer/GridContainer/MasterSlider")
 ip_edit_field = NodePath("StartMenu/VBoxContainer/IP_Edit_Field")
 mm_background = ExtResource("2_evs2v")
+
+[node name="Label" type="Label" parent="."]
+z_index = 1
+layout_mode = 0
+offset_left = -364.0
+offset_top = 24.0
+offset_right = 187.0
+offset_bottom = 673.0
+theme_override_font_sizes/font_size = 46
+text = "no_steam: [bool]"
+autowrap_mode = 1
+script = ExtResource("6_2itis")
 
 [node name="StartMenu" type="Control" parent="."]
 z_index = 1000
@@ -160,7 +173,7 @@ text = "Join Lobby"
 layout_mode = 2
 focus_neighbor_bottom = NodePath("../Host_online")
 theme = ExtResource("2_8mcyk")
-text = "list lobby members"
+text = "test rpc"
 
 [node name="Settings" type="Control" parent="."]
 visible = false
@@ -263,5 +276,5 @@ text = "X"
 [connection signal="pressed" from="StartMenu/VBoxContainer2/create_lobby_btn" to="StartMenu/VBoxContainer2" method="_on_create_lobby_btn_pressed"]
 [connection signal="pressed" from="StartMenu/VBoxContainer2/list_btn" to="StartMenu/VBoxContainer2" method="_on_list_btn_pressed"]
 [connection signal="pressed" from="StartMenu/VBoxContainer2/join_btn" to="StartMenu/VBoxContainer2" method="_on_join_btn_pressed"]
-[connection signal="pressed" from="StartMenu/VBoxContainer2/list_members" to="StartMenu/VBoxContainer2" method="_on_list_members_pressed"]
+[connection signal="pressed" from="StartMenu/VBoxContainer2/list_members" to="StartMenu/VBoxContainer2" method="_on_test_rpc"]
 [connection signal="pressed" from="Settings/Panel/CloseButton" to="." method="settings_close"]

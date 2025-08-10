@@ -22,6 +22,7 @@ globInputManager="*res://global/Input/input_manager.gd"
 globResourceManager="*res://global/resource_manager.tscn"
 globGameManager="*res://global/game_manager.tscn"
 globSteamHandler="*res://global/steam/steam_handler.tscn"
+RPCCaller="*res://global/Multiplayer/rpc_caller.gd"
 
 [debug]
 
@@ -40,6 +41,10 @@ window/size/mode.editor=0
 [dotnet]
 
 project/assembly_name="Magtong"
+
+[editor]
+
+run/main_run_args="-- nosteam"
 
 [editor_plugins]
 

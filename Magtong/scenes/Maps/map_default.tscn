@@ -35,7 +35,7 @@ size = Vector2(145, 250)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wws8m"]
 size = Vector2(260, 60)
 
-[node name="MapDefault" type="Node2D" node_paths=PackedStringArray("player_spawn_groups", "ball_spawn_group", "spawner", "mp_root", "team_indicator_groups", "divider_collider", "lobby_areas", "lobby_labels")]
+[node name="MapDefault" type="Node2D" node_paths=PackedStringArray("player_spawn_groups", "ball_spawn_group", "spawner", "mp_root", "team_indicator_groups", "divider_collider")]
 script = ExtResource("1_wbm5i")
 player_spawn_groups = [NodePath("FieldCenter/SpawnPoints/CenterBackSpawns"), NodePath("FieldCenter/SpawnPoints/LeftBackSpawns"), NodePath("FieldCenter/SpawnPoints/RightBackSpawns")]
 ball_spawn_group = NodePath("FieldCenter/SpawnPoints/BallSpawns")
@@ -43,8 +43,6 @@ spawner = NodePath("FieldCenter/EntitySpawner")
 mp_root = NodePath("FieldCenter/MultiplayerRoot")
 team_indicator_groups = NodePath("FieldCenter/TeamIndicatorPoints")
 divider_collider = NodePath("FieldCenter/CenterLineCollider")
-lobby_areas = [NodePath("FieldCenter/Team0_ready_area"), NodePath("FieldCenter/Team1_ready_area"), NodePath("FieldCenter/Team2_ready_area")]
-lobby_labels = [NodePath("FieldCenter/Team0_ready_area/T0ReadyLabel"), NodePath("FieldCenter/Team1_ready_area/T1ReadyLabel"), NodePath("FieldCenter/Team2_ready_area/T2ReadyLabel")]
 
 [node name="FieldCenter" type="Node2D" parent="."]
 scale = Vector2(1.215, 1.215)

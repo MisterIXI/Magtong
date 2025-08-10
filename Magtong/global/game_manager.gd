@@ -46,6 +46,7 @@ func _change_state(new_state: State):
 			scene_root.change_scene(default_map_scene.instantiate())
 	state_changed.emit(old_state, new_state)
 
+
 func host_game(is_local: bool, suppress_state_change: bool = false):
 	assert(current_state == State.MENU)
 	multiplayer.peer_connected.connect(_on_peer_connected)
@@ -141,3 +142,8 @@ func _on_connected():
 
 func _on_disconnected():
 	print_message("Disconnected from server!")
+
+@rpc("any_peer", "call_local", "reliable")
+func test_steam_rpc(data_int: int, data_str: String) -> void:
+	print("test data arrived! int: ", data_int, " str: ", data_str)
+	pass
