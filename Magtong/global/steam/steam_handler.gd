@@ -58,6 +58,8 @@ func send_lobby_chat() -> void:
 	Steam.sendLobbyChatMsg(lobby_id, "Hello from the lobby!")
 
 func join_first_lobby() -> void:
+	get_lobby_list()
+	await get_tree().create_timer(0.5).timeout
 	if lobby_id == 0:
 		print("No lobbies available to join.")
 		return
@@ -76,6 +78,8 @@ func _on_lobby_created(connect: int, lobby_id: int) -> void:
 		var peer : MultiplayerPeer = SteamMultiplayerPeer.new()
 		peer.create_host(0)
 		multiplayer.multiplayer_peer = peer
+		globGameManager._change_state(globGameManager.State.LOBBY)
+		globGameManager._on_peer_connected(1)
 	else:
 		print("Failed to create lobby, error code: ", connect)
 
@@ -98,7 +102,11 @@ func _on_lobby_joined(lobby: int, permissions: int, locked: bool, response: int)
 		var own_id = Steam.getSteamID()
 		if owner != own_id:
 			var peer : MultiplayerPeer = SteamMultiplayerPeer.new()
-			peer.create_client(lobby_id, 0)
+			var retval = peer.create_client(lobby_id, 0)
+			print("Return value of create_client: ", retval)
+			multiplayer.multiplayer_peer = peer
+			globGameManager._change_state(globGameManager.State.LOBBY)
+			globGameManager._on_peer_connected(own_id)
 	else:
 		print("Failed to join lobby ID: ", lobby, " with response code: ", response)
 
