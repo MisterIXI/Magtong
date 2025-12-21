@@ -1,7 +1,12 @@
 class_name SteamHandler
 extends Node
 
+const MAGTONG_STEAMID = 3044580
+const MAGTONG_PLAYTEST_STEAMID = 4273979
+
 var lobby_id: int = 0
+var peer: SteamMultiplayerPeer
+var is_host: bool = false
 var lobbies: Array = []
 var curr_lobby_members: Array[Dictionary] = []
 
@@ -19,7 +24,8 @@ func _process(delta):
 
 func initilize_steam() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	var initialize_response: Dictionary = Steam.steamInitEx(3044580)
+	# var initialize_response: Dictionary = Steam.steamInitEx(MAGTONG_STEAMID)
+	var initialize_response: Dictionary = Steam.steamInitEx(MAGTONG_STEAMID)
 	if initialize_response["status"] == 0:
 		print("Steam initialized successfully!")
 		print("App Owner: ", Steam.getAppOwner())
@@ -27,6 +33,7 @@ func initilize_steam() -> void:
 		print("Friend Count: ", Steam.getFriendCount(Steam.FRIEND_FLAG_IMMEDIATE))
 		steam_id = Steam.getSteamID()
 		steam_name = Steam.getPersonaName()
+		Steam.initRelayNetworkAccess()
 	else:
 		print("Did Steam initialize?: %s " % initialize_response)
 	
@@ -72,14 +79,17 @@ func _on_join_requested(lobby_id: int, steam_id: int) -> void:
 func _on_lobby_chat_update(lobby_id: int, changed_id: int, making_change_id: int, chat_state: int) -> void:
 	print("Lobby chat updated for lobby ID: ", lobby_id, " with changed ID: ", changed_id, " by making change ID: ", making_change_id, " with chat state: ", chat_state)
 
-func _on_lobby_created(connect: int, lobby_id: int) -> void:
-	if connect == 1:
+func _on_lobby_created(connect_code: int, lobby_id: int) -> void:
+	if connect_code == 1:
 		print("Lobby created successfully with ID: ", lobby_id)
 		var peer : MultiplayerPeer = SteamMultiplayerPeer.new()
-		peer.create_host(0)
+		peer.server_relay = true
+		peer.host_with_lobby(lobby_id)
 		multiplayer.multiplayer_peer = peer
+		is_host = true
 		globGameManager._change_state(globGameManager.State.LOBBY)
 		globGameManager._on_peer_connected(1)
+		peer.peer_connected.connect(globGameManager._on_peer_connected)
 	else:
 		print("Failed to create lobby, error code: ", connect)
 
@@ -93,15 +103,16 @@ func _on_lobby_data_update(success: int, lobby_id: int, member_id: int) -> void:
 func _on_lobby_invite(inviter: int, lobby: int, game: int) -> void:
 	print("Lobby invite received from Steam ID: ", inviter, " for lobby ID: ", lobby, " with game ID: ", game)
 
-func _on_lobby_joined(lobby: int, permissions: int, locked: bool, response: int) -> void:
+func _on_lobby_joined(lobby: int, _permissions: int, _locked: bool, response: int) -> void:
 	if response == 1:
 		print("Successfully joined lobby ID: ", lobby)
 		lobby_id = lobby
 		_get_lobby_members()
-		var owner = Steam.getLobbyOwner(lobby_id)
+		var is_lobby_owner = Steam.getLobbyOwner(lobby_id)
 		var own_id = Steam.getSteamID()
-		if owner != own_id:
+		if is_lobby_owner != own_id:
 			var peer : MultiplayerPeer = SteamMultiplayerPeer.new()
+			peer.server_relay = true
 			var retval = peer.create_client(lobby_id, 0)
 			print("Return value of create_client: ", retval)
 			multiplayer.multiplayer_peer = peer
