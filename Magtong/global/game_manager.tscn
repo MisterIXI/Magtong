@@ -41,8 +41,12 @@ layout_mode = 2
 [node name="MessageVBox" type="VBoxContainer" parent="CanvasLayer/MessagePanel/MessageMarginContainer/MessageScrollBox"]
 layout_mode = 2
 
+[node name="PingLabel" type="Label" parent="CanvasLayer"]
+offset_right = 40.0
+offset_bottom = 23.0
+text = "PING: 000ms"
+
 [node name="PingTester" type="Node" parent="." node_paths=PackedStringArray("timer")]
-process_mode = 4
 script = ExtResource("5_eaeoo")
 timer = NodePath("Timer")
 

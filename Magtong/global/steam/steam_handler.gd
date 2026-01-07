@@ -55,6 +55,8 @@ func get_lobby_list() -> void:
 	print("Lobby list request sent!")
 
 func create_debug_lobby() -> void:
+	var set_relay: bool = Steam.allowP2PPacketRelay(false)
+	print("Allowing Steam to be relay backup: %s" % set_relay)
 	print("Creating debug lobby...")
 	Steam.createLobby(Steam.LOBBY_TYPE_PUBLIC, 4)
 
@@ -81,9 +83,10 @@ func _on_lobby_chat_update(lobby_id: int, changed_id: int, making_change_id: int
 
 func _on_lobby_created(connect_code: int, lobby_id: int) -> void:
 	if connect_code == 1:
+
 		print("Lobby created successfully with ID: ", lobby_id)
 		var peer : MultiplayerPeer = SteamMultiplayerPeer.new()
-		peer.server_relay = true
+		peer.server_relay = false
 		peer.host_with_lobby(lobby_id)
 		multiplayer.multiplayer_peer = peer
 		is_host = true
@@ -112,7 +115,7 @@ func _on_lobby_joined(lobby: int, _permissions: int, _locked: bool, response: in
 		var own_id = Steam.getSteamID()
 		if is_lobby_owner != own_id:
 			var peer : MultiplayerPeer = SteamMultiplayerPeer.new()
-			peer.server_relay = true
+			peer.server_relay = false
 			var retval = peer.create_client(lobby_id, 0)
 			print("Return value of create_client: ", retval)
 			multiplayer.multiplayer_peer = peer
