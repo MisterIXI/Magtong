@@ -156,3 +156,15 @@ func make_p2p_handshake():
 	pass
 	
 	pass
+
+
+func _input(event):
+	if event is InputEventKey:
+		var key_event : InputEventKey = event
+		if key_event.keycode == KEY_SPACE and key_event.pressed:
+			_get_lobby_members()
+			if curr_lobby_members.size() < 2:
+				push_warning("too little members in array...")
+				return
+			print("0: ", Steam.getP2PSessionState(1))
+			print("1: ", Steam.getP2PSessionState(curr_lobby_members[1]["steam_id"]))
