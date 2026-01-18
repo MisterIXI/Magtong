@@ -22,6 +22,13 @@ globInputManager="*res://global/Input/input_manager.gd"
 globResourceManager="*res://global/resource_manager.tscn"
 globGameManager="*res://global/game_manager.tscn"
 globSteamHandler="*res://global/steam/steam_handler.tscn"
+WindowTiler="*res://addons/netfox.extras/window-tiler.gd"
+NetworkSimulator="*res://addons/netfox.extras/network-simulator.gd"
+NetworkTime="*res://addons/netfox/network-time.gd"
+NetworkTimeSynchronizer="*res://addons/netfox/network-time-synchronizer.gd"
+NetworkRollback="*res://addons/netfox/rollback/network-rollback.gd"
+NetworkEvents="*res://addons/netfox/network-events.gd"
+NetworkPerformance="*res://addons/netfox/network-performance.gd"
 
 [debug]
 
@@ -42,7 +49,7 @@ project/assembly_name="Magtong"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/godot_rl_agents/plugin.cfg")
+enabled=PackedStringArray("res://addons/godot_rl_agents/plugin.cfg", "res://addons/netfox.extras/plugin.cfg", "res://addons/netfox.internals/plugin.cfg", "res://addons/netfox/plugin.cfg")
 
 [file_customization]
 
