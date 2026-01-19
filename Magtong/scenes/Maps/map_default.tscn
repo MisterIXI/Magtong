@@ -371,9 +371,9 @@ player_scene = ExtResource("10_3y12a")
 [node name="PuckSpawner" type="Node" parent="."]
 script = ExtResource("10_knq6m")
 
-[node name="Node" type="Node" parent="."]
+[node name="RapierDriver2D" type="Node" parent="."]
 script = ExtResource("12_3y12a")
-physics_factor = 1
+metadata/_custom_type_script = "uid://bcc28dvk0pufe"
 
 [connection signal="body_entered" from="FieldCenter/GoalLeft" to="." method="_on_goal_collision" binds= [2]]
 [connection signal="body_entered" from="FieldCenter/GoalRight" to="." method="_on_goal_collision" binds= [1]]

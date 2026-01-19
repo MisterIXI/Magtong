@@ -85,58 +85,56 @@ func setup_player( map: MapScript, player_input: PlayerInput, is_in_lobby: bool 
 func on_input(input_info: InputInfo, ignore_server_check: bool = false):
 	if not ignore_server_check:
 		assert(multiplayer.is_server())
-	match input_info.input_type:
-		InputInfo.InputType.MOVE_X:
-			x_input = input_info.axis_value
-			if not im.input_locked:
-				update_target_vel(Vector2(x_input, y_input))
-		InputInfo.InputType.MOVE_Y:
-			y_input = input_info.axis_value
-			if not im.input_locked:
-				update_target_vel(Vector2(x_input, y_input))
-		InputInfo.InputType.PLUS:
-			plus_input = input_info.axis_value
-			if not im.input_locked:
-				update_polarity()
-		InputInfo.InputType.MINUS:
-			minus_input = input_info.axis_value
-			if not im.input_locked:
-				update_polarity()
-		InputInfo.InputType.PRIMARY:
-			if input_info.is_pressed and not im.input_locked:
-				try_to_pulse()
-		InputInfo.InputType.SECONDARY:
-			if not im.input_locked:
-				if input_info.is_pressed:
-					current_ability._ability_button_down()
-				else:
-					current_ability._ability_button_up()
-		InputInfo.InputType.MENU:
-			if input_info.is_pressed:
-				if is_in_lobby:
-					if player_input.peer_id == 1:
-						gl.request_game_start()
-				else:
-					mm.request_restart()
-		InputInfo.InputType.AUX_LEFT:
-			if input_info.is_pressed:
-				if is_in_lobby:
-					cycle_skin(-1)
-		InputInfo.InputType.AUX_RIGHT:
-			if input_info.is_pressed:
-				if is_in_lobby:
-					cycle_skin(1)
-		_:
-			pass
+	# match input_info.input_type:
+	# 	InputInfo.InputType.MOVE_X:
+	# 		x_input = input_info.axis_value
+	# 		if not im.input_locked:
+	# 			update_target_vel(Vector2(x_input, y_input))
+	# 	InputInfo.InputType.MOVE_Y:
+	# 		y_input = input_info.axis_value
+	# 		if not im.input_locked:
+	# 			update_target_vel(Vector2(x_input, y_input))
+	# 	InputInfo.InputType.PLUS:
+	# 		plus_input = input_info.axis_value
+	# 		if not im.input_locked:
+	# 			update_polarity()
+	# 	InputInfo.InputType.MINUS:
+	# 		minus_input = input_info.axis_value
+	# 		if not im.input_locked:
+	# 			update_polarity()
+	# 	InputInfo.InputType.PRIMARY:
+	# 		if input_info.is_pressed and not im.input_locked:
+	# 			try_to_pulse()
+	# 	InputInfo.InputType.SECONDARY:
+	# 		if not im.input_locked:
+	# 			if input_info.is_pressed:
+	# 				current_ability._ability_button_down()
+	# 			else:
+	# 				current_ability._ability_button_up()
+	# 	InputInfo.InputType.MENU:
+	# 		if input_info.is_pressed:
+	# 			if is_in_lobby:
+	# 				if player_input.peer_id == 1:
+	# 					gl.request_game_start()
+	# 			else:
+	# 				mm.request_restart()
+	# 	InputInfo.InputType.AUX_LEFT:
+	# 		if input_info.is_pressed:
+	# 			if is_in_lobby:
+	# 				cycle_skin(-1)
+	# 	InputInfo.InputType.AUX_RIGHT:
+	# 		if input_info.is_pressed:
+	# 			if is_in_lobby:
+	# 				cycle_skin(1)
+	# 	_:
+	# 		pass
 
 func _on_input_unlocked():
 	update_target_vel(Vector2(x_input, y_input))
 	update_polarity()
 
 func update_target_vel(new_vel: Vector2):
-	if new_vel.length() > 1:
-		new_vel = new_vel.normalized()
-	target_vel = new_vel * settings.speed
+	target_vel = new_vel
 
 func update_polarity():
 	if plus_input == 0.0 and minus_input == 0.0:
@@ -234,7 +232,8 @@ func _physics_rollback_tick(_delta, _tick):
 		else:
 			print("client: ", linear_velocity)
 	# print(multiplayer.get_unique_id(), ": target_vel: ", target_vel)
-	apply_central_force(target_vel * 30)
+	apply_central_force(target_vel *30)
+	# linear_velocity = target_vel
 	# global_position += target_vel * _delta
 	# linear_velocity = linear_velocity.move_toward(target_vel, settings.accell * 100 * _delta)
 

@@ -62,16 +62,16 @@ func _on_start_local_pressed() -> void:
 	globGameManager.host_game(true)
 
 func _on_host_online_pressed():
-	# globGameManager.host_game(false)
-	globSteamHandler.create_debug_lobby()
+	globGameManager.host_game(false)
+	# globSteamHandler.create_debug_lobby()
 
 func boot_to_menu_with_message(_message: String) -> void:
 	switch_to_menu(start_menu)
 
 
 func _on_join_online_pressed():
-	# globGameManager.join_game(ip_edit_field.text, 50000)
-	globSteamHandler.join_first_lobby()
+	globGameManager.join_game(ip_edit_field.text, 50000)
+	# globSteamHandler.join_first_lobby()
 
 func _on_join_local_pressed():
 	globGameManager.join_game("127.0.0.1", 50000)

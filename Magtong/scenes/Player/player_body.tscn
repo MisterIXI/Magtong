@@ -35,9 +35,8 @@ collision_mask = 3
 mass = 5.0
 physics_material_override = ExtResource("1_o1307")
 can_sleep = false
-continuous_cd = 1
+continuous_cd = 2
 angular_damp = 2.0
-constant_force = Vector2(50, 0)
 script = ExtResource("1_tqoy0")
 settings = ExtResource("3_qurob")
 pulse_timer = NodePath("Pulse_CD")
@@ -173,8 +172,10 @@ one_shot = true
 
 [node name="PinJoint2D" type="PinJoint2D" parent="Abilities/OrbitLock"]
 
-[node name="Input" type="Node" parent="."]
+[node name="Input" type="Node" parent="." node_paths=PackedStringArray("_rollback_synchronizer")]
 script = ExtResource("13_2l2e6")
+_rollback_synchronizer = NodePath("../RollbackSynchronizer")
+decay = 0.35000000000000003
 
 [node name="RollbackSynchronizer" type="Node" parent="." node_paths=PackedStringArray("root")]
 script = ExtResource("14_v8swr")
@@ -187,6 +188,7 @@ metadata/_custom_type_script = "uid://d350u8evihs1u"
 script = ExtResource("15_bviay")
 root = NodePath("..")
 properties = Array[String]([":global_transform"])
+record_first_state = false
 metadata/_custom_type_script = "uid://dour8fehaaugp"
 
 [connection signal="polarity_changed" from="." to="Graphics" method="on_polarity_changed"]

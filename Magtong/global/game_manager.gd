@@ -32,6 +32,22 @@ var p_id_helper: int = 1
 @onready var scene_root: SceneRoot = get_node("/root/MainScene/SceneRoot")
 @onready var main_menu: MainMenu = get_node("/root/MainScene/MainMenu")
 
+func _ready():
+	var rand_int: int = randi_range(0,1000)
+
+	NetworkSimulator.server_created.connect(
+		func():
+			_change_state(State.LOBBY)
+			multiplayer.peer_connected.connect(_on_peer_connected)
+			_on_peer_connected(1)
+			print("%d: Server created" % rand_int)
+	)
+	NetworkSimulator.client_connected.connect(
+		func():
+			_change_state.call_deferred(State.LOBBY)
+			print("%d: Client connected" % rand_int)
+	)
+
 @rpc("authority", "call_local", "reliable")
 func _change_state(new_state: State):
 	var old_state = current_state

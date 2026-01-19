@@ -9,8 +9,11 @@ func _ready():
 	
 func on_timeout():
 	if multiplayer.has_multiplayer_peer():
-		ping_time = Time.get_ticks_usec()
-		ping_start.rpc_id(1, multiplayer.multiplayer_peer.get_unique_id())
+		if multiplayer.is_server():
+			ping_label.text = "PING: SERVER\nAVG: SERVER"
+		else:
+			ping_time = Time.get_ticks_usec()
+			ping_start.rpc_id(1, multiplayer.multiplayer_peer.get_unique_id())
 
 @rpc("any_peer", "call_local", "reliable")
 func ping_start(return_id):

@@ -44,6 +44,8 @@ layout_mode = 2
 [node name="PingLabel" type="Label" parent="CanvasLayer"]
 offset_right = 40.0
 offset_bottom = 23.0
+theme_override_constants/outline_size = 15
+theme_override_font_sizes/font_size = 46
 text = "PING: 000ms"
 
 [node name="PingTester" type="Node" parent="." node_paths=PackedStringArray("timer")]

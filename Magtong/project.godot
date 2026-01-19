@@ -168,6 +168,8 @@ restart={
 
 extras/auto_tile_windows=true
 time/tickrate=30
+autoconnect/enabled=true
+autoconnect/simulated_latency_ms=150
 
 [physics]
 
