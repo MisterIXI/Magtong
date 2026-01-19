@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://dfrx78wg8rqmp"]
+[gd_scene load_steps=22 format=3 uid="uid://dfrx78wg8rqmp"]
 
 [ext_resource type="Script" uid="uid://sa63i4yiqm1a" path="res://scenes/Maps/map_script.gd" id="1_wbm5i"]
 [ext_resource type="Texture2D" uid="uid://pthgonvw7edr" path="res://assets/Textures/PlayField/Field_default_v2.png" id="2_8n442"]
@@ -8,6 +8,10 @@
 [ext_resource type="Script" uid="uid://b1xrsvxdwgo35" path="res://scenes/Maps/spawn_point_group.gd" id="4_jds7q"]
 [ext_resource type="Script" uid="uid://ebrdju6fmb3p" path="res://scenes/visual_components/tween_modulate_alpha_blink.gd" id="5_e81lu"]
 [ext_resource type="Texture2D" uid="uid://c023clfhq43lh" path="res://assets/Textures/PlayField/Field_default_v3.png" id="5_gm1x1"]
+[ext_resource type="Script" uid="uid://cl2i3i1eekqln" path="res://scenes/Maps/player_spawner.gd" id="9_31et8"]
+[ext_resource type="PackedScene" uid="uid://do0i7ixg4d7p1" path="res://scenes/Player/player_body.tscn" id="10_3y12a"]
+[ext_resource type="Script" uid="uid://b6elqc4juodnb" path="res://scenes/Maps/puck_spawner.gd" id="10_knq6m"]
+[ext_resource type="Script" uid="uid://bcc28dvk0pufe" path="res://addons/netfox.extras/physics/rapier_driver_2d.gd" id="12_3y12a"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_mw83u"]
 
@@ -35,11 +39,10 @@ size = Vector2(145, 250)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wws8m"]
 size = Vector2(260, 60)
 
-[node name="MapDefault" type="Node2D" node_paths=PackedStringArray("player_spawn_groups", "ball_spawn_group", "spawner", "mp_root", "team_indicator_groups", "divider_collider", "lobby_areas", "lobby_labels")]
+[node name="MapDefault" type="Node2D" node_paths=PackedStringArray("player_spawn_groups", "ball_spawn_group", "mp_root", "team_indicator_groups", "divider_collider", "lobby_areas", "lobby_labels")]
 script = ExtResource("1_wbm5i")
 player_spawn_groups = [NodePath("FieldCenter/SpawnPoints/CenterBackSpawns"), NodePath("FieldCenter/SpawnPoints/LeftBackSpawns"), NodePath("FieldCenter/SpawnPoints/RightBackSpawns")]
 ball_spawn_group = NodePath("FieldCenter/SpawnPoints/BallSpawns")
-spawner = NodePath("FieldCenter/EntitySpawner")
 mp_root = NodePath("FieldCenter/MultiplayerRoot")
 team_indicator_groups = NodePath("FieldCenter/TeamIndicatorPoints")
 divider_collider = NodePath("FieldCenter/CenterLineCollider")
@@ -150,6 +153,7 @@ collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="FieldCenter/CenterLineCollider"]
 shape = SubResource("RectangleShape2D_2cnpn")
+disabled = true
 
 [node name="GoalLeft" type="Area2D" parent="FieldCenter"]
 position = Vector2(-564.844, 0)
@@ -290,10 +294,6 @@ theme_override_font_sizes/font_size = 30
 text = "0"
 horizontal_alignment = 2
 
-[node name="EntitySpawner" type="MultiplayerSpawner" parent="FieldCenter"]
-_spawnable_scenes = PackedStringArray("uid://do0i7ixg4d7p1", "uid://dlc283cvpl3eh")
-spawn_path = NodePath("../MultiplayerRoot")
-
 [node name="MultiplayerRoot" type="Node2D" parent="FieldCenter"]
 
 [node name="SpawnPoints" type="Node2D" parent="FieldCenter"]
@@ -362,6 +362,18 @@ offset_bottom = 360.0
 layout_mode = 0
 offset_right = 365.0
 offset_bottom = 180.0
+
+[node name="PlayerSpawner" type="Node" parent="." node_paths=PackedStringArray("spawn_root")]
+script = ExtResource("9_31et8")
+spawn_root = NodePath("../FieldCenter/MultiplayerRoot")
+player_scene = ExtResource("10_3y12a")
+
+[node name="PuckSpawner" type="Node" parent="."]
+script = ExtResource("10_knq6m")
+
+[node name="Node" type="Node" parent="."]
+script = ExtResource("12_3y12a")
+physics_factor = 1
 
 [connection signal="body_entered" from="FieldCenter/GoalLeft" to="." method="_on_goal_collision" binds= [2]]
 [connection signal="body_entered" from="FieldCenter/GoalRight" to="." method="_on_goal_collision" binds= [1]]

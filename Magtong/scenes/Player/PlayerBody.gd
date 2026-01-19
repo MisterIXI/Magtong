@@ -1,4 +1,4 @@
-extends RigidBody2D
+extends NetworkRigidBody2D
 class_name PlayerBody
 
 @export var settings: PlayerSettings
@@ -33,6 +33,7 @@ var current_ability: AbilityBase
 var ability_id: int = -1
 @export var abilities: Array[AbilityBase]
 @export var collider: CollisionShape2D
+@onready var input: NetfoxInput = $Input
 
 func _ready():
 	if abilities and abilities.size() > 0:
@@ -41,43 +42,45 @@ func _ready():
 			current_ability.setup(map)
 
 func setup_player( map: MapScript, player_input: PlayerInput, is_in_lobby: bool = false):
+	return
 	self.map = map
-	self.player_input = player_input
-	player_input.input_received.connect(on_input)
-	globInputManager.input_unlocked.connect(_on_input_unlocked)
-	self.is_in_lobby = is_in_lobby
-	if is_in_lobby:
-		gl = globGameManager.scene_root.current_scene as GameLobby
-	else:
-		if globGameManager.scene_root: 
-			mm = globGameManager.scene_root.current_scene as MatchManager
-		else:
-			push_warning("No scene root found. setting mm as null...")
-	player_skin.texture = globResourceManager.icons.player_sprites[player_input.player_sprite_id]
-	set_skin.rpc(player_input.player_sprite_id)
-	# set up ability
-	if player_input.selected_ability != -1:
-		ability_id = player_input.selected_ability
-	else:
-		ability_id = 0
-	current_ability = abilities[ability_id]
-	if not is_multiplayer_authority():
-		freeze = true
-	for x in abilities:
-		x.setup(map)
-	setup_completed.emit(self)
+	# self.player_input = player_input
+	# player_input.input_received.connect(on_input)
+	# globInputManager.input_unlocked.connect(_on_input_unlocked)
+	# self.is_in_lobby = is_in_lobby
+	# if is_in_lobby:
+	# 	gl = globGameManager.scene_root.current_scene as GameLobby
+	# else:
+	# 	if globGameManager.scene_root: 
+	# 		mm = globGameManager.scene_root.current_scene as MatchManager
+	# 	else:
+	# 		push_warning("No scene root found. setting mm as null...")
+	# player_skin.texture = globResourceManager.icons.player_sprites[player_input.player_sprite_id]
+	# set_skin.rpc(player_input.player_sprite_id)
+	# # set up ability
+	# if player_input.selected_ability != -1:
+	# 	ability_id = player_input.selected_ability
+	# else:
+	# 	ability_id = 0
+	# current_ability = abilities[ability_id]
+	# if not is_multiplayer_authority():
+	# 	freeze = true
+	# for x in abilities:
+	# 	x.setup(map)
+	# setup_completed.emit(self)
 
 # fixing MP flickering
-# https://www.reddit.com/r/godot/comments/180ywzs/multiplayersynchronizer_and_rigidbody/
-func _integrate_forces(_state):
-	if is_multiplayer_authority():
-		sync_pos = global_position
-		sync_rot = rotation
-		# print("Nope")
-	else:
-		# print("Sync_pos: ", sync_pos, "Sync_rot: ", sync_rot)
-		global_position = sync_pos
-		rotation = sync_rot
+# # https://www.reddit.com/r/godot/comments/180ywzs/multiplayersynchronizer_and_rigidbody/
+# func _integrate_forces(_state):
+# 	if is_multiplayer_authority():
+# 		sync_pos = global_position
+# 		sync_rot = rotation
+# 		# print("Nope")
+# 	else:
+# 		# print("Sync_pos: ", sync_pos, "Sync_rot: ", sync_rot)
+# 		global_position = sync_pos
+# 		rotation = sync_rot
+# 		pass
 
 func on_input(input_info: InputInfo, ignore_server_check: bool = false):
 	if not ignore_server_check:
@@ -169,18 +172,19 @@ func reset_input_state(retain_input: bool = true):
 		
 	
 func reset(new_pos: Vector2):
-	linear_velocity = Vector2()
-	angular_velocity = 0
-	change_polarity(Polarity.IDLE)
-	target_vel = Vector2()
-	global_position = new_pos
-	forced_pos = new_pos
-	force_move_flag = true
-	PhysicsServer2D.body_set_state(
-		get_rid(),
-		PhysicsServer2D.BODY_STATE_TRANSFORM,
-		Transform2D.IDENTITY.translated(new_pos)
-	)
+	pass
+	# linear_velocity = Vector2()
+	# angular_velocity = 0
+	# change_polarity(Polarity.IDLE)
+	# target_vel = Vector2()
+	# global_position = new_pos
+	# forced_pos = new_pos
+	# force_move_flag = true
+	# PhysicsServer2D.body_set_state(
+	# 	get_rid(),
+	# 	PhysicsServer2D.BODY_STATE_TRANSFORM,
+	# 	Transform2D.IDENTITY.translated(new_pos)
+	# )
 
 func reset_once(new_pos: Vector2):
 	reset(new_pos)
@@ -194,17 +198,17 @@ func try_to_pulse():
 func disable_and_hide():
 	hide()
 	collider.set_deferred("disabled", true)
-	linear_velocity = Vector2()
-	angular_velocity = 0
-	change_polarity(Polarity.IDLE)
-	target_vel = Vector2()
-	forced_pos = global_position
-	force_move_flag = true
-	PhysicsServer2D.body_set_state(
-		get_rid(),
-		PhysicsServer2D.BODY_STATE_TRANSFORM,
-		Transform2D.IDENTITY.translated(global_position)
-	)
+	# linear_velocity = Vector2()
+	# angular_velocity = 0
+	# change_polarity(Polarity.IDLE)
+	# target_vel = Vector2()
+	# forced_pos = global_position
+	# force_move_flag = true
+	# PhysicsServer2D.body_set_state(
+	# 	get_rid(),
+	# 	PhysicsServer2D.BODY_STATE_TRANSFORM,
+	# 	Transform2D.IDENTITY.translated(global_position)
+	# )
 
 @rpc("authority", "call_local", "reliable")
 func pulse():
@@ -217,3 +221,20 @@ func set_skin(player_sprite_id: int):
 func cycle_skin(dir: int):
 	player_input.player_sprite_id = (player_input.player_sprite_id + dir) % globResourceManager.icons.player_sprites.size()
 	set_skin.rpc(player_input.player_sprite_id)
+
+var counter: int = 0
+func _physics_rollback_tick(_delta, _tick):
+	sleeping = false
+	update_target_vel(input.movement)
+	counter += 1
+	if counter >= 1000:
+		counter = 0
+		if multiplayer.get_unique_id() == 1:
+			print("server: ", global_position)
+		else:
+			print("client: ", linear_velocity)
+	# print(multiplayer.get_unique_id(), ": target_vel: ", target_vel)
+	apply_central_force(target_vel * 30)
+	# global_position += target_vel * _delta
+	# linear_velocity = linear_velocity.move_toward(target_vel, settings.accell * 100 * _delta)
+

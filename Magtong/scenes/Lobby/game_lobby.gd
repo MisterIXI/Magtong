@@ -43,7 +43,7 @@ func on_peer_connected(peer_id: int):
 	_update_lobby_labels.rpc_id(peer_id, curr_team_sizes)
 
 func on_player_input_registered(player_input: PlayerInput):
-	current_map.spawn_player(player_input)
+	# current_map.spawn_player(player_input)
 	ready_check()
 
 func on_player_entered_team_area(player_input: PlayerInput, team: int):

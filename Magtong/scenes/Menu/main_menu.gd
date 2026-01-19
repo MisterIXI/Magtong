@@ -70,11 +70,11 @@ func boot_to_menu_with_message(_message: String) -> void:
 
 
 func _on_join_online_pressed():
-	# globGameManager.join_game(ip_edit_field.text, 12345)
+	# globGameManager.join_game(ip_edit_field.text, 50000)
 	globSteamHandler.join_first_lobby()
 
 func _on_join_local_pressed():
-	globGameManager.join_game("127.0.0.1", 12345)
+	globGameManager.join_game("127.0.0.1", 50000)
 
 func _on_quit_pressed() -> void:
 	get_tree().quit()

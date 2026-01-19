@@ -27,7 +27,8 @@ func _input(event: InputEvent) -> void:
 		if player_mappings.has( - 1):
 			var input = player_mappings[- 1].check_input(event)
 			if input:
-				send_input.rpc_id(1, -1, input.to_dict())
+				player_inputs[multiplayer.get_unique_id()][-1].execute_input(input)
+				# send_input.rpc_id(1, -1, input.to_dict()) #######################
 		elif globGameManager.current_state == GameManager.State.LOBBY:
 			request_player_registration.rpc_id(1, -1)
 	# check for gamepad buttons
@@ -35,7 +36,9 @@ func _input(event: InputEvent) -> void:
 		if player_mappings.has(event.device):
 			var input = player_mappings[event.device].check_input(event)
 			if input:
-				send_input.rpc_id(1, event.device, input.to_dict())
+				player_inputs[multiplayer.get_unique_id()][event.device].execute_input(input)
+				# send_input.rpc_id(1, event.device, input.to_dict()) #######################
+
 		elif globGameManager.current_state == GameManager.State.LOBBY:
 			request_player_registration.rpc_id(1, event.device)
 	# check for gamepad axis
@@ -43,7 +46,9 @@ func _input(event: InputEvent) -> void:
 		if player_mappings.has(event.device):
 			var input = player_mappings[event.device].check_input(event)
 			if input:
-				send_input.rpc_id(1, event.device, input.to_dict())
+				# send_input.rpc_id(1, event.device, input.to_dict()) #######################
+				player_inputs[multiplayer.get_unique_id()][event.device].execute_input(input)
+
 
 func set_input_locked(locked: bool) -> void:
 	input_locked = locked
@@ -80,6 +85,7 @@ func request_player_registration(device_id: int) -> void:
 		if not player_inputs.has(peer_id):
 			player_inputs[peer_id] = {}
 		player_inputs[peer_id][device_id] = player_input
+
 		register_player.rpc_id(peer_id, device_id)
 		player_input_registered.emit(player_input)
 		# var lobby:Lobby = globGameManager.scene_root.current_scene

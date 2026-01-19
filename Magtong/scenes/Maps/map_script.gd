@@ -37,10 +37,10 @@ func set_lobby_mode() -> void:
 	is_lobby_map = true
 	pucks = []
 	# spawn two pucks for players to play around with
-	pucks.append(spawn_puck())
-	pucks[0].global_position += Vector2.LEFT * 50
-	pucks.append(spawn_puck())
-	pucks[1].global_position += Vector2.RIGHT * 50
+	# pucks.append(spawn_puck())
+	# pucks[0].global_position += Vector2.LEFT * 50
+	# pucks.append(spawn_puck())
+	# pucks[1].global_position += Vector2.RIGHT * 50
 	if divider_collider != null:
 		var childs = divider_collider.get_children()
 		for child: CollisionShape2D in childs:
@@ -131,6 +131,8 @@ func reset_players(keep_position: bool) -> void:
 			players[i][j].reset_input_state.rpc()
 
 func _physics_process(delta):
+	# for netfox disable for now
+	return
 	if not multiplayer.is_server():
 		return
 	# step through all players and check if they are emitting magnetic field

@@ -53,14 +53,14 @@ func host_game(is_local: bool, suppress_state_change: bool = false):
 	var retval
 	if is_local:
 		# 1 max client
-		retval = peer.create_server(12345, 1)
+		retval = peer.create_server(50000, 1)
 	else:
 		# 32 max clients
-		retval = peer.create_server(12345, 32)
+		retval = peer.create_server(50000, 32)
 	if retval:
 		print("Server error: ", retval)
 	else:
-		print("Server created on port 12345")
+		print("Server created on port 50000")
 	multiplayer.multiplayer_peer = peer
 	if not suppress_state_change:
 		_change_state.rpc(State.LOBBY)
