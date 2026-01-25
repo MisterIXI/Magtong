@@ -169,7 +169,9 @@ restart={
 extras/auto_tile_windows=true
 time/tickrate=30
 autoconnect/enabled=true
-autoconnect/simulated_latency_ms=150
+rollback/display_offset=1
+rollback/input_delay=2
+autoconnect/simulated_latency_ms=40
 
 [physics]
 
@@ -186,7 +188,7 @@ anti_aliasing/quality/use_debanding=true
 
 [steam]
 
-initialization/app_id=0
 initialization/initialize_on_startup=false
 initialization/embed_callbacks=false
 multiplayer_peer/max_channels=4
+initialization/app_id=0

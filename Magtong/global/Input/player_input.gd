@@ -19,6 +19,9 @@ func _init(peer_id: int = -1, device_id: int = -1, player_id: int = -1, is_host:
 	self.is_host = is_host
 	self.player_sprite_id = randi_range(0, globResourceManager.icons.player_sprites.size() - 1)
 
+@rpc("any_peer", "call_local", "reliable")
+func rpc_input(input_info: Dictionary) -> void:
+	input_received.emit(from_dict(input_info))
 
 func execute_input(input_info: InputInfo) -> void:
 	# Emit the signal

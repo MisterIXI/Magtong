@@ -28,6 +28,8 @@ func to_dict() -> Dictionary:
 	}
 	return result
 
+func is_movement() -> bool:
+	return input_type == InputType.MOVE_X or input_type == InputType.MOVE_Y
 
 enum InputType{
 	# default (empty)

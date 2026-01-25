@@ -42,32 +42,32 @@ func _ready():
 			current_ability.setup(map)
 
 func setup_player( map: MapScript, player_input: PlayerInput, is_in_lobby: bool = false):
-	return
+	# return
 	self.map = map
-	# self.player_input = player_input
-	# player_input.input_received.connect(on_input)
-	# globInputManager.input_unlocked.connect(_on_input_unlocked)
-	# self.is_in_lobby = is_in_lobby
-	# if is_in_lobby:
-	# 	gl = globGameManager.scene_root.current_scene as GameLobby
-	# else:
-	# 	if globGameManager.scene_root: 
-	# 		mm = globGameManager.scene_root.current_scene as MatchManager
-	# 	else:
-	# 		push_warning("No scene root found. setting mm as null...")
-	# player_skin.texture = globResourceManager.icons.player_sprites[player_input.player_sprite_id]
-	# set_skin.rpc(player_input.player_sprite_id)
-	# # set up ability
-	# if player_input.selected_ability != -1:
-	# 	ability_id = player_input.selected_ability
-	# else:
-	# 	ability_id = 0
-	# current_ability = abilities[ability_id]
-	# if not is_multiplayer_authority():
-	# 	freeze = true
-	# for x in abilities:
-	# 	x.setup(map)
-	# setup_completed.emit(self)
+	self.player_input = player_input
+	player_input.input_received.connect(on_input)
+	globInputManager.input_unlocked.connect(_on_input_unlocked)
+	self.is_in_lobby = is_in_lobby
+	if is_in_lobby:
+		gl = globGameManager.scene_root.current_scene as GameLobby
+	else:
+		if globGameManager.scene_root: 
+			mm = globGameManager.scene_root.current_scene as MatchManager
+		else:
+			push_warning("No scene root found. setting mm as null...")
+	player_skin.texture = globResourceManager.icons.player_sprites[player_input.player_sprite_id]
+	set_skin.rpc(player_input.player_sprite_id)
+	# set up ability
+	if player_input.selected_ability != -1:
+		ability_id = player_input.selected_ability
+	else:
+		ability_id = 0
+	current_ability = abilities[ability_id]
+	if not is_multiplayer_authority():
+		freeze = true
+	for x in abilities:
+		x.setup(map)
+	setup_completed.emit(self)
 
 # fixing MP flickering
 # # https://www.reddit.com/r/godot/comments/180ywzs/multiplayersynchronizer_and_rigidbody/
@@ -85,49 +85,41 @@ func setup_player( map: MapScript, player_input: PlayerInput, is_in_lobby: bool 
 func on_input(input_info: InputInfo, ignore_server_check: bool = false):
 	if not ignore_server_check:
 		assert(multiplayer.is_server())
-	# match input_info.input_type:
-	# 	InputInfo.InputType.MOVE_X:
-	# 		x_input = input_info.axis_value
-	# 		if not im.input_locked:
-	# 			update_target_vel(Vector2(x_input, y_input))
-	# 	InputInfo.InputType.MOVE_Y:
-	# 		y_input = input_info.axis_value
-	# 		if not im.input_locked:
-	# 			update_target_vel(Vector2(x_input, y_input))
-	# 	InputInfo.InputType.PLUS:
-	# 		plus_input = input_info.axis_value
-	# 		if not im.input_locked:
-	# 			update_polarity()
-	# 	InputInfo.InputType.MINUS:
-	# 		minus_input = input_info.axis_value
-	# 		if not im.input_locked:
-	# 			update_polarity()
-	# 	InputInfo.InputType.PRIMARY:
-	# 		if input_info.is_pressed and not im.input_locked:
-	# 			try_to_pulse()
-	# 	InputInfo.InputType.SECONDARY:
-	# 		if not im.input_locked:
-	# 			if input_info.is_pressed:
-	# 				current_ability._ability_button_down()
-	# 			else:
-	# 				current_ability._ability_button_up()
-	# 	InputInfo.InputType.MENU:
-	# 		if input_info.is_pressed:
-	# 			if is_in_lobby:
-	# 				if player_input.peer_id == 1:
-	# 					gl.request_game_start()
-	# 			else:
-	# 				mm.request_restart()
-	# 	InputInfo.InputType.AUX_LEFT:
-	# 		if input_info.is_pressed:
-	# 			if is_in_lobby:
-	# 				cycle_skin(-1)
-	# 	InputInfo.InputType.AUX_RIGHT:
-	# 		if input_info.is_pressed:
-	# 			if is_in_lobby:
-	# 				cycle_skin(1)
-	# 	_:
-	# 		pass
+	match input_info.input_type:
+		InputInfo.InputType.PLUS:
+			plus_input = input_info.axis_value
+			if not im.input_locked:
+				update_polarity()
+		InputInfo.InputType.MINUS:
+			minus_input = input_info.axis_value
+			if not im.input_locked:
+				update_polarity()
+		InputInfo.InputType.PRIMARY:
+			if input_info.is_pressed and not im.input_locked:
+				try_to_pulse()
+		InputInfo.InputType.SECONDARY:
+			if not im.input_locked:
+				if input_info.is_pressed:
+					current_ability._ability_button_down()
+				else:
+					current_ability._ability_button_up()
+		InputInfo.InputType.MENU:
+			if input_info.is_pressed:
+				if is_in_lobby:
+					if player_input.peer_id == 1:
+						gl.request_game_start()
+				else:
+					mm.request_restart()
+		InputInfo.InputType.AUX_LEFT:
+			if input_info.is_pressed:
+				if is_in_lobby:
+					cycle_skin(-1)
+		InputInfo.InputType.AUX_RIGHT:
+			if input_info.is_pressed:
+				if is_in_lobby:
+					cycle_skin(1)
+		_:
+			pass
 
 func _on_input_unlocked():
 	update_target_vel(Vector2(x_input, y_input))
@@ -153,6 +145,7 @@ func change_polarity(new_pol: Polarity):
 	if new_pol != state:
 		state = new_pol
 		polarity_changed.emit(state)
+
 @rpc("any_peer", "call_local", "reliable")
 func reset_input_state(retain_input: bool = true):
 	var old_plus = plus_input
@@ -220,20 +213,13 @@ func cycle_skin(dir: int):
 	player_input.player_sprite_id = (player_input.player_sprite_id + dir) % globResourceManager.icons.player_sprites.size()
 	set_skin.rpc(player_input.player_sprite_id)
 
-var counter: int = 0
 func _physics_rollback_tick(_delta, _tick):
 	sleeping = false
 	update_target_vel(input.movement)
-	counter += 1
-	if counter >= 1000:
-		counter = 0
-		if multiplayer.get_unique_id() == 1:
-			print("server: ", global_position)
-		else:
-			print("client: ", linear_velocity)
+
 	# print(multiplayer.get_unique_id(), ": target_vel: ", target_vel)
-	apply_central_force(target_vel *30)
-	# linear_velocity = target_vel
+	# apply_central_force(target_vel *30)
+	linear_velocity = target_vel
 	# global_position += target_vel * _delta
 	# linear_velocity = linear_velocity.move_toward(target_vel, settings.accell * 100 * _delta)
 

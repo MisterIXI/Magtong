@@ -27,8 +27,10 @@ func _input(event: InputEvent) -> void:
 		if player_mappings.has( - 1):
 			var input = player_mappings[- 1].check_input(event)
 			if input:
-				player_inputs[multiplayer.get_unique_id()][-1].execute_input(input)
-				# send_input.rpc_id(1, -1, input.to_dict()) #######################
+				if input.is_movement():
+					player_inputs[multiplayer.get_unique_id()][-1].execute_input(input)
+				else:
+					send_input.rpc_id(1, -1, input.to_dict()) #######################
 		elif globGameManager.current_state == GameManager.State.LOBBY:
 			request_player_registration.rpc_id(1, -1)
 	# check for gamepad buttons
@@ -36,17 +38,19 @@ func _input(event: InputEvent) -> void:
 		if player_mappings.has(event.device):
 			var input = player_mappings[event.device].check_input(event)
 			if input:
-				player_inputs[multiplayer.get_unique_id()][event.device].execute_input(input)
-				# send_input.rpc_id(1, event.device, input.to_dict()) #######################
+				# player_inputs[multiplayer.get_unique_id()][event.device].execute_input(input)
+				send_input.rpc_id(1, event.device, input.to_dict()) #######################
 
 		elif globGameManager.current_state == GameManager.State.LOBBY:
 			request_player_registration.rpc_id(1, event.device)
 	# check for gamepad axis
 	elif event is InputEventJoypadMotion:
 		if player_mappings.has(event.device):
-			var input = player_mappings[event.device].check_input(event)
+			var input :InputInfo= player_mappings[event.device].check_input(event)
 			if input:
-				# send_input.rpc_id(1, event.device, input.to_dict()) #######################
+				# if not input.is_movement():
+				# 	send_input.rpc_id(1, event.device, input.to_dict()) #######################
+
 				player_inputs[multiplayer.get_unique_id()][event.device].execute_input(input)
 
 
@@ -57,6 +61,7 @@ func set_input_locked(locked: bool) -> void:
 
 @rpc("any_peer", "call_local", "reliable")
 func send_input(device_id: int, input_dict: Dictionary) -> void:
+	print("Received Input")
 	# if input_locked:
 	# 	return
 	var input_info = InputInfo.new(input_dict)
