@@ -61,7 +61,7 @@ func set_input_locked(locked: bool) -> void:
 
 @rpc("any_peer", "call_local", "reliable")
 func send_input(device_id: int, input_dict: Dictionary) -> void:
-	print("Received Input")
+	# print("Received Input")
 	# if input_locked:
 	# 	return
 	var input_info = InputInfo.new(input_dict)

@@ -141,8 +141,9 @@ func _on_lobby_match_list(lobbies: Array) -> void:
 func _on_lobby_message(lobby_id: int, user: int, message: String, chat_type: int) -> void:
 	print("Lobby message received in lobby ID: ", lobby_id, " from user ID: ", user, " with message: ", message, " of type: ", chat_type)
 
-func _on_persona_state_change(steam_id: int, flags: int) -> void:
-	print("Persona state changed for Steam ID: ", steam_id, " with flags: ", flags)
+func _on_persona_state_change(_steam_id: int, _flags: int) -> void:
+	# print("Persona state changed for Steam ID: ", _steam_id, " with flags: ", _flags)
+	pass
 
 
 func _on_p2p_session_request(remote_id: int) -> void:

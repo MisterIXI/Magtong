@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://dfrx78wg8rqmp"]
+[gd_scene load_steps=23 format=3 uid="uid://dfrx78wg8rqmp"]
 
 [ext_resource type="Script" uid="uid://sa63i4yiqm1a" path="res://scenes/Maps/map_script.gd" id="1_wbm5i"]
 [ext_resource type="Texture2D" uid="uid://pthgonvw7edr" path="res://assets/Textures/PlayField/Field_default_v2.png" id="2_8n442"]
@@ -12,6 +12,7 @@
 [ext_resource type="PackedScene" uid="uid://do0i7ixg4d7p1" path="res://scenes/Player/player_body.tscn" id="10_3y12a"]
 [ext_resource type="Script" uid="uid://b6elqc4juodnb" path="res://scenes/Maps/puck_spawner.gd" id="10_knq6m"]
 [ext_resource type="Script" uid="uid://bcc28dvk0pufe" path="res://addons/netfox.extras/physics/rapier_driver_2d.gd" id="12_3y12a"]
+[ext_resource type="PackedScene" uid="uid://dlc283cvpl3eh" path="res://scenes/Puck/puck.tscn" id="12_haili"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_mw83u"]
 
@@ -370,6 +371,7 @@ player_scene = ExtResource("10_3y12a")
 
 [node name="PuckSpawner" type="Node" parent="."]
 script = ExtResource("10_knq6m")
+puck_scene = ExtResource("12_haili")
 
 [node name="RapierDriver2D" type="Node" parent="."]
 script = ExtResource("12_3y12a")

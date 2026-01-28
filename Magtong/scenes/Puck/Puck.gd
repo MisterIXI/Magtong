@@ -1,10 +1,10 @@
-extends RigidBody2D
+extends NetworkRigidBody2D
 class_name Puck
 
 @export var plus_sprite: Sprite2D
 @export var minus_sprite: Sprite2D
 var is_plus_pol: bool = true
-
+var push_change: Vector2 = Vector2.ZERO
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	pass  # Replace with function body.
@@ -33,3 +33,8 @@ func receive_pulse(is_now_plus_pol: bool):
 		minus_sprite.show()
 		is_plus_pol = false
 
+func _physics_rollback_tick(_delta, _tick):
+	# apply_central_force(push_change * _delta)
+	linear_velocity += push_change * _delta
+	push_change = Vector2.ZERO
+	pass

@@ -41,9 +41,12 @@ func _ready():
 			current_ability = abilities[0]
 			current_ability.setup(map)
 
-func setup_player( map: MapScript, player_input: PlayerInput, is_in_lobby: bool = false):
+func setup_player(player_input: PlayerInput, is_in_lobby: bool = false):
+	if not multiplayer.is_server():
+		return
 	# return
-	self.map = map
+	print("Setup happened")
+	# self.map = get_parent().get_parent().get_parent()
 	self.player_input = player_input
 	player_input.input_received.connect(on_input)
 	globInputManager.input_unlocked.connect(_on_input_unlocked)
@@ -65,8 +68,8 @@ func setup_player( map: MapScript, player_input: PlayerInput, is_in_lobby: bool 
 	current_ability = abilities[ability_id]
 	if not is_multiplayer_authority():
 		freeze = true
-	for x in abilities:
-		x.setup(map)
+	# for x in abilities:
+	# 	x.setup(map)
 	setup_completed.emit(self)
 
 # fixing MP flickering
@@ -222,4 +225,3 @@ func _physics_rollback_tick(_delta, _tick):
 	linear_velocity = target_vel
 	# global_position += target_vel * _delta
 	# linear_velocity = linear_velocity.move_toward(target_vel, settings.accell * 100 * _delta)
-

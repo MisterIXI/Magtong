@@ -39,7 +39,7 @@ func _switch_map(id: int):
 
 func on_peer_connected(peer_id: int):
 	assert(multiplayer.is_server())
-	catchup_on_join.rpc_id(peer_id, team_max_size, all_ready)
+	catchup_on_join.rpc_id(peer_id, team_max_size, all_ready, current_map.pucks.size())
 	_update_lobby_labels.rpc_id(peer_id, curr_team_sizes)
 
 func on_player_input_registered(player_input: PlayerInput):
@@ -97,8 +97,10 @@ func request_game_start():
 		globGameManager.start_game()
 
 @rpc("authority", "call_local", "reliable")
-func catchup_on_join(team_max_size: int, is_ready: bool):
+func catchup_on_join(team_max_size: int, is_ready: bool, puck_spawn_count: int):
 	current_map = map_root.get_child(0) as MapScript
+	for i in range(puck_spawn_count):
+		current_map.spawn_puck()
 	self.team_max_size = team_max_size
 	if is_ready:
 		all_ready = true

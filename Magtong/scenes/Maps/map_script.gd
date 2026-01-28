@@ -10,6 +10,7 @@ class_name MapScript
 @export var lobby_areas: Array[Area2D]
 @export var lobby_labels: Array[Label]
 
+
 var is_lobby_map: bool = false
 var player_sg_indices: Array[int] = []
 
@@ -37,10 +38,10 @@ func set_lobby_mode() -> void:
 	is_lobby_map = true
 	pucks = []
 	# spawn two pucks for players to play around with
-	# pucks.append(spawn_puck())
-	# pucks[0].global_position += Vector2.LEFT * 50
-	# pucks.append(spawn_puck())
-	# pucks[1].global_position += Vector2.RIGHT * 50
+	spawn_puck.rpc()
+	pucks[0].global_position += Vector2.LEFT * 50
+	spawn_puck.rpc()
+	pucks[1].global_position += Vector2.RIGHT * 50
 	if divider_collider != null:
 		var childs = divider_collider.get_children()
 		for child: CollisionShape2D in childs:
@@ -58,17 +59,20 @@ func spawn_player(player_input: PlayerInput) -> PlayerBody:
 	var player_body = globResourceManager.player_scene
 	var new_player: PlayerBody = player_body.instantiate()
 	mp_root.add_child(new_player, true)
-	new_player.setup_player(self, player_input, is_lobby_map)
+	new_player.setup_player(player_input, is_lobby_map)
 	new_player.pulse_emitted.connect(on_pulse_from)
 	players[0].append(new_player)
 	print("all player_inputs: ", globInputManager.get_all_player_inputs()[0].team)
 	return new_player
 
-func spawn_puck() -> Puck:
+@rpc("authority", "call_local", "reliable")
+func spawn_puck() -> void:
 	var puck_body = globResourceManager.puck_scene
 	var puck = puck_body.instantiate()
+	puck.set_multiplayer_authority(1)
 	mp_root.add_child(puck, true)
-	return puck
+	pucks.append(puck)
+
 
 func setup(match_manager: MatchManager) -> void:
 	if not multiplayer.is_server():
@@ -77,7 +81,7 @@ func setup(match_manager: MatchManager) -> void:
 	im = globInputManager
 	mm = match_manager
 	var player_body = globResourceManager.player_scene
-	pucks.append(spawn_puck())
+	spawn_puck.rpc()
 	players = [[],[]]
 	# TODO: get team num somehow to not hardcode this
 	# loop through all player inputs to build players double array (array of the teams, players[team_num][player_num])
@@ -89,7 +93,7 @@ func setup(match_manager: MatchManager) -> void:
 				continue # skip spectators and invalid team
 			var new_player: PlayerBody = player_body.instantiate()
 			mp_root.add_child(new_player, true)
-			new_player.setup_player(self, im.player_inputs[peer][player]) 
+			new_player.setup_player(im.player_inputs[peer][player]) 
 			players[team - 1].append(new_player)
 			team_counter[team] = team_counter.get(team, 0) + 1
 			new_player.pulse_emitted.connect(on_pulse_from)
@@ -131,8 +135,6 @@ func reset_players(keep_position: bool) -> void:
 			players[i][j].reset_input_state.rpc()
 
 func _physics_process(delta):
-	# for netfox disable for now
-	return
 	if not multiplayer.is_server():
 		return
 	# step through all players and check if they are emitting magnetic field
@@ -141,6 +143,7 @@ func _physics_process(delta):
 			if player.state != PlayerBody.Polarity.IDLE:
 				# if not idle, affect all pucks
 				for puck in pucks:
+					print("puck_is_pucking")
 					var is_repelling = puck.is_plus_pol == (player.state == player.Polarity.POS)
 					var dist = puck.global_position.distance_to(player.global_position)
 					var force = settings.magnet_dropoff.sample(dist / settings.magnet_range)
@@ -149,8 +152,9 @@ func _physics_process(delta):
 					var scaled_force = (
 						(puck.global_position - player.global_position).normalized() * force * settings.magnet_force
 					)
-					puck.apply_central_force(scaled_force)
-					player.apply_central_force( - scaled_force)
+					puck.push_change += scaled_force
+					# puck.apply_central_force(scaled_force)
+					# player.apply_central_force( - scaled_force)
 				# and affect all other players
 				# for opp_team in players:
 				# 	for opp_player in opp_team:
@@ -206,4 +210,3 @@ func on_node_spawned(node: Node) -> void:
 		spawned_players.append(node)
 	elif node.is_in_group("Puck"):
 		spawned_pucks.append(node)
-

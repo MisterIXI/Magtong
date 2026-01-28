@@ -171,7 +171,6 @@ time/tickrate=30
 autoconnect/enabled=true
 rollback/display_offset=1
 rollback/input_delay=2
-autoconnect/simulated_latency_ms=40
 
 [physics]
 
