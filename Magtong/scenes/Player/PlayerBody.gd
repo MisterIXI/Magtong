@@ -7,7 +7,7 @@ signal polarity_changed(new_pol: Polarity)
 signal pulse_emitted(pulse_position: Vector2)
 # signal impulse_emitted(pulse_position: Vector2, pol: Polarity)
 signal setup_completed(player_body: PlayerBody)
-var state : Polarity = Polarity.IDLE
+var state: Polarity = Polarity.IDLE
 
 var target_vel: Vector2 = Vector2()
 @export var pulse_timer: Timer
@@ -40,7 +40,7 @@ func _ready():
 			current_ability = abilities[0]
 			current_ability.setup(map)
 
-func setup_player( map: MapScript, player_input: PlayerInput, is_in_lobby: bool = false):
+func setup_player(map: MapScript, player_input: PlayerInput, is_in_lobby: bool = false):
 	self.map = map
 	self.player_input = player_input
 	player_input.input_received.connect(on_input)
@@ -49,7 +49,7 @@ func setup_player( map: MapScript, player_input: PlayerInput, is_in_lobby: bool 
 	if is_in_lobby:
 		gl = globGameManager.scene_root.current_scene as GameLobby
 	else:
-		if globGameManager.scene_root: 
+		if globGameManager.scene_root:
 			mm = globGameManager.scene_root.current_scene as MatchManager
 		else:
 			push_warning("No scene root found. setting mm as null...")
@@ -65,7 +65,7 @@ func setup_player( map: MapScript, player_input: PlayerInput, is_in_lobby: bool 
 		freeze = true
 	for x in abilities:
 		x.setup(map)
-	setup_completed.emit(self)
+	setup_completed.emit(self )
 
 # fixing MP flickering
 # https://www.reddit.com/r/godot/comments/180ywzs/multiplayersynchronizer_and_rigidbody/
@@ -80,8 +80,9 @@ func _integrate_forces(_state):
 		rotation = sync_rot
 
 func on_input(input_info: InputInfo, ignore_server_check: bool = false):
-	if not ignore_server_check:
-		assert(multiplayer.is_server())
+	# if not ignore_server_check:
+	# 	return
+		# assert(multiplayer.is_server())
 	match input_info.input_type:
 		InputInfo.InputType.MOVE_X:
 			x_input = input_info.axis_value
@@ -124,6 +125,7 @@ func on_input(input_info: InputInfo, ignore_server_check: bool = false):
 				if is_in_lobby:
 					cycle_skin(1)
 		_:
+			push_warning("Input type is undefined, doing nothing...")
 			pass
 
 func _on_input_unlocked():

@@ -214,6 +214,8 @@ func _physics_process(delta):
 func input_info_axis_x(value: float) -> InputInfo:
 	return InputInfo.new({
 		"input_type": InputInfo.InputType.MOVE_X,
+		"device_id": 0,
+		"peer_id": 0,
 		"is_pressed": true,
 		"axis_value": value,
 	})
@@ -222,6 +224,8 @@ func input_info_axis_x(value: float) -> InputInfo:
 func input_info_axis_y(value: float) -> InputInfo:
 	return InputInfo.new({
 		"input_type": InputInfo.InputType.MOVE_Y,
+		"device_id": 0,
+		"peer_id": 0,
 		"is_pressed": true,
 		"axis_value": value,
 	})
@@ -229,6 +233,8 @@ func input_info_axis_y(value: float) -> InputInfo:
 func input_info_axis_plus(value: float) -> InputInfo:
 	return InputInfo.new({
 		"input_type": InputInfo.InputType.PLUS,
+		"device_id": 0,
+		"peer_id": 0,
 		"is_pressed": true,
 		"axis_value": value,
 	})
@@ -236,6 +242,8 @@ func input_info_axis_plus(value: float) -> InputInfo:
 func input_info_axis_minus(value: float) -> InputInfo:
 	return InputInfo.new({
 		"input_type": InputInfo.InputType.MINUS,
+		"device_id": 0,
+		"peer_id": 0,
 		"is_pressed": true,
 		"axis_value": value,
 	})

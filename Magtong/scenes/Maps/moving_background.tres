@@ -1,4 +1,4 @@
-[gd_resource type="ShaderMaterial" load_steps=10 format=3 uid="uid://b6kdhahtxkbxl"]
+[gd_resource type="ShaderMaterial" format=3 uid="uid://b6kdhahtxkbxl"]
 
 [ext_resource type="Shader" uid="uid://kx1crdiabsen" path="res://assets/Textures/Shaders/moving_background.gdshader" id="1_balcx"]
 

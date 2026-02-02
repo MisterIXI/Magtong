@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://do0i7ixg4d7p1"]
+[gd_scene format=3 uid="uid://do0i7ixg4d7p1"]
 
 [ext_resource type="Script" uid="uid://ckl5efhgnjjk5" path="res://scenes/Player/PlayerVisuals.gd" id="1_31gdm"]
 [ext_resource type="PhysicsMaterial" uid="uid://b0b4nmkgg6odu" path="res://resources/Player_physics_mat.tres" id="1_o1307"]
@@ -12,6 +12,7 @@
 [ext_resource type="Texture2D" uid="uid://dt4t6l1gnn6bj" path="res://assets/Textures/blank pixels.png" id="10_mioy0"]
 [ext_resource type="Script" uid="uid://bv0frw24fkere" path="res://scenes/Player/Abilities/impulse.gd" id="11_qrj2s"]
 [ext_resource type="Script" uid="uid://dw6nfyd0kxs1h" path="res://scenes/Player/Abilities/orbit_lock.gd" id="12_0fqa4"]
+[ext_resource type="Script" uid="uid://pvmidorxlrne" path="res://scenes/Player/player_p2p_sync.gd" id="13_2l2e6"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_smi2p"]
 radius = 22.0227
@@ -24,23 +25,9 @@ point_count = 4
 _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.718468, 0.797802), -0.798401, -0.798401, 0, 0, Vector2(1, 0), -3.20139, 0.0, 0, 0]
 point_count = 3
 
-[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_i0q21"]
-properties/0/path = NodePath(".:sync_pos")
-properties/0/spawn = true
-properties/0/replication_mode = 1
-properties/1/path = NodePath(".:sync_rot")
-properties/1/spawn = true
-properties/1/replication_mode = 1
-properties/2/path = NodePath(".:rotation")
-properties/2/spawn = false
-properties/2/replication_mode = 0
-properties/3/path = NodePath(".:position")
-properties/3/spawn = false
-properties/3/replication_mode = 0
-
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_xje1m"]
 
-[node name="PlayerBody" type="RigidBody2D" node_paths=PackedStringArray("pulse_timer", "impulse_timer", "player_skin", "abilities", "collider") groups=["PlayerBody"]]
+[node name="PlayerBody" type="RigidBody2D" unique_id=1938512223 node_paths=PackedStringArray("pulse_timer", "impulse_timer", "player_skin", "abilities", "collider") groups=["PlayerBody"]]
 collision_layer = 3
 collision_mask = 3
 mass = 5.0
@@ -55,15 +42,15 @@ player_skin = NodePath("Graphics/PlayerCharacter")
 abilities = [NodePath("Abilities/Impulse"), NodePath("Abilities/OrbitLock")]
 collider = NodePath("CollisionShape2D")
 
-[node name="TestSprite" type="Sprite2D" parent="."]
+[node name="TestSprite" type="Sprite2D" parent="." unique_id=1351362273]
 visible = false
 scale = Vector2(3.39, 3.39)
 texture = ExtResource("4_o87xm")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1604682779]
 shape = SubResource("CircleShape2D_smi2p")
 
-[node name="Graphics" type="Node2D" parent="." node_paths=PackedStringArray("sprite", "player", "plus_particles", "minus_particles", "plus_burst_particles", "minus_burst_particles", "pol_shader_sprite")]
+[node name="Graphics" type="Node2D" parent="." unique_id=536745034 node_paths=PackedStringArray("sprite", "player", "plus_particles", "minus_particles", "plus_burst_particles", "minus_burst_particles", "pol_shader_sprite")]
 scale = Vector2(1.451, 1.451)
 script = ExtResource("1_31gdm")
 sprite = NodePath("PlayerCharacter")
@@ -75,12 +62,12 @@ minus_burst_particles = NodePath("MinusBurst")
 settings = ExtResource("3_qurob")
 pol_shader_sprite = NodePath("BackBufferCopy/PlayerShader")
 
-[node name="PlayerCharacter" type="Sprite2D" parent="Graphics"]
+[node name="PlayerCharacter" type="Sprite2D" parent="Graphics" unique_id=642487351]
 z_index = 1
 scale = Vector2(0.06, 0.06)
 texture = ExtResource("5_nlqny")
 
-[node name="PlusParticles" type="CPUParticles2D" parent="Graphics"]
+[node name="PlusParticles" type="CPUParticles2D" parent="Graphics" unique_id=1348201909]
 emitting = false
 amount = 100
 texture = ExtResource("5_igkf6")
@@ -96,7 +83,7 @@ scale_amount_max = 0.3
 scale_amount_curve = SubResource("Curve_ikk82")
 color = Color(1, 0, 0, 0.498039)
 
-[node name="MinusParticles" type="CPUParticles2D" parent="Graphics"]
+[node name="MinusParticles" type="CPUParticles2D" parent="Graphics" unique_id=464649108]
 emitting = false
 amount = 100
 texture = ExtResource("6_ipbde")
@@ -112,7 +99,7 @@ scale_amount_max = 0.3
 scale_amount_curve = SubResource("Curve_ikk82")
 color = Color(0, 0, 1, 0.498039)
 
-[node name="PlusBurst" type="CPUParticles2D" parent="Graphics"]
+[node name="PlusBurst" type="CPUParticles2D" parent="Graphics" unique_id=1596233912]
 emitting = false
 amount = 30
 texture = ExtResource("5_igkf6")
@@ -126,7 +113,7 @@ initial_velocity_max = 500.0
 scale_amount_curve = SubResource("Curve_a04ll")
 color = Color(1, 0, 0, 1)
 
-[node name="MinusBurst" type="CPUParticles2D" parent="Graphics"]
+[node name="MinusBurst" type="CPUParticles2D" parent="Graphics" unique_id=2146506625]
 emitting = false
 amount = 30
 texture = ExtResource("6_ipbde")
@@ -140,50 +127,50 @@ initial_velocity_max = 500.0
 scale_amount_curve = SubResource("Curve_a04ll")
 color = Color(0, 0, 1, 1)
 
-[node name="BackBufferCopy" type="BackBufferCopy" parent="Graphics"]
+[node name="BackBufferCopy" type="BackBufferCopy" parent="Graphics" unique_id=192759862]
 copy_mode = 2
 
-[node name="PlayerShader" type="Sprite2D" parent="Graphics/BackBufferCopy"]
+[node name="PlayerShader" type="Sprite2D" parent="Graphics/BackBufferCopy" unique_id=1902451682]
 material = ExtResource("9_egiyc")
 scale = Vector2(28.985, 28.985)
 texture = ExtResource("10_mioy0")
 
-[node name="FieldManager" type="Node2D" parent="."]
+[node name="FieldManager" type="Node2D" parent="." unique_id=1811094384]
 
-[node name="Pulse_CD" type="Timer" parent="."]
+[node name="Pulse_CD" type="Timer" parent="." unique_id=2069636502]
 one_shot = true
 
-[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
-replication_config = SubResource("SceneReplicationConfig_i0q21")
+[node name="Abilities" type="Node2D" parent="." unique_id=352481725]
 
-[node name="Abilities" type="Node2D" parent="."]
-
-[node name="Impulse" type="Node2D" parent="Abilities" node_paths=PackedStringArray("cd_timer", "player")]
+[node name="Impulse" type="Node2D" parent="Abilities" unique_id=578697263 node_paths=PackedStringArray("cd_timer", "player")]
 script = ExtResource("11_qrj2s")
 cd_timer = NodePath("Impulse_CD")
 ability_name = "Impulse"
 player = NodePath("../..")
 
-[node name="Impulse_CD" type="Timer" parent="Abilities/Impulse"]
+[node name="Impulse_CD" type="Timer" parent="Abilities/Impulse" unique_id=1209849363]
 one_shot = true
 
-[node name="OrbitLock" type="Node2D" parent="Abilities" node_paths=PackedStringArray("max_orbit_timer", "orbit_cd", "player")]
+[node name="OrbitLock" type="Node2D" parent="Abilities" unique_id=246410903 node_paths=PackedStringArray("max_orbit_timer", "orbit_cd", "player")]
 script = ExtResource("12_0fqa4")
 max_orbit_timer = NodePath("OrbitLimiter")
 orbit_cd = NodePath("Orbit_CD")
 ability_name = "OrbitLock"
 player = NodePath("../..")
 
-[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="Abilities/OrbitLock"]
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="Abilities/OrbitLock" unique_id=148462174]
 replication_config = SubResource("SceneReplicationConfig_xje1m")
 
-[node name="Orbit_CD" type="Timer" parent="Abilities/OrbitLock"]
+[node name="Orbit_CD" type="Timer" parent="Abilities/OrbitLock" unique_id=1886200788]
 one_shot = true
 
-[node name="OrbitLimiter" type="Timer" parent="Abilities/OrbitLock"]
+[node name="OrbitLimiter" type="Timer" parent="Abilities/OrbitLock" unique_id=1003645588]
 one_shot = true
 
-[node name="PinJoint2D" type="PinJoint2D" parent="Abilities/OrbitLock"]
+[node name="PinJoint2D" type="PinJoint2D" parent="Abilities/OrbitLock" unique_id=1979243455]
+
+[node name="p2p_sync" type="Node" parent="." unique_id=137913855]
+script = ExtResource("13_2l2e6")
 
 [connection signal="polarity_changed" from="." to="Graphics" method="on_polarity_changed"]
 [connection signal="pulse_emitted" from="." to="Graphics" method="_on_player_body_pulse_emitted"]

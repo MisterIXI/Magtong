@@ -26,7 +26,7 @@ signal state_changed(old_state: State, new_state: State)
 @export var message_vbox: VBoxContainer
 @export var message_scrollbox: ScrollContainer
 @export var message_panel: PanelContainer
-
+var p2_id: int = -1
 var player_ids: Dictionary = {}
 var p_id_helper: int = 1
 @onready var scene_root: SceneRoot = get_node("/root/MainScene/SceneRoot")
@@ -130,6 +130,8 @@ func start_game():
 	_change_state(State.GAME)
 
 func _on_peer_connected(peer_id: int):
+	if peer_id != 1:
+		p2_id = peer_id
 	player_ids[peer_id] = p_id_helper
 	send_message.rpc("New player connected! ID: " + str(p_id_helper))
 	p_id_helper += 1

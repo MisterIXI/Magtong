@@ -9,9 +9,11 @@ var peer: SteamMultiplayerPeer
 var is_host: bool = false
 var lobbies: Array = []
 var curr_lobby_members: Array[Dictionary] = []
-
+var lobby_host_steam_id: int = -1
 var steam_id: int = -1
 var steam_name: String = ""
+
+var p2_id: int = -1
 
 func _ready():
 	initilize_steam()
@@ -88,6 +90,7 @@ func _on_lobby_created(connect_code: int, lobby_id: int) -> void:
 		var peer : MultiplayerPeer = SteamMultiplayerPeer.new()
 		peer.server_relay = false
 		peer.host_with_lobby(lobby_id)
+		self.lobby_id = lobby_id
 		multiplayer.multiplayer_peer = peer
 		is_host = true
 		globGameManager._change_state(globGameManager.State.LOBBY)
@@ -111,9 +114,10 @@ func _on_lobby_joined(lobby: int, _permissions: int, _locked: bool, response: in
 		print("Successfully joined lobby ID: ", lobby)
 		lobby_id = lobby
 		_get_lobby_members()
-		var is_lobby_owner = Steam.getLobbyOwner(lobby_id)
+		var lobby_owner_id = Steam.getLobbyOwner(lobby_id)
+		lobby_host_steam_id = lobby_owner_id
 		var own_id = Steam.getSteamID()
-		if is_lobby_owner != own_id:
+		if lobby_owner_id != own_id:
 			var peer : MultiplayerPeer = SteamMultiplayerPeer.new()
 			peer.server_relay = false
 			var retval = peer.create_client(lobby_id, 0)
@@ -142,11 +146,13 @@ func _on_lobby_message(lobby_id: int, user: int, message: String, chat_type: int
 	print("Lobby message received in lobby ID: ", lobby_id, " from user ID: ", user, " with message: ", message, " of type: ", chat_type)
 
 func _on_persona_state_change(steam_id: int, flags: int) -> void:
-	print("Persona state changed for Steam ID: ", steam_id, " with flags: ", flags)
+	pass
+	# print("Persona state changed for Steam ID: ", steam_id, " with flags: ", flags)
 
 
 func _on_p2p_session_request(remote_id: int) -> void:
 	print("Accepted p2p session with ")
+	p2_id = remote_id
 	Steam.acceptP2PSessionWithUser(remote_id)
 
 func get_steam_name(steam_id: int) -> String:
@@ -166,5 +172,5 @@ func _input(event):
 			if curr_lobby_members.size() < 2:
 				push_warning("too little members in array...")
 				return
-			print("0: ", Steam.getP2PSessionState(1))
-			print("1: ", Steam.getP2PSessionState(curr_lobby_members[1]["steam_id"]))
+			# print("0: ", Steam.getP2PSessionState(1))
+			# print("1: ", Steam.getP2PSessionState(curr_lobby_members[1]["steam_id"]))

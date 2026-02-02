@@ -171,7 +171,8 @@ func _physics_process(delta):
 				player.reset(player.forced_pos)
 				player.force_move_flag = false
 			else:
-				player.linear_velocity = player.linear_velocity.move_toward(player.target_vel, settings.accell * delta)
+				# player.linear_velocity = player.linear_velocity.move_toward(player.target_vel, settings.accell * delta)
+				player.linear_velocity = player.target_vel
 		
 func on_pulse_from(pulse_pos: Vector2) -> void:
 	for puck in pucks:

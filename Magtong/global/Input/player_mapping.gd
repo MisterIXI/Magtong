@@ -87,10 +87,10 @@ func set_keyboard_mapping2():
 func check_input(event: InputEvent) -> InputInfo:
 	# check keyboard
 	var input = InputInfo.new()
-
 	if self.is_keyboard and event is InputEventKey:
 		var key_event = event as InputEventKey
 		var keycode = key_event.keycode
+		input.device_id = -1
 		# print(key_event)
 		if key_event.keycode == self.k_up:
 			self.k_up_pressed = key_event.pressed
@@ -138,6 +138,7 @@ func check_input(event: InputEvent) -> InputInfo:
 	# check joystick axis
 	elif not self.is_keyboard and event is InputEventJoypadMotion:
 		var joy_event = event as InputEventJoypadMotion
+		input.device_id = joy_event.device
 		if joy_event.axis == self.j_x_axis:
 			input.input_type = InputInfo.InputType.MOVE_X
 			input.axis_value = joy_event.axis_value
@@ -153,6 +154,7 @@ func check_input(event: InputEvent) -> InputInfo:
 	# check joystick buttons
 	elif not self.is_keyboard and event is InputEventJoypadButton:
 		var joy_event = event as InputEventJoypadButton
+		input.device_id = joy_event.device
 		if joy_event.button_index == self.j_plusB:
 			input.input_type = InputInfo.InputType.PLUS
 			input.axis_value = 1.0 if joy_event.pressed else 0.0

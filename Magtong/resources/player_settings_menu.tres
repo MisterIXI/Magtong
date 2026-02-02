@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="PlayerSettings" load_steps=3 format=3 uid="uid://ua78q2387d0m"]
+[gd_resource type="Resource" script_class="PlayerSettings" format=3 uid="uid://ua78q2387d0m"]
 
 [ext_resource type="Script" uid="uid://diu4aanwoj8dd" path="res://scenes/Player/player_settings.gd" id="1_63q82"]
 
