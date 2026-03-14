@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://dfrx78wg8rqmp"]
+[gd_scene format=3 uid="uid://dfrx78wg8rqmp"]
 
 [ext_resource type="Script" uid="uid://sa63i4yiqm1a" path="res://scenes/Maps/map_script.gd" id="1_wbm5i"]
 [ext_resource type="Texture2D" uid="uid://pthgonvw7edr" path="res://assets/Textures/PlayField/Field_default_v2.png" id="2_8n442"]
@@ -8,6 +8,7 @@
 [ext_resource type="Script" uid="uid://b1xrsvxdwgo35" path="res://scenes/Maps/spawn_point_group.gd" id="4_jds7q"]
 [ext_resource type="Script" uid="uid://ebrdju6fmb3p" path="res://scenes/visual_components/tween_modulate_alpha_blink.gd" id="5_e81lu"]
 [ext_resource type="Texture2D" uid="uid://c023clfhq43lh" path="res://assets/Textures/PlayField/Field_default_v3.png" id="5_gm1x1"]
+[ext_resource type="Script" uid="uid://cqlbhp03yjnsg" path="res://scenes/Maps/entity_spawner.gd" id="8_mp02d"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_mw83u"]
 
@@ -35,21 +36,21 @@ size = Vector2(145, 250)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wws8m"]
 size = Vector2(260, 60)
 
-[node name="MapDefault" type="Node2D" node_paths=PackedStringArray("player_spawn_groups", "ball_spawn_group", "spawner", "mp_root", "team_indicator_groups", "divider_collider", "lobby_areas", "lobby_labels")]
+[node name="MapDefault" type="Node2D" unique_id=2021643607 node_paths=PackedStringArray("player_spawn_groups", "ball_spawn_group", "spawner", "mp_root", "team_indicator_groups", "divider_collider", "lobby_areas", "lobby_labels")]
 script = ExtResource("1_wbm5i")
 player_spawn_groups = [NodePath("FieldCenter/SpawnPoints/CenterBackSpawns"), NodePath("FieldCenter/SpawnPoints/LeftBackSpawns"), NodePath("FieldCenter/SpawnPoints/RightBackSpawns")]
 ball_spawn_group = NodePath("FieldCenter/SpawnPoints/BallSpawns")
-spawner = NodePath("FieldCenter/EntitySpawner")
+spawner = NodePath("")
 mp_root = NodePath("FieldCenter/MultiplayerRoot")
 team_indicator_groups = NodePath("FieldCenter/TeamIndicatorPoints")
 divider_collider = NodePath("FieldCenter/CenterLineCollider")
 lobby_areas = [NodePath("FieldCenter/Team0_ready_area"), NodePath("FieldCenter/Team1_ready_area"), NodePath("FieldCenter/Team2_ready_area")]
 lobby_labels = [NodePath("FieldCenter/Team0_ready_area/T0ReadyLabel"), NodePath("FieldCenter/Team1_ready_area/T1ReadyLabel"), NodePath("FieldCenter/Team2_ready_area/T2ReadyLabel")]
 
-[node name="FieldCenter" type="Node2D" parent="."]
+[node name="FieldCenter" type="Node2D" parent="." unique_id=862220121]
 scale = Vector2(1.215, 1.215)
 
-[node name="ColorRect" type="ColorRect" parent="FieldCenter"]
+[node name="ColorRect" type="ColorRect" parent="FieldCenter" unique_id=856120988]
 texture_repeat = 2
 material = ExtResource("2_mw83u")
 anchors_preset = 8
@@ -66,127 +67,127 @@ grow_vertical = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 
-[node name="Image" type="Sprite2D" parent="FieldCenter"]
+[node name="Image" type="Sprite2D" parent="FieldCenter" unique_id=1243405154]
 modulate = Color(2, 2, 2, 1)
 scale = Vector2(0.604, 0.604)
 texture = ExtResource("5_gm1x1")
 
-[node name="Image2" type="Sprite2D" parent="FieldCenter"]
+[node name="Image2" type="Sprite2D" parent="FieldCenter" unique_id=955798597]
 visible = false
 scale = Vector2(0.604, 0.604)
 texture = SubResource("NoiseTexture2D_mp02d")
 
-[node name="FieldDefault" type="Sprite2D" parent="FieldCenter"]
+[node name="FieldDefault" type="Sprite2D" parent="FieldCenter" unique_id=264952607]
 visible = false
 scale = Vector2(0.171, 0.171)
 texture = ExtResource("2_8n442")
 
-[node name="BorderCollider" type="StaticBody2D" parent="FieldCenter"]
+[node name="BorderCollider" type="StaticBody2D" parent="FieldCenter" unique_id=591679011]
 
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="FieldCenter/BorderCollider"]
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="FieldCenter/BorderCollider" unique_id=2053871592]
 position = Vector2(-510.156, -202.344)
 scale = Vector2(0.171, 0.171)
 polygon = PackedVector2Array(-173.611, 137.061, -159.905, 82.2368, -146.199, 13.7062, -123.355, -63.9619, -82.2368, -150.767, -22.8438, -237.573, 36.5496, -306.104, 114.218, -370.066, 219.298, -424.89, 301.535, -456.871, 397.478, -479.715, 475.146, -488.852, -219.298, -639.62)
 
-[node name="CollisionPolygon2D2" type="CollisionPolygon2D" parent="FieldCenter/BorderCollider"]
+[node name="CollisionPolygon2D2" type="CollisionPolygon2D" parent="FieldCenter/BorderCollider" unique_id=149763567]
 position = Vector2(456.25, -256.25)
 rotation = 1.57079
 scale = Vector2(0.171, 0.171)
 polygon = PackedVector2Array(-173.611, 137.061, -159.905, 82.2368, -146.199, 13.7062, -123.355, -63.9619, -82.2368, -150.767, -22.8438, -237.573, 36.5496, -306.104, 114.218, -370.066, 219.298, -424.89, 301.535, -456.871, 397.478, -479.715, 475.146, -488.852, -219.298, -667.032)
 
-[node name="CollisionPolygon2D3" type="CollisionPolygon2D" parent="FieldCenter/BorderCollider"]
+[node name="CollisionPolygon2D3" type="CollisionPolygon2D" parent="FieldCenter/BorderCollider" unique_id=648090825]
 position = Vector2(-456.79, 255.967)
 rotation = -1.57079
 scale = Vector2(0.171, 0.171)
 polygon = PackedVector2Array(-173.611, 137.061, -159.905, 82.2368, -146.199, 13.7062, -123.355, -63.9619, -82.2368, -150.767, -22.8438, -237.573, 36.5496, -306.104, 114.218, -370.066, 219.298, -424.89, 301.535, -456.871, 397.478, -479.715, 475.146, -488.852, -219.298, -639.62)
 
-[node name="CollisionPolygon2D4" type="CollisionPolygon2D" parent="FieldCenter/BorderCollider"]
+[node name="CollisionPolygon2D4" type="CollisionPolygon2D" parent="FieldCenter/BorderCollider" unique_id=1184209547]
 position = Vector2(510.288, 201.646)
 rotation = 3.14159
 scale = Vector2(0.171, 0.171)
 polygon = PackedVector2Array(-173.611, 137.061, -159.905, 82.2368, -146.199, 13.7062, -123.355, -63.9619, -82.2368, -150.767, -22.8438, -237.573, 36.5496, -306.104, 114.218, -370.066, 219.298, -424.89, 301.535, -456.871, 397.478, -479.715, 475.146, -488.852, -219.298, -667.032)
 
-[node name="RightWallBack" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
+[node name="RightWallBack" type="CollisionShape2D" parent="FieldCenter/BorderCollider" unique_id=492216406]
 position = Vector2(586.008, 1.62559e-10)
 rotation = -1.5708
 shape = SubResource("RectangleShape2D_53t0d")
 
-[node name="RightWallTop" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
+[node name="RightWallTop" type="CollisionShape2D" parent="FieldCenter/BorderCollider" unique_id=990810239]
 position = Vector2(562.078, -176.543)
 rotation = -1.5708
 shape = SubResource("RectangleShape2D_q586n")
 
-[node name="RightWallBottom" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
+[node name="RightWallBottom" type="CollisionShape2D" parent="FieldCenter/BorderCollider" unique_id=83958820]
 position = Vector2(562.14, 176.955)
 rotation = -1.5708
 shape = SubResource("RectangleShape2D_q586n")
 
-[node name="LeftWallBack" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
+[node name="LeftWallBack" type="CollisionShape2D" parent="FieldCenter/BorderCollider" unique_id=593959390]
 position = Vector2(-586.008, -1.62559e-10)
 rotation = -1.5708
 shape = SubResource("RectangleShape2D_53t0d")
 
-[node name="LeftWallTop" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
+[node name="LeftWallTop" type="CollisionShape2D" parent="FieldCenter/BorderCollider" unique_id=887404193]
 position = Vector2(-562.14, -176.955)
 rotation = -1.5708
 shape = SubResource("RectangleShape2D_q586n")
 
-[node name="LeftWallBottom" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
+[node name="LeftWallBottom" type="CollisionShape2D" parent="FieldCenter/BorderCollider" unique_id=882161610]
 position = Vector2(-562.14, 176.955)
 rotation = -1.5708
 shape = SubResource("RectangleShape2D_q586n")
 
-[node name="TopWall" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
+[node name="TopWall" type="CollisionShape2D" parent="FieldCenter/BorderCollider" unique_id=1524325124]
 position = Vector2(0, -300)
 shape = SubResource("RectangleShape2D_5c01j")
 
-[node name="BottomWall" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
+[node name="BottomWall" type="CollisionShape2D" parent="FieldCenter/BorderCollider" unique_id=767392118]
 position = Vector2(0, 300)
 shape = SubResource("RectangleShape2D_5c01j")
 
-[node name="CenterLineCollider" type="StaticBody2D" parent="FieldCenter"]
+[node name="CenterLineCollider" type="StaticBody2D" parent="FieldCenter" unique_id=608386005]
 collision_layer = 2
 collision_mask = 2
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="FieldCenter/CenterLineCollider"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="FieldCenter/CenterLineCollider" unique_id=1298649445]
 shape = SubResource("RectangleShape2D_2cnpn")
 
-[node name="GoalLeft" type="Area2D" parent="FieldCenter"]
+[node name="GoalLeft" type="Area2D" parent="FieldCenter" unique_id=1412510151]
 position = Vector2(-564.844, 0)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="FieldCenter/GoalLeft"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="FieldCenter/GoalLeft" unique_id=2052907623]
 position = Vector2(5.34778, 0)
 shape = SubResource("RectangleShape2D_rw2oh")
 
-[node name="Sprite2D" type="Sprite2D" parent="FieldCenter/GoalLeft"]
+[node name="Sprite2D" type="Sprite2D" parent="FieldCenter/GoalLeft" unique_id=2002548380]
 modulate = Color(1, 0, 0, 1)
 position = Vector2(5.99601, 0)
 scale = Vector2(2.31625, 17.5187)
 texture = ExtResource("3_0ppxq")
 
-[node name="GoalRight" type="Area2D" parent="FieldCenter"]
+[node name="GoalRight" type="Area2D" parent="FieldCenter" unique_id=11152872]
 position = Vector2(534.866, 0)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="FieldCenter/GoalRight"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="FieldCenter/GoalRight" unique_id=1740600187]
 position = Vector2(23.9817, 0)
 shape = SubResource("RectangleShape2D_rw2oh")
 
-[node name="Sprite2D" type="Sprite2D" parent="FieldCenter/GoalRight"]
+[node name="Sprite2D" type="Sprite2D" parent="FieldCenter/GoalRight" unique_id=2125583747]
 modulate = Color(0.0869751, 0.327561, 0.742188, 1)
 position = Vector2(23.9817, 0)
 scale = Vector2(2.31625, 17.5187)
 texture = ExtResource("3_0ppxq")
 
-[node name="Team1_ready_area" type="Area2D" parent="FieldCenter"]
+[node name="Team1_ready_area" type="Area2D" parent="FieldCenter" unique_id=646115073]
 position = Vector2(-466.406, 0)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="FieldCenter/Team1_ready_area"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="FieldCenter/Team1_ready_area" unique_id=319348644]
 shape = SubResource("RectangleShape2D_ilral")
 
-[node name="DownScaler" type="Node2D" parent="FieldCenter/Team1_ready_area"]
+[node name="DownScaler" type="Node2D" parent="FieldCenter/Team1_ready_area" unique_id=829993556]
 scale = Vector2(0.25, 0.25)
 
-[node name="NinePatchRect" type="NinePatchRect" parent="FieldCenter/Team1_ready_area/DownScaler"]
+[node name="NinePatchRect" type="NinePatchRect" parent="FieldCenter/Team1_ready_area/DownScaler" unique_id=1068080991]
 auto_translate_mode = 1
 modulate = Color(1, 0, 0, 0.4)
 offset_left = -282.0
@@ -200,13 +201,13 @@ patch_margin_top = 80
 patch_margin_right = 80
 patch_margin_bottom = 80
 
-[node name="VC_BlinkAlpha" type="Node" parent="FieldCenter/Team1_ready_area/DownScaler/NinePatchRect"]
+[node name="VC_BlinkAlpha" type="Node" parent="FieldCenter/Team1_ready_area/DownScaler/NinePatchRect" unique_id=759762811]
 script = ExtResource("5_e81lu")
 upper_bound = 0.5
 lower_bound = 0.4
 cycle_duration = 1.5
 
-[node name="T1ReadyLabel" type="Label" parent="FieldCenter/Team1_ready_area"]
+[node name="T1ReadyLabel" type="Label" parent="FieldCenter/Team1_ready_area" unique_id=2078236096]
 offset_left = 50.0
 offset_top = 125.0
 offset_right = 96.0
@@ -214,16 +215,16 @@ offset_bottom = 167.0
 theme_override_font_sizes/font_size = 30
 text = "0/3"
 
-[node name="Team2_ready_area" type="Area2D" parent="FieldCenter"]
+[node name="Team2_ready_area" type="Area2D" parent="FieldCenter" unique_id=2038707013]
 position = Vector2(465.524, 0)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="FieldCenter/Team2_ready_area"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="FieldCenter/Team2_ready_area" unique_id=510151208]
 shape = SubResource("RectangleShape2D_ilral")
 
-[node name="DownScaler" type="Node2D" parent="FieldCenter/Team2_ready_area"]
+[node name="DownScaler" type="Node2D" parent="FieldCenter/Team2_ready_area" unique_id=322476876]
 scale = Vector2(0.25, 0.25)
 
-[node name="NinePatchRect" type="NinePatchRect" parent="FieldCenter/Team2_ready_area/DownScaler"]
+[node name="NinePatchRect" type="NinePatchRect" parent="FieldCenter/Team2_ready_area/DownScaler" unique_id=1644296522]
 modulate = Color(0, 0, 1, 0.4)
 offset_left = -282.0
 offset_top = -500.0
@@ -236,13 +237,13 @@ patch_margin_top = 80
 patch_margin_right = 80
 patch_margin_bottom = 80
 
-[node name="VC_BlinkAlpha2" type="Node" parent="FieldCenter/Team2_ready_area/DownScaler/NinePatchRect"]
+[node name="VC_BlinkAlpha2" type="Node" parent="FieldCenter/Team2_ready_area/DownScaler/NinePatchRect" unique_id=346436672]
 script = ExtResource("5_e81lu")
 upper_bound = 0.5
 lower_bound = 0.4
 cycle_duration = 1.5
 
-[node name="T2ReadyLabel" type="Label" parent="FieldCenter/Team2_ready_area"]
+[node name="T2ReadyLabel" type="Label" parent="FieldCenter/Team2_ready_area" unique_id=770435143]
 auto_translate_mode = 1
 offset_left = -95.0
 offset_top = 125.0
@@ -251,16 +252,16 @@ offset_bottom = 167.0
 theme_override_font_sizes/font_size = 30
 text = "0/3"
 
-[node name="Team0_ready_area" type="Area2D" parent="FieldCenter"]
+[node name="Team0_ready_area" type="Area2D" parent="FieldCenter" unique_id=585995974]
 position = Vector2(0, 255)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="FieldCenter/Team0_ready_area"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="FieldCenter/Team0_ready_area" unique_id=959175406]
 shape = SubResource("RectangleShape2D_wws8m")
 
-[node name="DownScaler" type="Node2D" parent="FieldCenter/Team0_ready_area"]
+[node name="DownScaler" type="Node2D" parent="FieldCenter/Team0_ready_area" unique_id=796814471]
 scale = Vector2(0.25, 0.25)
 
-[node name="NinePatchRect" type="NinePatchRect" parent="FieldCenter/Team0_ready_area/DownScaler"]
+[node name="NinePatchRect" type="NinePatchRect" parent="FieldCenter/Team0_ready_area/DownScaler" unique_id=825416065]
 auto_translate_mode = 1
 modulate = Color(0.194349, 0.194349, 0.194349, 0.4)
 offset_left = -520.0
@@ -274,13 +275,13 @@ patch_margin_top = 80
 patch_margin_right = 80
 patch_margin_bottom = 80
 
-[node name="VC_BlinkAlpha3" type="Node" parent="FieldCenter/Team0_ready_area/DownScaler/NinePatchRect"]
+[node name="VC_BlinkAlpha3" type="Node" parent="FieldCenter/Team0_ready_area/DownScaler/NinePatchRect" unique_id=1659221975]
 script = ExtResource("5_e81lu")
 upper_bound = 0.5
 lower_bound = 0.4
 cycle_duration = 1.5
 
-[node name="T0ReadyLabel" type="Label" parent="FieldCenter/Team0_ready_area"]
+[node name="T0ReadyLabel" type="Label" parent="FieldCenter/Team0_ready_area" unique_id=88739093]
 auto_translate_mode = 1
 offset_left = -178.125
 offset_top = -12.0313
@@ -290,67 +291,66 @@ theme_override_font_sizes/font_size = 30
 text = "0"
 horizontal_alignment = 2
 
-[node name="EntitySpawner" type="MultiplayerSpawner" parent="FieldCenter"]
-_spawnable_scenes = PackedStringArray("uid://do0i7ixg4d7p1", "uid://dlc283cvpl3eh")
-spawn_path = NodePath("../MultiplayerRoot")
+[node name="EntitySpawner2" type="Node" parent="FieldCenter" unique_id=1910560455]
+script = ExtResource("8_mp02d")
 
-[node name="MultiplayerRoot" type="Node2D" parent="FieldCenter"]
+[node name="MultiplayerRoot" type="Node2D" parent="FieldCenter" unique_id=613893040]
 
-[node name="SpawnPoints" type="Node2D" parent="FieldCenter"]
+[node name="SpawnPoints" type="Node2D" parent="FieldCenter" unique_id=196552320]
 
-[node name="BallSpawns" type="Node2D" parent="FieldCenter/SpawnPoints" node_paths=PackedStringArray("spawn_points")]
+[node name="BallSpawns" type="Node2D" parent="FieldCenter/SpawnPoints" unique_id=1912686784 node_paths=PackedStringArray("spawn_points")]
 script = ExtResource("4_jds7q")
 spawn_points = [NodePath("CenterSpawn"), NodePath("TopSpawn"), NodePath("BottomSpawn")]
 
-[node name="CenterSpawn" type="Node2D" parent="FieldCenter/SpawnPoints/BallSpawns"]
+[node name="CenterSpawn" type="Node2D" parent="FieldCenter/SpawnPoints/BallSpawns" unique_id=1161736582]
 
-[node name="TopSpawn" type="Node2D" parent="FieldCenter/SpawnPoints/BallSpawns"]
+[node name="TopSpawn" type="Node2D" parent="FieldCenter/SpawnPoints/BallSpawns" unique_id=1551506738]
 position = Vector2(0, -86)
 
-[node name="BottomSpawn" type="Node2D" parent="FieldCenter/SpawnPoints/BallSpawns"]
+[node name="BottomSpawn" type="Node2D" parent="FieldCenter/SpawnPoints/BallSpawns" unique_id=567841346]
 position = Vector2(0, 83)
 
-[node name="CenterBackSpawns" type="Node2D" parent="FieldCenter/SpawnPoints" node_paths=PackedStringArray("spawn_points")]
+[node name="CenterBackSpawns" type="Node2D" parent="FieldCenter/SpawnPoints" unique_id=491877504 node_paths=PackedStringArray("spawn_points")]
 script = ExtResource("4_jds7q")
 spawn_points = [NodePath("P1_Spawn"), NodePath("P2_Spawn")]
 
-[node name="P1_Spawn" type="Node2D" parent="FieldCenter/SpawnPoints/CenterBackSpawns"]
+[node name="P1_Spawn" type="Node2D" parent="FieldCenter/SpawnPoints/CenterBackSpawns" unique_id=1354226525]
 position = Vector2(-350, 0)
 
-[node name="P2_Spawn" type="Node2D" parent="FieldCenter/SpawnPoints/CenterBackSpawns"]
+[node name="P2_Spawn" type="Node2D" parent="FieldCenter/SpawnPoints/CenterBackSpawns" unique_id=1129405449]
 position = Vector2(350, 0)
 
-[node name="LeftBackSpawns" type="Node2D" parent="FieldCenter/SpawnPoints" node_paths=PackedStringArray("spawn_points")]
+[node name="LeftBackSpawns" type="Node2D" parent="FieldCenter/SpawnPoints" unique_id=1115355353 node_paths=PackedStringArray("spawn_points")]
 script = ExtResource("4_jds7q")
 spawn_points = [NodePath("P1_Spawn"), NodePath("P2_Spawn")]
 
-[node name="P1_Spawn" type="Node2D" parent="FieldCenter/SpawnPoints/LeftBackSpawns"]
+[node name="P1_Spawn" type="Node2D" parent="FieldCenter/SpawnPoints/LeftBackSpawns" unique_id=1776171872]
 position = Vector2(-480, -240)
 
-[node name="P2_Spawn" type="Node2D" parent="FieldCenter/SpawnPoints/LeftBackSpawns"]
+[node name="P2_Spawn" type="Node2D" parent="FieldCenter/SpawnPoints/LeftBackSpawns" unique_id=1180915057]
 position = Vector2(480, 240)
 
-[node name="RightBackSpawns" type="Node2D" parent="FieldCenter/SpawnPoints" node_paths=PackedStringArray("spawn_points")]
+[node name="RightBackSpawns" type="Node2D" parent="FieldCenter/SpawnPoints" unique_id=1210766712 node_paths=PackedStringArray("spawn_points")]
 script = ExtResource("4_jds7q")
 spawn_points = [NodePath("P1_Spawn"), NodePath("P2_Spawn")]
 
-[node name="P1_Spawn" type="Node2D" parent="FieldCenter/SpawnPoints/RightBackSpawns"]
+[node name="P1_Spawn" type="Node2D" parent="FieldCenter/SpawnPoints/RightBackSpawns" unique_id=1662495966]
 position = Vector2(-480, 240)
 
-[node name="P2_Spawn" type="Node2D" parent="FieldCenter/SpawnPoints/RightBackSpawns"]
+[node name="P2_Spawn" type="Node2D" parent="FieldCenter/SpawnPoints/RightBackSpawns" unique_id=504778080]
 position = Vector2(480, -240)
 
-[node name="TeamIndicatorPoints" type="Node2D" parent="FieldCenter" node_paths=PackedStringArray("spawn_points")]
+[node name="TeamIndicatorPoints" type="Node2D" parent="FieldCenter" unique_id=591243502 node_paths=PackedStringArray("spawn_points")]
 script = ExtResource("4_jds7q")
 spawn_points = [NodePath("T1"), NodePath("T2")]
 
-[node name="T1" type="Node2D" parent="FieldCenter/TeamIndicatorPoints"]
+[node name="T1" type="Node2D" parent="FieldCenter/TeamIndicatorPoints" unique_id=1012659903]
 position = Vector2(-150, 0)
 
-[node name="T2" type="Node2D" parent="FieldCenter/TeamIndicatorPoints"]
+[node name="T2" type="Node2D" parent="FieldCenter/TeamIndicatorPoints" unique_id=941735882]
 position = Vector2(150, 0)
 
-[node name="Panel" type="Panel" parent="."]
+[node name="Panel" type="Panel" parent="." unique_id=1599733895]
 visible = false
 modulate = Color(1, 1, 1, 0.494118)
 offset_left = -635.0
@@ -358,7 +358,7 @@ offset_top = -360.0
 offset_right = 635.0
 offset_bottom = 360.0
 
-[node name="GM_message_box" type="Panel" parent="Panel"]
+[node name="GM_message_box" type="Panel" parent="Panel" unique_id=1458352285]
 layout_mode = 0
 offset_right = 365.0
 offset_bottom = 180.0
