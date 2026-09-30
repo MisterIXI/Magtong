@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="GameSettings" format=3 uid="uid://i5o6awp6jtgc"]
+
+[ext_resource type="Script" uid="uid://c7t72q3avbv7p" path="res://resources/game_settings.gd" id="1_fou1i"]
+
+[sub_resource type="Curve" id="Curve_8x30i"]
+_data = [Vector2(0, 1), 0.0, -2.8905706, 0, 0, Vector2(1, 0), -0.08811059, 0.0, 0, 0]
+point_count = 2
+metadata/_snap_count = 3
+
+[resource]
+script = ExtResource("1_fou1i")
+magnet_dropoff = SubResource("Curve_8x30i")
+metadata/_custom_type_script = "uid://c7t72q3avbv7p"

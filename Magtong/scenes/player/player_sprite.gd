@@ -1,0 +1,2 @@
+class_name PlayerSprite
+extends Sprite2D

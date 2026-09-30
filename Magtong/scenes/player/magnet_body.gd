@@ -1,0 +1,2 @@
+class_name MagnetBody
+extends RigidBody2D
