@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="MagnetSettings" format=3 uid="uid://r6pyookmc6aa"]
+
+[ext_resource type="Script" uid="uid://cyxg18o8pie0w" path="res://resources/magnet_settings.gd" id="1_rdcu6"]
+
+[sub_resource type="Curve" id="Curve_05u61"]
+_data = [Vector2(0, 1), 0.0, -3.1822405, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[resource]
+script = ExtResource("1_rdcu6")
+magnet_dropoff = SubResource("Curve_05u61")

@@ -14,6 +14,10 @@ config/name="Magtong"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="uid://bxkcu5puahxod"
 
+[autoload]
+
+GlobGameManager="*uid://dlqj6rqm7nqna"
+
 [display]
 
 window/size/viewport_width=1920

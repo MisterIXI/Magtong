@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://dlqj6rqm7nqna"]
+
+[ext_resource type="Script" uid="uid://dr00sblw64gb8" path="res://global/glob_game_manager.gd" id="1_y0i6y"]
+[ext_resource type="Resource" uid="uid://r6pyookmc6aa" path="res://resources/default_magnet_settings.tres" id="2_x0o57"]
+
+[node name="GameManager" type="Node" unique_id=144126633]
+script = ExtResource("1_y0i6y")
+magnet_settings = ExtResource("2_x0o57")
+metadata/_custom_type_script = "uid://dr00sblw64gb8"

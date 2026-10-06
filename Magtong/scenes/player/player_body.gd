@@ -4,19 +4,14 @@ extends RigidBody2D
 @export var sprite: PlayerSprite
 @export var player_input: PlayerInput
 
-signal magnet_state_changed(newState: MagnetState)
+signal magnet_state_changed(newState: Type.MagnetState)
 
-var magnet_state: MagnetState
-
-enum MagnetState{
-	Positive,
-	Neutral,
-	Negative
-}
+var magnet_state: Type.MagnetState
 
 
 
-func change_magnet_state(new_state: MagnetState):
+
+func change_magnet_state(new_state: Type.MagnetState):
 	magnet_state = new_state
 	magnet_state_changed.emit(magnet_state)
 
