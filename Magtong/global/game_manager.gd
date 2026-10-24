@@ -27,6 +27,9 @@ signal state_changed(old_state: State, new_state: State)
 @onready var scene_root: SceneRoot = get_node("/root/MainScene/SceneRoot")
 @onready var main_menu: MainMenu = get_node("/root/MainScene/MainMenu")
 
+func _ready():
+	NetDebug.parse_args()
+
 func _change_state(new_state: State):
 	var old_state = current_state
 	current_state = new_state

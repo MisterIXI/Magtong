@@ -1,5 +1,8 @@
 class_name MMBackground
 extends Node2D
+## Main menu background: a sandbox simulation (no walls, no match) with scripted player inputs.
+
+const PUCK_PAIRS: int = 8
 
 var players: Array[PlayerBody] = []
 var pucks: Array[Puck] = []
@@ -12,157 +15,143 @@ var tween2: Tween
 var tween3: Tween
 var tween4: Tween
 @export var settings: PlayerSettings
+var sim: Simulation
+var state: SimState
+# scripted input per player
+var moves: Array[Vector2] = []
+var buttons: PackedInt32Array = PackedInt32Array()
 
 func _ready():
-	# Initialize players and pucks arrays
-	players = []
-	pucks = []
-	
+	sim = Simulation.new(settings, Simulation.Mode.SANDBOX)
+	state = SimState.new()
+	# spawn pucks (the simulation needs them before the players)
+	for i in range(PUCK_PAIRS):
+		_spawn_puck(p1_start_pos + Vector2.DOWN * 100 * (i+1), i % 2 != 0)
+		_spawn_puck(p2_start_pos + Vector2.UP * 100 * (i+1), i % 2 != 0)
 	# spawn players
-	players.append(spawn_player())
-	players[0].reset_once(p1_start_pos)
-	players[0].force_move_flag = false
-	players.append(spawn_player())
-	players[1].reset_once(p2_start_pos)
-	players.append(spawn_player())
-	players[2].reset_once(p3_start_pos)
-	players.append(spawn_player())
-	players[3].reset_once(p4_start_pos)
-
-	# spawn pucks
-	for i in range(8):
-		var puck: Puck = globResourceManager.puck_scene.instantiate()
-		add_child(puck)
-		puck.reset(p1_start_pos + Vector2.DOWN * 100 * (i+1), false)
-		pucks.append(puck)
-		if i % 2 == 0:
-			puck.receive_pulse(false)
-		puck = globResourceManager.puck_scene.instantiate()
-		add_child(puck)
-		puck.reset(p2_start_pos + Vector2.UP * 100 * (i+1), false)
-		pucks.append(puck)
-		if i % 2 == 0:
-			puck.receive_pulse(false)
+	for start_pos in [p1_start_pos, p2_start_pos, p3_start_pos, p4_start_pos]:
+		_spawn_player(start_pos)
+	_update_views()
 	start_tweens()
-	
+
 func start_tweens():
 	await get_tree().physics_frame
-	var p1 = players[0]
-	# var p2 = players[1]
+	var p1 = 0
+	
 	# tween for body 1
 	tween1 = create_tween()
 	# move right
-	tween1.tween_callback(p1.on_input.bind(input_info_axis_x(0.5)))
+	tween1.tween_callback(_set_x.bind(p1, 0.5))
 	tween1.tween_interval(1.5)
-	tween1.tween_callback(p1.on_input.bind(input_info_axis_plus(1.0)))
+	tween1.tween_callback(_set_plus.bind(p1, 1.0))
 	tween1.tween_interval(1.5)
 	# move left and down
 	tween1.tween_method(
-		func (x): p1.on_input(input_info_axis_y(x)),
+		func (x): _set_y(p1, x),
 		0.0,
 		0.5,
 		0.5,
 	)
 	tween1.parallel()
 	tween1.tween_method(
-		func (x): p1.on_input(input_info_axis_x(x)),
+		func (x): _set_x(p1, x),
 		0.5,
 		-0.5,
 		1.5,
 	)
 	# move down and right
-	tween1.tween_callback(p1.on_input.bind(input_info_axis_plus(0.0)))
-	tween1.tween_callback(p1.on_input.bind(input_info_axis_minus(1.0)))
+	tween1.tween_callback(_set_plus.bind(p1, 0.0))
+	tween1.tween_callback(_set_minus.bind(p1, 1.0))
 	tween1.tween_method(
-		func (x): x = clampf(x, 0.0, 0.5); p1.on_input(input_info_axis_y(x)),
+		func (x): x = clampf(x, 0.0, 0.5); _set_y(p1, x),
 		1.5,
 		0.0,
 		1.5,
 	)
 	tween1.parallel()
 	tween1.tween_method(
-		func (x): p1.on_input(input_info_axis_x(x)),
+		func (x): _set_x(p1, x),
 		-0.5,
 		0.5,
 		1.5,
 	)
-	tween1.tween_callback(p1.on_input.bind(input_info_axis_y(0.0)))
-	tween1.tween_callback(p1.on_input.bind(input_info_axis_x(-0.5)))
+	tween1.tween_callback(_set_y.bind(p1, 0.0))
+	tween1.tween_callback(_set_x.bind(p1, -0.5))
 	tween1.tween_interval(1.5)
-	tween1.tween_callback(p1.on_input.bind(input_info_axis_minus(0.0)))
+	tween1.tween_callback(_set_minus.bind(p1, 0.0))
 	tween1.tween_interval(1.5)
-	tween1.tween_callback(p1.on_input.bind(input_info_axis_x(0.0)))
-	tween1.tween_callback(p1.reset_once.bind(p1_start_pos))
+	tween1.tween_callback(_set_x.bind(p1, 0.0))
+	tween1.tween_callback(_teleport.bind(p1, p1_start_pos))
 	tween1.tween_interval(1.0)
 	tween1.set_loops()
 	tween1.play()
 
 	# tween for body 2
-	var p2 = players[1]
+	var p2 = 1
 	tween2 = create_tween()
 	# move right
-	tween2.tween_callback(p2.on_input.bind(input_info_axis_x(-0.5)))
+	tween2.tween_callback(_set_x.bind(p2, -0.5))
 	tween2.tween_interval(1.5)
-	tween2.tween_callback(p2.on_input.bind(input_info_axis_minus(1.0)))
+	tween2.tween_callback(_set_minus.bind(p2, 1.0))
 	tween2.tween_interval(1.5)
 	# move left and down
 	tween2.tween_method(
-		func (x): p2.on_input(input_info_axis_y(x)),
+		func (x): _set_y(p2, x),
 		0.0,
 		-0.5,
 		0.5,
 	)
 	tween2.parallel()
 	tween2.tween_method(
-		func (x): p2.on_input(input_info_axis_x(x)),
+		func (x): _set_x(p2, x),
 		-0.5,
 		0.5,
 		1.5,
 	)
 	# move down and right
-	tween2.tween_callback(p2.on_input.bind(input_info_axis_minus(0.0)))
-	tween2.tween_callback(p2.on_input.bind(input_info_axis_plus(1.0)))
+	tween2.tween_callback(_set_minus.bind(p2, 0.0))
+	tween2.tween_callback(_set_plus.bind(p2, 1.0))
 	tween2.tween_method(
-		func (x): x = clampf(x, -0.5, 0.0); p2.on_input(input_info_axis_y(x)),
+		func (x): x = clampf(x, -0.5, 0.0); _set_y(p2, x),
 		-1.5,
 		0.0,
 		1.5,
 	)
 	tween2.parallel()
 	tween2.tween_method(
-		func (x): p2.on_input(input_info_axis_x(x)),
+		func (x): _set_x(p2, x),
 		0.5,
 		-0.5,
 		1.5,
 	)
-	tween2.tween_callback(p2.on_input.bind(input_info_axis_y(0.0)))
-	tween2.tween_callback(p2.on_input.bind(input_info_axis_x(0.5)))
+	tween2.tween_callback(_set_y.bind(p2, 0.0))
+	tween2.tween_callback(_set_x.bind(p2, 0.5))
 	tween2.tween_interval(1.5)
-	tween2.tween_callback(p2.on_input.bind(input_info_axis_plus(0.0)))
+	tween2.tween_callback(_set_plus.bind(p2, 0.0))
 	tween2.tween_interval(1.5)
-	tween2.tween_callback(p2.on_input.bind(input_info_axis_x(0.0)))
-	tween2.tween_callback(p2.reset_once.bind(p2_start_pos))
+	tween2.tween_callback(_set_x.bind(p2, 0.0))
+	tween2.tween_callback(_teleport.bind(p2, p2_start_pos))
 	tween2.tween_interval(1.0)
 	tween2.set_loops()
 	tween2.play()
 
 	# simple loops for p3 and p4
 	# p3 up and down
-	var p3 = players[2]
-	p3.on_input(input_info_axis_minus(1.0))
-	p3.on_input(input_info_axis_y(0.3))
+	var p3 = 2
+	_set_minus(p3, 1.0)
+	_set_y(p3, 0.3)
 	tween3 = create_tween()
-	# tween3.tween_callback(p3.on_input.bind(input_info_axis_y(0.3)))
+	# tween3.tween_callback(_set_y.bind(p3, 0.3))
 	tween3.tween_interval(1.75)
 	tween3.tween_method(
-		func (x): p3.on_input(input_info_axis_y(x)),
+		func (x): _set_y(p3, x),
 		0.3,
 		-0.3,
 		1.0,
 	)
 	tween3.tween_interval(3.5)
 	tween3.tween_method(
-		func (x): p3.on_input(input_info_axis_y(x)),
+		func (x): _set_y(p3, x),
 		-0.3,
 		0.3,
 		1.0,
@@ -170,76 +159,50 @@ func start_tweens():
 	tween3.tween_interval(1.75)
 	tween3.set_loops()
 	
-func _physics_process(delta):
-	# step through all players and check if they are emitting magnetic field
-	for player in players:
-		if player.state != PlayerBody.Polarity.IDLE:
-			# if not idle, affect all pucks
-			for puck in pucks:
-				var is_repelling = puck.is_plus_pol == (player.state == player.Polarity.POS)
-				var dist = puck.global_position.distance_to(player.global_position)
-				var force = settings.magnet_dropoff.sample(dist / settings.magnet_range)
-				if not is_repelling:
-					force = -force
-				var scaled_force = (
-					(puck.global_position - player.global_position).normalized() * force * settings.magnet_force
-				)
-				puck.apply_central_force(scaled_force)
-				# player.apply_central_force( - scaled_force)
-			# and affect all other players
-			# for opp_team in players:
-			# 	for opp_player in opp_team:
-			# 		if opp_player == player:
-			# 			continue
-			# 		var is_repelling = player.state == opp_player.state
-			# 		var dist = player.global_position.distance_to(opp_player.global_position)
-			# 		var force = settings.magnet_dropoff.sample(dist / settings.magnet_range)
-			# 		if not is_repelling:
-			# 			force = -force
-			# 		var scaled_force = (
-			# 			(opp_player.global_position - player.global_position).normalized() * force * settings.magnet_force
-			# 		)
-			# 		opp_player.apply_central_force(scaled_force)
-			# 		player.apply_central_force( - scaled_force)
-# regardless of state, apply input
-	for player in players:
-		if player.force_move_flag:
-			player.reset(player.forced_pos)
-			player.force_move_flag = false
-		else:
-			player.linear_velocity = player.linear_velocity.move_toward(player.target_vel, settings.accell * delta)
+func _physics_process(_delta):
+	var inputs := PackedInt32Array()
+	for i in players.size():
+		inputs.append(SimInput.encode(moves[i], buttons[i]))
+	sim.step(state, inputs)
+	_update_views()
 
-func input_info_axis_x(value: float) -> InputInfo:
-	return InputInfo.new({
-		"input_type": InputInfo.InputType.MOVE_X,
-		"is_pressed": true,
-		"axis_value": value,
-	})
+func _update_views() -> void:
+	for k in pucks.size():
+		pucks[k].update_from_sim(state, k)
+	for i in players.size():
+		players[i].update_from_sim(state, sim.player_body(i), i)
 
+func _set_x(player: int, value: float) -> void:
+	moves[player].x = value
 
-func input_info_axis_y(value: float) -> InputInfo:
-	return InputInfo.new({
-		"input_type": InputInfo.InputType.MOVE_Y,
-		"is_pressed": true,
-		"axis_value": value,
-	})
+func _set_y(player: int, value: float) -> void:
+	moves[player].y = value
 
-func input_info_axis_plus(value: float) -> InputInfo:
-	return InputInfo.new({
-		"input_type": InputInfo.InputType.PLUS,
-		"is_pressed": true,
-		"axis_value": value,
-	})
+func _set_plus(player: int, value: float) -> void:
+	_set_button(player, SimInput.PLUS, value > 0.0)
 
-func input_info_axis_minus(value: float) -> InputInfo:
-	return InputInfo.new({
-		"input_type": InputInfo.InputType.MINUS,
-		"is_pressed": true,
-		"axis_value": value,
-	})
+func _set_minus(player: int, value: float) -> void:
+	_set_button(player, SimInput.MINUS, value > 0.0)
 
-func spawn_player() -> PlayerBody:
-	var player_body = globResourceManager.player_scene
-	var new_player: PlayerBody = player_body.instantiate()
+func _set_button(player: int, button: int, pressed: bool) -> void:
+	if pressed:
+		buttons[player] |= button
+	else:
+		buttons[player] &= ~button
+
+func _teleport(player: int, pos: Vector2) -> void:
+	sim.teleport(state, sim.player_body(player), pos)
+
+func _spawn_puck(pos: Vector2, is_plus: bool) -> void:
+	var puck: Puck = globResourceManager.puck_scene.instantiate()
+	add_child(puck)
+	sim.add_puck(state, pos, is_plus)
+	pucks.append(puck)
+
+func _spawn_player(pos: Vector2) -> void:
+	var new_player: PlayerBody = globResourceManager.player_scene.instantiate()
 	add_child(new_player, true)
-	return new_player
+	sim.add_player(state, pos)
+	players.append(new_player)
+	moves.append(Vector2.ZERO)
+	buttons.append(0)

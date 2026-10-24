@@ -1,33 +1,23 @@
-extends RigidBody2D
+extends Node2D
 class_name Puck
+## Visual representation of one simulated puck.
 
 @export var plus_sprite: Sprite2D
 @export var minus_sprite: Sprite2D
 var is_plus_pol: bool = true
+var _last_reset_tick: int = -1
 
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	pass  # Replace with function body.
+## Called every tick after the simulation stepped.
+func update_from_sim(sim_state: SimState, body: int) -> void:
+	position = sim_state.pos[body]
+	if sim_state.reset_tick != _last_reset_tick:
+		_last_reset_tick = sim_state.reset_tick
+		reset_physics_interpolation()
+	var plus := sim_state.puck_plus[body] == 1
+	if plus != is_plus_pol:
+		set_polarity(plus)
 
-func reset(new_forced_pos: Vector2, reset_state: bool):
-	if reset_state:
-		receive_pulse(true)
-	linear_velocity = Vector2(0, 0)
-	angular_velocity = 0
-	global_position = new_forced_pos
-	PhysicsServer2D.body_set_state(
-		get_rid(),
-		PhysicsServer2D.BODY_STATE_TRANSFORM,
-		Transform2D.IDENTITY.translated(new_forced_pos)
-	)
-
-func receive_pulse(is_now_plus_pol: bool):
-	if is_now_plus_pol:
-		plus_sprite.show()
-		minus_sprite.hide()
-		is_plus_pol = true
-	else:
-		plus_sprite.hide()
-		minus_sprite.show()
-		is_plus_pol = false
-
+func set_polarity(is_now_plus_pol: bool):
+	is_plus_pol = is_now_plus_pol
+	plus_sprite.visible = is_plus_pol
+	minus_sprite.visible = not is_plus_pol

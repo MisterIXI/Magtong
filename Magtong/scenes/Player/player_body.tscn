@@ -1,7 +1,6 @@
-[gd_scene load_steps=16 format=3 uid="uid://do0i7ixg4d7p1"]
+[gd_scene load_steps=12 format=3 uid="uid://do0i7ixg4d7p1"]
 
 [ext_resource type="Script" uid="uid://ckl5efhgnjjk5" path="res://scenes/Player/PlayerVisuals.gd" id="1_31gdm"]
-[ext_resource type="PhysicsMaterial" uid="uid://b0b4nmkgg6odu" path="res://resources/Player_physics_mat.tres" id="1_o1307"]
 [ext_resource type="Script" uid="uid://dw3dosg1jvu4y" path="res://scenes/Player/PlayerBody.gd" id="1_tqoy0"]
 [ext_resource type="Resource" uid="uid://ua78q2387d0m" path="res://resources/player_settings_menu.tres" id="3_qurob"]
 [ext_resource type="Texture2D" uid="uid://cmy6u5rwg4j0f" path="res://icon.svg" id="4_o87xm"]
@@ -10,11 +9,6 @@
 [ext_resource type="Texture2D" uid="uid://d20d2kk22uqyt" path="res://assets/Textures/minus_sign.png" id="6_ipbde"]
 [ext_resource type="Material" uid="uid://df5q7yunlak58" path="res://scenes/Player/player_power_shader.tres" id="9_egiyc"]
 [ext_resource type="Texture2D" uid="uid://dt4t6l1gnn6bj" path="res://assets/Textures/blank pixels.png" id="10_mioy0"]
-[ext_resource type="Script" uid="uid://bv0frw24fkere" path="res://scenes/Player/Abilities/impulse.gd" id="11_qrj2s"]
-[ext_resource type="Script" uid="uid://dw6nfyd0kxs1h" path="res://scenes/Player/Abilities/orbit_lock.gd" id="12_0fqa4"]
-
-[sub_resource type="CircleShape2D" id="CircleShape2D_smi2p"]
-radius = 22.0227
 
 [sub_resource type="Curve" id="Curve_ikk82"]
 _data = [Vector2(0, 0.0156175), 0.0, 8.96711, 0, 0, Vector2(0.226415, 0.987695), -1.03467, -1.03467, 0, 0, Vector2(0.833962, 0.575485), -0.221778, -0.221778, 0, 0, Vector2(0.97973, 0), -3.80947, 0.0, 0, 0]
@@ -24,28 +18,14 @@ point_count = 4
 _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.718468, 0.797802), -0.798401, -0.798401, 0, 0, Vector2(1, 0), -3.20139, 0.0, 0, 0]
 point_count = 3
 
-[node name="PlayerBody" type="RigidBody2D" node_paths=PackedStringArray("pulse_timer", "impulse_timer", "player_skin", "abilities", "collider") groups=["PlayerBody"]]
-collision_layer = 3
-collision_mask = 3
-mass = 5.0
-physics_material_override = ExtResource("1_o1307")
-can_sleep = false
-angular_damp = 2.0
+[node name="PlayerBody" type="Node2D" node_paths=PackedStringArray("player_skin") groups=["PlayerBody"]]
 script = ExtResource("1_tqoy0")
-settings = ExtResource("3_qurob")
-pulse_timer = NodePath("Pulse_CD")
-impulse_timer = NodePath("Abilities/Impulse/Impulse_CD")
 player_skin = NodePath("Graphics/PlayerCharacter")
-abilities = [NodePath("Abilities/Impulse"), NodePath("Abilities/OrbitLock")]
-collider = NodePath("CollisionShape2D")
 
 [node name="TestSprite" type="Sprite2D" parent="."]
 visible = false
 scale = Vector2(3.39, 3.39)
 texture = ExtResource("4_o87xm")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource("CircleShape2D_smi2p")
 
 [node name="Graphics" type="Node2D" parent="." node_paths=PackedStringArray("sprite", "player", "plus_particles", "minus_particles", "plus_burst_particles", "minus_burst_particles", "pol_shader_sprite")]
 scale = Vector2(1.451, 1.451)
@@ -134,37 +114,7 @@ texture = ExtResource("10_mioy0")
 
 [node name="FieldManager" type="Node2D" parent="."]
 
-[node name="Pulse_CD" type="Timer" parent="."]
-one_shot = true
-
-[node name="Abilities" type="Node2D" parent="."]
-
-[node name="Impulse" type="Node2D" parent="Abilities" node_paths=PackedStringArray("cd_timer", "player")]
-script = ExtResource("11_qrj2s")
-cd_timer = NodePath("Impulse_CD")
-ability_name = "Impulse"
-player = NodePath("../..")
-
-[node name="Impulse_CD" type="Timer" parent="Abilities/Impulse"]
-one_shot = true
-
-[node name="OrbitLock" type="Node2D" parent="Abilities" node_paths=PackedStringArray("max_orbit_timer", "orbit_cd", "player")]
-script = ExtResource("12_0fqa4")
-max_orbit_timer = NodePath("OrbitLimiter")
-orbit_cd = NodePath("Orbit_CD")
-ability_name = "OrbitLock"
-player = NodePath("../..")
-
-[node name="Orbit_CD" type="Timer" parent="Abilities/OrbitLock"]
-one_shot = true
-
-[node name="OrbitLimiter" type="Timer" parent="Abilities/OrbitLock"]
-one_shot = true
-
-[node name="PinJoint2D" type="PinJoint2D" parent="Abilities/OrbitLock"]
-
 [connection signal="polarity_changed" from="." to="Graphics" method="on_polarity_changed"]
 [connection signal="pulse_emitted" from="." to="Graphics" method="_on_player_body_pulse_emitted"]
 [connection signal="setup_completed" from="." to="Graphics" method="_on_player_body_setup_completed"]
-[connection signal="impulse_emitted" from="Abilities/Impulse" to="Graphics" method="_on_player_impulse_emitted"]
-[connection signal="timeout" from="Abilities/OrbitLock/OrbitLimiter" to="Abilities/OrbitLock" method="_on_max_orbit_timer_timeout"]
+[connection signal="impulse_emitted" from="." to="Graphics" method="_on_player_impulse_emitted"]

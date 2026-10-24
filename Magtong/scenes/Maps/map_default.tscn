@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://dfrx78wg8rqmp"]
+[gd_scene load_steps=15 format=3 uid="uid://dfrx78wg8rqmp"]
 
 [ext_resource type="Script" uid="uid://sa63i4yiqm1a" path="res://scenes/Maps/map_script.gd" id="1_wbm5i"]
 [ext_resource type="Texture2D" uid="uid://pthgonvw7edr" path="res://assets/Textures/PlayField/Field_default_v2.png" id="2_8n442"]
@@ -8,23 +8,12 @@
 [ext_resource type="Script" uid="uid://b1xrsvxdwgo35" path="res://scenes/Maps/spawn_point_group.gd" id="4_jds7q"]
 [ext_resource type="Script" uid="uid://ebrdju6fmb3p" path="res://scenes/visual_components/tween_modulate_alpha_blink.gd" id="5_e81lu"]
 [ext_resource type="Texture2D" uid="uid://c023clfhq43lh" path="res://assets/Textures/PlayField/Field_default_v3.png" id="5_gm1x1"]
+[ext_resource type="Script" path="res://simulation/rink_outline.gd" id="6_rink"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_mw83u"]
 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_mp02d"]
 noise = SubResource("FastNoiseLite_mw83u")
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_53t0d"]
-size = Vector2(250, 30)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_q586n"]
-size = Vector2(178.601, 47.8601)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_5c01j"]
-size = Vector2(1200, 30)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_2cnpn"]
-size = Vector2(2.45, 590)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_rw2oh"]
 size = Vector2(22.6956, 175)
@@ -35,13 +24,13 @@ size = Vector2(145, 250)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wws8m"]
 size = Vector2(260, 60)
 
-[node name="MapDefault" type="Node2D" node_paths=PackedStringArray("player_spawn_groups", "ball_spawn_group", "mp_root", "team_indicator_groups", "divider_collider", "lobby_areas", "lobby_labels")]
+[node name="MapDefault" type="Node2D" node_paths=PackedStringArray("player_spawn_groups", "ball_spawn_group", "mp_root", "team_indicator_groups", "rink", "lobby_areas", "lobby_labels")]
 script = ExtResource("1_wbm5i")
 player_spawn_groups = [NodePath("FieldCenter/SpawnPoints/CenterBackSpawns"), NodePath("FieldCenter/SpawnPoints/LeftBackSpawns"), NodePath("FieldCenter/SpawnPoints/RightBackSpawns")]
 ball_spawn_group = NodePath("FieldCenter/SpawnPoints/BallSpawns")
 mp_root = NodePath("FieldCenter/MultiplayerRoot")
 team_indicator_groups = NodePath("FieldCenter/TeamIndicatorPoints")
-divider_collider = NodePath("FieldCenter/CenterLineCollider")
+rink = NodePath("FieldCenter/RinkOutline")
 lobby_areas = [NodePath("FieldCenter/Team0_ready_area"), NodePath("FieldCenter/Team1_ready_area"), NodePath("FieldCenter/Team2_ready_area")]
 lobby_labels = [NodePath("FieldCenter/Team0_ready_area/T0ReadyLabel"), NodePath("FieldCenter/Team1_ready_area/T1ReadyLabel"), NodePath("FieldCenter/Team2_ready_area/T2ReadyLabel")]
 
@@ -80,77 +69,12 @@ visible = false
 scale = Vector2(0.171, 0.171)
 texture = ExtResource("2_8n442")
 
-[node name="BorderCollider" type="StaticBody2D" parent="FieldCenter"]
-
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="FieldCenter/BorderCollider"]
-position = Vector2(-510.156, -202.344)
-scale = Vector2(0.171, 0.171)
-polygon = PackedVector2Array(-173.611, 137.061, -159.905, 82.2368, -146.199, 13.7062, -123.355, -63.9619, -82.2368, -150.767, -22.8438, -237.573, 36.5496, -306.104, 114.218, -370.066, 219.298, -424.89, 301.535, -456.871, 397.478, -479.715, 475.146, -488.852, -219.298, -639.62)
-
-[node name="CollisionPolygon2D2" type="CollisionPolygon2D" parent="FieldCenter/BorderCollider"]
-position = Vector2(456.25, -256.25)
-rotation = 1.57079
-scale = Vector2(0.171, 0.171)
-polygon = PackedVector2Array(-173.611, 137.061, -159.905, 82.2368, -146.199, 13.7062, -123.355, -63.9619, -82.2368, -150.767, -22.8438, -237.573, 36.5496, -306.104, 114.218, -370.066, 219.298, -424.89, 301.535, -456.871, 397.478, -479.715, 475.146, -488.852, -219.298, -667.032)
-
-[node name="CollisionPolygon2D3" type="CollisionPolygon2D" parent="FieldCenter/BorderCollider"]
-position = Vector2(-456.79, 255.967)
-rotation = -1.57079
-scale = Vector2(0.171, 0.171)
-polygon = PackedVector2Array(-173.611, 137.061, -159.905, 82.2368, -146.199, 13.7062, -123.355, -63.9619, -82.2368, -150.767, -22.8438, -237.573, 36.5496, -306.104, 114.218, -370.066, 219.298, -424.89, 301.535, -456.871, 397.478, -479.715, 475.146, -488.852, -219.298, -639.62)
-
-[node name="CollisionPolygon2D4" type="CollisionPolygon2D" parent="FieldCenter/BorderCollider"]
-position = Vector2(510.288, 201.646)
-rotation = 3.14159
-scale = Vector2(0.171, 0.171)
-polygon = PackedVector2Array(-173.611, 137.061, -159.905, 82.2368, -146.199, 13.7062, -123.355, -63.9619, -82.2368, -150.767, -22.8438, -237.573, 36.5496, -306.104, 114.218, -370.066, 219.298, -424.89, 301.535, -456.871, 397.478, -479.715, 475.146, -488.852, -219.298, -667.032)
-
-[node name="RightWallBack" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
-position = Vector2(586.008, 1.62559e-10)
-rotation = -1.5708
-shape = SubResource("RectangleShape2D_53t0d")
-
-[node name="RightWallTop" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
-position = Vector2(562.078, -176.543)
-rotation = -1.5708
-shape = SubResource("RectangleShape2D_q586n")
-
-[node name="RightWallBottom" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
-position = Vector2(562.14, 176.955)
-rotation = -1.5708
-shape = SubResource("RectangleShape2D_q586n")
-
-[node name="LeftWallBack" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
-position = Vector2(-586.008, -1.62559e-10)
-rotation = -1.5708
-shape = SubResource("RectangleShape2D_53t0d")
-
-[node name="LeftWallTop" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
-position = Vector2(-562.14, -176.955)
-rotation = -1.5708
-shape = SubResource("RectangleShape2D_q586n")
-
-[node name="LeftWallBottom" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
-position = Vector2(-562.14, 176.955)
-rotation = -1.5708
-shape = SubResource("RectangleShape2D_q586n")
-
-[node name="TopWall" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
-position = Vector2(0, -300)
-shape = SubResource("RectangleShape2D_5c01j")
-
-[node name="BottomWall" type="CollisionShape2D" parent="FieldCenter/BorderCollider"]
-position = Vector2(0, 300)
-shape = SubResource("RectangleShape2D_5c01j")
-
-[node name="CenterLineCollider" type="StaticBody2D" parent="FieldCenter"]
-collision_layer = 2
-collision_mask = 2
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="FieldCenter/CenterLineCollider"]
-shape = SubResource("RectangleShape2D_2cnpn")
+[node name="RinkOutline" type="Node2D" parent="FieldCenter"]
+script = ExtResource("6_rink")
 
 [node name="GoalLeft" type="Area2D" parent="FieldCenter"]
+monitoring = false
+monitorable = false
 position = Vector2(-564.844, 0)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="FieldCenter/GoalLeft"]
@@ -164,6 +88,8 @@ scale = Vector2(2.31625, 17.5187)
 texture = ExtResource("3_0ppxq")
 
 [node name="GoalRight" type="Area2D" parent="FieldCenter"]
+monitoring = false
+monitorable = false
 position = Vector2(534.866, 0)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="FieldCenter/GoalRight"]
@@ -177,6 +103,8 @@ scale = Vector2(2.31625, 17.5187)
 texture = ExtResource("3_0ppxq")
 
 [node name="Team1_ready_area" type="Area2D" parent="FieldCenter"]
+monitoring = false
+monitorable = false
 position = Vector2(-466.406, 0)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="FieldCenter/Team1_ready_area"]
@@ -214,6 +142,8 @@ theme_override_font_sizes/font_size = 30
 text = "0/3"
 
 [node name="Team2_ready_area" type="Area2D" parent="FieldCenter"]
+monitoring = false
+monitorable = false
 position = Vector2(465.524, 0)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="FieldCenter/Team2_ready_area"]
@@ -251,6 +181,8 @@ theme_override_font_sizes/font_size = 30
 text = "0/3"
 
 [node name="Team0_ready_area" type="Area2D" parent="FieldCenter"]
+monitoring = false
+monitorable = false
 position = Vector2(0, 255)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="FieldCenter/Team0_ready_area"]
@@ -357,13 +289,3 @@ offset_bottom = 360.0
 layout_mode = 0
 offset_right = 365.0
 offset_bottom = 180.0
-
-[connection signal="body_entered" from="FieldCenter/GoalLeft" to="." method="_on_goal_collision" binds= [2]]
-[connection signal="body_entered" from="FieldCenter/GoalRight" to="." method="_on_goal_collision" binds= [1]]
-[connection signal="body_entered" from="FieldCenter/Team1_ready_area" to="." method="on_player_entered_team_area" binds= [1]]
-[connection signal="body_exited" from="FieldCenter/Team1_ready_area" to="." method="on_player_left_team_area" binds= [1]]
-[connection signal="body_entered" from="FieldCenter/Team2_ready_area" to="." method="on_player_entered_team_area" binds= [2]]
-[connection signal="body_exited" from="FieldCenter/Team2_ready_area" to="." method="on_player_left_team_area" binds= [2]]
-[connection signal="body_entered" from="FieldCenter/Team0_ready_area" to="." method="on_player_entered_team_area" binds= [0]]
-[connection signal="body_exited" from="FieldCenter/Team0_ready_area" to="." method="on_player_left_team_area" binds= [0]]
-[connection signal="child_entered_tree" from="FieldCenter/MultiplayerRoot" to="." method="on_node_spawned"]

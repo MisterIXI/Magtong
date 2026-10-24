@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="PlayerSettings" load_steps=3 format=3 uid="uid://ua78q2387d0m"]
+[gd_resource type="Resource" script_class="PlayerSettings" format=3 uid="uid://ua78q2387d0m"]
 
 [ext_resource type="Script" uid="uid://diu4aanwoj8dd" path="res://scenes/Player/player_settings.gd" id="1_63q82"]
 
@@ -14,6 +14,7 @@ magnet_range = 1900.0
 pulse_range = 200.0
 speed = 600.0
 accell = 6000.0
+magnet_recoil = false
 viz_idle_speed = 2.0
 viz_acc = 150.0
 viz_max_speed = 40.0

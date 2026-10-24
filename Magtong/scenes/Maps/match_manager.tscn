@@ -43,7 +43,7 @@ font_size = 35
 font_color = Color(0, 0, 0, 1)
 outline_size = 5
 
-[node name="MatchManager" type="Node2D" node_paths=PackedStringArray("overlay_left", "overlay_right", "p1_score_label", "p2_score_label", "timer_label", "status_label", "countdown_node", "countdown_label", "game_timer", "countdown_timer", "ms")]
+[node name="MatchManager" type="Node2D" node_paths=PackedStringArray("overlay_left", "overlay_right", "p1_score_label", "p2_score_label", "timer_label", "status_label", "countdown_node", "countdown_label", "ms")]
 script = ExtResource("1_ns4u8")
 overlay_left = NodePath("Node/CanvasLayer/TextureRect/OverlayLeft")
 overlay_right = NodePath("Node/CanvasLayer/TextureRect/OverlayRight")
@@ -53,8 +53,6 @@ timer_label = NodePath("Node/CanvasLayer/TextureRect/TimerLabel")
 status_label = NodePath("Node/CanvasLayer/TextureRect/StateLabel")
 countdown_node = NodePath("Node/CanvasLayer/CountdownGradient")
 countdown_label = NodePath("Node/CanvasLayer/CountdownGradient/CountdownLabel")
-game_timer = NodePath("GameTimer")
-countdown_timer = NodePath("CountdownTimer")
 ms = NodePath("MapDefault")
 
 [node name="GameCamera" type="Camera2D" parent="."]
@@ -67,10 +65,6 @@ drag_horizontal_enabled = true
 script = ExtResource("2_i8ydq")
 
 [node name="MapDefault" parent="." instance=ExtResource("2_belxq")]
-
-[node name="GameTimer" type="Timer" parent="."]
-
-[node name="CountdownTimer" type="Timer" parent="."]
 
 [node name="Node" type="Node" parent="."]
 
@@ -312,6 +306,3 @@ auto_translate_mode = 1
 layout_mode = 2
 text = "uhoasuhfoeaufh"
 label_settings = SubResource("LabelSettings_ouugc")
-
-[connection signal="timeout" from="GameTimer" to="." method="_on_game_timeout"]
-[connection signal="timeout" from="CountdownTimer" to="." method="_on_countdown_timer_timeout"]
