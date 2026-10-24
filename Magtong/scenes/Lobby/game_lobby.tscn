@@ -1,8 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://1qy067e4ex88"]
+[gd_scene load_steps=4 format=3 uid="uid://1qy067e4ex88"]
 
 [ext_resource type="Script" uid="uid://cn2d0fhroc7yi" path="res://scenes/Lobby/game_lobby.gd" id="1_xd21i"]
 [ext_resource type="Script" uid="uid://bbhgwhrp31n5x" path="res://scenes/Lobby/set_camera_zoom.gd" id="2_kejge"]
-[ext_resource type="Script" uid="uid://d1hxwte20dv82" path="res://scenes/Maps/MPs_map_adder.gd" id="2_ygmby"]
 [ext_resource type="Script" uid="uid://bqkxaul8111cv" path="res://scenes/Lobby/ready_banner.gd" id="3_gc8kx"]
 
 [node name="GameLobby" type="Node2D" node_paths=PackedStringArray("map_root", "player_game_banner")]
@@ -18,38 +17,7 @@ drag_horizontal_enabled = true
 [node name="CameraZoomer" type="Node" parent="GameCamera"]
 script = ExtResource("2_kejge")
 
-[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
-spawn_path = NodePath("../MapRoot")
-
-[node name="MPMapAdder" type="Node" parent="MultiplayerSpawner"]
-script = ExtResource("2_ygmby")
-
 [node name="MapRoot" type="Node2D" parent="."]
-
-[node name="HostSettings" type="Control" parent="."]
-visible = false
-layout_mode = 3
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -20.0
-offset_top = -20.0
-offset_right = 20.0
-offset_bottom = 20.0
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-
-[node name="PanelContainer" type="PanelContainer" parent="HostSettings"]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="VBoxContainer" type="VBoxContainer" parent="HostSettings/PanelContainer"]
-layout_mode = 2
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 

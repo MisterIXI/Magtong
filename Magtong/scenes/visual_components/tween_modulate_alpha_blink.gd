@@ -40,9 +40,6 @@ func recreate_tween():
 	tween.tween_property(target, "modulate:a",upper_bound,cycle_duration/2)
 	tween.set_loops(-1)
 
-func _get_configuration_warnings():
-	if upper_bound < lower_bound:
-		return ["Upper bound must be greater than lower bound."]
 
 func _exit_tree():
 	if tween != null:

@@ -35,11 +35,10 @@ size = Vector2(145, 250)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wws8m"]
 size = Vector2(260, 60)
 
-[node name="MapDefault" type="Node2D" node_paths=PackedStringArray("player_spawn_groups", "ball_spawn_group", "spawner", "mp_root", "team_indicator_groups", "divider_collider", "lobby_areas", "lobby_labels")]
+[node name="MapDefault" type="Node2D" node_paths=PackedStringArray("player_spawn_groups", "ball_spawn_group", "mp_root", "team_indicator_groups", "divider_collider", "lobby_areas", "lobby_labels")]
 script = ExtResource("1_wbm5i")
 player_spawn_groups = [NodePath("FieldCenter/SpawnPoints/CenterBackSpawns"), NodePath("FieldCenter/SpawnPoints/LeftBackSpawns"), NodePath("FieldCenter/SpawnPoints/RightBackSpawns")]
 ball_spawn_group = NodePath("FieldCenter/SpawnPoints/BallSpawns")
-spawner = NodePath("FieldCenter/EntitySpawner")
 mp_root = NodePath("FieldCenter/MultiplayerRoot")
 team_indicator_groups = NodePath("FieldCenter/TeamIndicatorPoints")
 divider_collider = NodePath("FieldCenter/CenterLineCollider")
@@ -289,10 +288,6 @@ offset_bottom = 29.9688
 theme_override_font_sizes/font_size = 30
 text = "0"
 horizontal_alignment = 2
-
-[node name="EntitySpawner" type="MultiplayerSpawner" parent="FieldCenter"]
-_spawnable_scenes = PackedStringArray("uid://do0i7ixg4d7p1", "uid://dlc283cvpl3eh")
-spawn_path = NodePath("../MultiplayerRoot")
 
 [node name="MultiplayerRoot" type="Node2D" parent="FieldCenter"]
 

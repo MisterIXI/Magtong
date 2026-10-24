@@ -10,13 +10,12 @@ var is_active: bool = false
 
 func _setup():
 	for i in range(map.spawned_pucks.size()):
-		if multiplayer == null or multiplayer.is_server():
-			var joint = PinJoint2D.new()
-			joint.process_mode = Node.PROCESS_MODE_DISABLED
-			joint.disable_collision = false
-			joint.softness = 50
-			joints.append(joint)
-			add_child(joint)
+		var joint = PinJoint2D.new()
+		joint.process_mode = Node.PROCESS_MODE_DISABLED
+		joint.disable_collision = false
+		joint.softness = 50
+		joints.append(joint)
+		add_child(joint)
 		var line = Line2D.new()
 		line.visible = false
 		lines.append(line)
@@ -36,21 +35,21 @@ func _ability_button_down():
 			in_distance.append(true)
 		else:
 			in_distance.append(false)
-	activate_ability.rpc(in_distance)
+	activate_ability(in_distance)
 
 func _ability_button_up():
 	if is_active:
-		deactivate_ability.rpc()
+		deactivate_ability()
 
 func _ability_reset():
 	if is_active:
-		deactivate_ability.rpc()
+		deactivate_ability()
 	orbit_cd.stop()
 	max_orbit_timer.stop()
 
 func _on_max_orbit_timer_timeout():
 	if is_active:
-		deactivate_ability.rpc()
+		deactivate_ability()
 
 func _process(_delta):
 	if is_active:
@@ -58,16 +57,14 @@ func _process(_delta):
 			if active_lines[i]:
 				lines[i].points = [Vector3.ZERO, map.spawned_pucks[i].global_position - player.global_position]
 
-@rpc("authority", "call_local", "reliable")
 func activate_ability(active_pucks: Array):
 	active_lines = active_pucks
 	var has_hit_something = false
 	for i in range(map.spawned_pucks.size()):
 		var puck : Puck= map.spawned_pucks[i]
 		if puck.global_position.distance_to(player.global_position) < self.settings.orbitlock_max_dist:
-			if multiplayer.is_server():
-				joints[i].node_a = player.get_path()
-				joints[i].node_b = puck.get_path()
+			joints[i].node_a = player.get_path()
+			joints[i].node_b = puck.get_path()
 			active_lines[i] = true
 			lines[i].visible = true
 			lines[i].points = [Vector3.ZERO, map.spawned_pucks[i].global_position - player.global_position]
@@ -76,19 +73,15 @@ func activate_ability(active_pucks: Array):
 		# TODO: play fizzle effect
 		pass
 	is_active = true
-	if multiplayer.is_server():
-		max_orbit_timer.start(self.settings.orbitlock_max_duration)
+	max_orbit_timer.start(self.settings.orbitlock_max_duration)
 
-@rpc("authority", "call_local", "reliable")
 func deactivate_ability():
 	if is_active:
 		for i in range(map.spawned_pucks.size()):
-			if multiplayer.is_server():
-				joints[i].node_b = ""
+			joints[i].node_b = ""
 			active_lines[i] = false
 			lines[i].visible = false
 		is_active = false
-	if multiplayer.is_server():
-		max_orbit_timer.stop()
-		orbit_cd.start(self.settings.orbitlock_cooldown)
+	max_orbit_timer.stop()
+	orbit_cd.start(self.settings.orbitlock_cooldown)
 

@@ -70,11 +70,11 @@ func check_puck_rewards():
 
 	
 func setup_ai_players(only_one: bool):
-	var p1_input = PlayerInput.new(-1, -1, 0, true)
+	var p1_input = PlayerInput.new(InputManager.KEYBOARD_DEVICE_ID, 0)
 	p1_input.team = 1
 	var p1 = pb_scene.instantiate() as PlayerBody
 	p1.name = "AI1"
-	var p2_input = PlayerInput.new(-1, -1, 1, true)
+	var p2_input = PlayerInput.new(InputManager.KEYBOARD_DEVICE_ID, 1)
 	p2_input.team = 2
 	var p2 = pb_scene.instantiate() as PlayerBody
 	p2.name = "AI2"

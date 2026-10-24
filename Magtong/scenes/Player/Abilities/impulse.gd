@@ -17,7 +17,7 @@ func _ability_button_down():
 				(puck.global_position - player.global_position).normalized() * force * self.settings.magnet_force * mult * self.settings.impulse_mult
 			)
 			puck.apply_impulse(scaled_force)
-		rpc_impulse_signal.rpc(player.global_position, player.state)
+		impulse_emitted.emit(player.global_position, player.state)
 
 func emit_pulse(pulse_position: Vector2, pol: PlayerBody.Polarity):
 	for puck in map.pucks:
@@ -28,10 +28,6 @@ func emit_pulse(pulse_position: Vector2, pol: PlayerBody.Polarity):
 		var scaled_force = ((puck.global_position - pulse_position).normalized() * force * self.settings.magnet_force * mult * self.settings.impulse_mult)
 
 		puck.apply_impulse(scaled_force)
-
-@rpc("authority", "call_local", "reliable")
-func rpc_impulse_signal(pulse_position: Vector2, pol: PlayerBody.Polarity):
-	impulse_emitted.emit(pulse_position, pol)
 
 func _ability_reset():
 	cd_timer.stop()

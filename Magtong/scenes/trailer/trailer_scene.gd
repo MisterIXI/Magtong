@@ -157,8 +157,6 @@ func trailer_tween():
 	tween.tween_callback(p3.on_input.bind(input_info_pulse()))
 
 func _physics_process(delta):
-	if not multiplayer.is_server():
-		return
 	# step through all players and check if they are emitting magnetic field
 	for player in players:
 		if player.state != PlayerBody.Polarity.IDLE:

@@ -20,8 +20,6 @@ var y_input: float = 0.0
 var plus_input: float = 0.0
 var minus_input: float = 0.0
 var current_polarity
-var sync_pos: Vector2
-var sync_rot: float
 
 @onready var im: InputManager = globInputManager
 var mm: MatchManager
@@ -54,34 +52,17 @@ func setup_player( map: MapScript, player_input: PlayerInput, is_in_lobby: bool 
 		else:
 			push_warning("No scene root found. setting mm as null...")
 	player_skin.texture = globResourceManager.icons.player_sprites[player_input.player_sprite_id]
-	set_skin.rpc(player_input.player_sprite_id)
 	# set up ability
 	if player_input.selected_ability != -1:
 		ability_id = player_input.selected_ability
 	else:
 		ability_id = 0
 	current_ability = abilities[ability_id]
-	if not is_multiplayer_authority():
-		freeze = true
 	for x in abilities:
 		x.setup(map)
 	setup_completed.emit(self)
 
-# fixing MP flickering
-# https://www.reddit.com/r/godot/comments/180ywzs/multiplayersynchronizer_and_rigidbody/
-func _integrate_forces(_state):
-	if is_multiplayer_authority():
-		sync_pos = global_position
-		sync_rot = rotation
-		# print("Nope")
-	else:
-		# print("Sync_pos: ", sync_pos, "Sync_rot: ", sync_rot)
-		global_position = sync_pos
-		rotation = sync_rot
-
-func on_input(input_info: InputInfo, ignore_server_check: bool = false):
-	if not ignore_server_check:
-		assert(multiplayer.is_server())
+func on_input(input_info: InputInfo):
 	match input_info.input_type:
 		InputInfo.InputType.MOVE_X:
 			x_input = input_info.axis_value
@@ -111,8 +92,7 @@ func on_input(input_info: InputInfo, ignore_server_check: bool = false):
 		InputInfo.InputType.MENU:
 			if input_info.is_pressed:
 				if is_in_lobby:
-					if player_input.peer_id == 1:
-						gl.request_game_start()
+					gl.request_game_start()
 				else:
 					mm.request_restart()
 		InputInfo.InputType.AUX_LEFT:
@@ -138,21 +118,19 @@ func update_target_vel(new_vel: Vector2):
 func update_polarity():
 	if plus_input == 0.0 and minus_input == 0.0:
 		if state != Polarity.IDLE:
-			change_polarity.rpc(Polarity.IDLE)
+			change_polarity(Polarity.IDLE)
 	elif plus_input > 0.0: # use plus with priority
 		if state != Polarity.POS:
-			change_polarity.rpc(Polarity.POS)
+			change_polarity(Polarity.POS)
 	else:
 		if state != Polarity.NEG:
-			change_polarity.rpc(Polarity.NEG)
+			change_polarity(Polarity.NEG)
 
 ## If the Polarity is different from the current state, update the state and emit signal
-@rpc("any_peer", "call_local", "reliable")
 func change_polarity(new_pol: Polarity):
 	if new_pol != state:
 		state = new_pol
 		polarity_changed.emit(state)
-@rpc("any_peer", "call_local", "reliable")
 func reset_input_state(retain_input: bool = true):
 	var old_plus = plus_input
 	var old_minus = minus_input
@@ -189,7 +167,7 @@ func reset_once(new_pos: Vector2):
 func try_to_pulse():
 	if pulse_timer.is_stopped():
 		pulse_timer.start()
-		pulse.rpc()
+		pulse()
 
 func disable_and_hide():
 	hide()
@@ -206,14 +184,12 @@ func disable_and_hide():
 		Transform2D.IDENTITY.translated(global_position)
 	)
 
-@rpc("authority", "call_local", "reliable")
 func pulse():
 	pulse_emitted.emit(global_position)
 
-@rpc("any_peer", "call_local", "reliable")
 func set_skin(player_sprite_id: int):
 	player_skin.texture = globResourceManager.icons.player_sprites[player_sprite_id]
 
 func cycle_skin(dir: int):
 	player_input.player_sprite_id = (player_input.player_sprite_id + dir) % globResourceManager.icons.player_sprites.size()
-	set_skin.rpc(player_input.player_sprite_id)
+	set_skin(player_input.player_sprite_id)

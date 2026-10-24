@@ -1,7 +1,6 @@
-extends Node
+extends RefCounted
 class_name PlayerMapping
 
-var player_id: int
 var is_keyboard: bool
 var k_up: Key
 var k_down: Key
@@ -35,8 +34,7 @@ var k_left_pressed: bool = false
 var k_up_pressed: bool = false
 var k_down_pressed: bool = false
 
-func _init(player_id: int, is_keyboard: bool):
-	self.player_id = player_id
+func _init(is_keyboard: bool):
 	self.is_keyboard = is_keyboard
 	if is_keyboard:
 		set_keyboard_mapping1()
@@ -70,19 +68,6 @@ func set_keyboard_mapping1():
 	self.k_menu = KEY_ESCAPE
 	self.k_aux_left = KEY_U
 	self.k_aux_right = KEY_O
-
-func set_keyboard_mapping2():
-	self.k_up = KEY_UP
-	self.k_down = KEY_DOWN
-	self.k_left = KEY_LEFT
-	self.k_right = KEY_RIGHT
-	self.k_plus = KEY_K
-	self.k_minus = KEY_L
-	self.k_primary = KEY_J
-	self.k_secondary = KEY_I
-	self.k_menu = KEY_NUMBERSIGN
-	self.k_aux_left = KEY_COMMA
-	self.k_aux_right = KEY_PERIOD
 
 func check_input(event: InputEvent) -> InputInfo:
 	# check keyboard

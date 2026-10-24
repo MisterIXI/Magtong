@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://do0i7ixg4d7p1"]
+[gd_scene load_steps=16 format=3 uid="uid://do0i7ixg4d7p1"]
 
 [ext_resource type="Script" uid="uid://ckl5efhgnjjk5" path="res://scenes/Player/PlayerVisuals.gd" id="1_31gdm"]
 [ext_resource type="PhysicsMaterial" uid="uid://b0b4nmkgg6odu" path="res://resources/Player_physics_mat.tres" id="1_o1307"]
@@ -23,22 +23,6 @@ point_count = 4
 [sub_resource type="Curve" id="Curve_a04ll"]
 _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.718468, 0.797802), -0.798401, -0.798401, 0, 0, Vector2(1, 0), -3.20139, 0.0, 0, 0]
 point_count = 3
-
-[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_i0q21"]
-properties/0/path = NodePath(".:sync_pos")
-properties/0/spawn = true
-properties/0/replication_mode = 1
-properties/1/path = NodePath(".:sync_rot")
-properties/1/spawn = true
-properties/1/replication_mode = 1
-properties/2/path = NodePath(".:rotation")
-properties/2/spawn = false
-properties/2/replication_mode = 0
-properties/3/path = NodePath(".:position")
-properties/3/spawn = false
-properties/3/replication_mode = 0
-
-[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_xje1m"]
 
 [node name="PlayerBody" type="RigidBody2D" node_paths=PackedStringArray("pulse_timer", "impulse_timer", "player_skin", "abilities", "collider") groups=["PlayerBody"]]
 collision_layer = 3
@@ -153,9 +137,6 @@ texture = ExtResource("10_mioy0")
 [node name="Pulse_CD" type="Timer" parent="."]
 one_shot = true
 
-[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
-replication_config = SubResource("SceneReplicationConfig_i0q21")
-
 [node name="Abilities" type="Node2D" parent="."]
 
 [node name="Impulse" type="Node2D" parent="Abilities" node_paths=PackedStringArray("cd_timer", "player")]
@@ -173,9 +154,6 @@ max_orbit_timer = NodePath("OrbitLimiter")
 orbit_cd = NodePath("Orbit_CD")
 ability_name = "OrbitLock"
 player = NodePath("../..")
-
-[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="Abilities/OrbitLock"]
-replication_config = SubResource("SceneReplicationConfig_xje1m")
 
 [node name="Orbit_CD" type="Timer" parent="Abilities/OrbitLock"]
 one_shot = true

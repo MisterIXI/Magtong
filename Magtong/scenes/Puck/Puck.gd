@@ -9,10 +9,9 @@ var is_plus_pol: bool = true
 func _ready():
 	pass  # Replace with function body.
 
-@rpc("authority", "call_local", "reliable")
 func reset(new_forced_pos: Vector2, reset_state: bool):
 	if reset_state:
-		receive_pulse.rpc(true)
+		receive_pulse(true)
 	linear_velocity = Vector2(0, 0)
 	angular_velocity = 0
 	global_position = new_forced_pos
@@ -22,7 +21,6 @@ func reset(new_forced_pos: Vector2, reset_state: bool):
 		Transform2D.IDENTITY.translated(new_forced_pos)
 	)
 
-@rpc("authority", "call_local", "reliable")
 func receive_pulse(is_now_plus_pol: bool):
 	if is_now_plus_pol:
 		plus_sprite.show()

@@ -149,8 +149,8 @@ func start_tweens():
 	# simple loops for p3 and p4
 	# p3 up and down
 	var p3 = players[2]
-	p3.on_input(input_info_axis_minus(1.0), true)
-	p3.on_input(input_info_axis_y(0.3), true)
+	p3.on_input(input_info_axis_minus(1.0))
+	p3.on_input(input_info_axis_y(0.3))
 	tween3 = create_tween()
 	# tween3.tween_callback(p3.on_input.bind(input_info_axis_y(0.3)))
 	tween3.tween_interval(1.75)
@@ -171,8 +171,6 @@ func start_tweens():
 	tween3.set_loops()
 	
 func _physics_process(delta):
-	if not multiplayer.is_server():
-		return
 	# step through all players and check if they are emitting magnetic field
 	for player in players:
 		if player.state != PlayerBody.Polarity.IDLE:
