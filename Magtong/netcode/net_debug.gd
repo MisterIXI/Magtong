@@ -3,6 +3,8 @@ class_name NetDebug
 ## process: team 1 is this machine, team 2 a fake remote peer, connected through a FakeNetwork.
 ## Set with the debug keys of NetDebugOverlay or command line user args, e.g.
 ## godot --path . -- --rollback-test --fake-ping=120 --fake-jitter=20 --fake-loss=0.05 --input-delay=2
+## For real online sessions --net-lag=60 --net-loss=0.05 add lag and loss to everything this machine sends
+## (two local game processes with --net-lag=60 each play like a 120 ms connection).
 
 const PING_STEPS: Array[int] = [0, 50, 100, 150, 250]
 const LOSS_STEPS: Array[float] = [0.0, 0.05, 0.2]
@@ -14,6 +16,9 @@ static var jitter_ms: int = 10
 static var loss: float = 0.0
 static var input_delay: int = 2
 static var show_overlay: bool = false
+## real online sessions: delay every outgoing packet / drop outgoing unreliable packets (testing only)
+static var net_lag_ms: int = 0
+static var net_loss: float = 0.0
 
 static func parse_args() -> void:
 	for arg in OS.get_cmdline_user_args():
@@ -30,6 +35,10 @@ static func parse_args() -> void:
 				loss = parts[1].to_float()
 			"--input-delay":
 				input_delay = clampi(parts[1].to_int(), 0, MAX_INPUT_DELAY)
+			"--net-lag":
+				net_lag_ms = parts[1].to_int()
+			"--net-loss":
+				net_loss = parts[1].to_float()
 
 static func apply_network(network: FakeNetwork) -> void:
 	network.ping_ms = ping_ms

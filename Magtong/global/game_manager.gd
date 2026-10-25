@@ -29,6 +29,10 @@ signal state_changed(old_state: State, new_state: State)
 
 func _ready():
 	NetDebug.parse_args()
+	globNet.connected_to_host.connect(_on_connected_to_host)
+	globNet.connection_ended.connect(return_to_menu)
+	globNet.return_to_lobby_requested.connect(_on_return_to_lobby_requested)
+	_handle_command_line.call_deferred()
 
 func _change_state(new_state: State):
 	var old_state = current_state
@@ -44,6 +48,70 @@ func _change_state(new_state: State):
 func start_local_game():
 	assert(current_state == State.MENU)
 	_change_state(State.LOBBY)
+
+#region online
+func host_direct(port: int = NetGame.DEFAULT_PORT) -> void:
+	var err := globNet.host_direct(port)
+	if err != OK:
+		main_menu.show_message("Could not host on port %d: %s" % [port, error_string(err)])
+		return
+	enter_online_lobby()
+
+## address can be "ip" or "ip:port"
+func join_direct(address: String) -> void:
+	var port := NetGame.DEFAULT_PORT
+	if address.count(":") == 1:
+		port = address.get_slice(":", 1).to_int()
+		address = address.get_slice(":", 0)
+	var err := globNet.join_direct(address, port)
+	if err != OK:
+		main_menu.show_message("Could not connect to %s:%d: %s" % [address, port, error_string(err)])
+		return
+	wait_for_host()
+
+func host_steam() -> void:
+	globSteamHandler.create_lobby()
+	main_menu.show_message("Creating Steam lobby...", false)
+
+## The host side is ready, go to the lobby.
+func enter_online_lobby() -> void:
+	main_menu.hide_message()
+	if current_state == State.MENU:
+		_change_state(State.LOBBY)
+
+## A client connection is starting, wait in the menu until the host answers.
+func wait_for_host() -> void:
+	main_menu.show_message("Connecting...", false)
+
+func _on_connected_to_host() -> void:
+	enter_online_lobby()
+
+func _on_return_to_lobby_requested() -> void:
+	if current_state == State.GAME:
+		_change_state(State.LOBBY)
+
+## Leaves any online session and shows the main menu, optionally with a message.
+func return_to_menu(message: String = "") -> void:
+	globNet.leave()
+	globSteamHandler.leave_lobby()
+	globInputManager.clear_players()
+	if current_state != State.MENU:
+		var old_state = current_state
+		current_state = State.MENU
+		scene_root.change_scene(null)
+		main_menu.switch_to_menu(main_menu.start_menu)
+		state_changed.emit(old_state, current_state)
+	if message != "":
+		main_menu.show_message(message)
+
+## --host[=port] / --join=ip[:port] start an online session right away (handy for testing)
+func _handle_command_line() -> void:
+	for arg in OS.get_cmdline_user_args():
+		if arg == "--host" or arg.begins_with("--host="):
+			host_direct(arg.get_slice("=", 1).to_int() if "=" in arg else NetGame.DEFAULT_PORT)
+		elif arg.begins_with("--join="):
+			join_direct(arg.get_slice("=", 1))
+#endregion
 
 func print_message(message: String):
 	message_log.append(message)

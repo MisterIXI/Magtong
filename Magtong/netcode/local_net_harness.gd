@@ -15,12 +15,15 @@ func _init(sims_and_states: Array, player_owner: PackedInt32Array, input_delay: 
 
 ## One frame for every peer. input_for(player: int, target_tick: int) -> int returns the input of a
 ## local player for the tick it gets scheduled for.
-func tick(input_for: Callable, now_ms: int) -> void:
+## Peers in skip do not simulate this frame (they still send and receive), e.g. a machine that started late.
+func tick(input_for: Callable, now_ms: int, skip: Array = []) -> void:
 	for peer in sessions.size():
 		var session := sessions[peer]
 		for packet in network.receive(peer, now_ms):
 			session.receive_packet(packet, now_ms)
-		if session.can_advance():
+		if peer in skip:
+			session.resolve_rollback()
+		elif session.can_advance():
 			var target_tick := session.current_tick + 1 + session.input_delay
 			for p in session.local_players:
 				session.add_local_input(p, input_for.call(p, target_tick))

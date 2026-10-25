@@ -24,6 +24,7 @@ config/icon="res://assets/Textures/PlayerSkins/PlayerCharacter.png"
 
 globInputManager="*res://global/Input/input_manager.gd"
 globResourceManager="*res://global/resource_manager.tscn"
+globNet="*res://netcode/net_game.gd"
 globGameManager="*res://global/game_manager.tscn"
 globSteamHandler="*res://global/steam/steam_handler.tscn"
 

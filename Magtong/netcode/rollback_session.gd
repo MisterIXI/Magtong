@@ -47,6 +47,7 @@ var rollbacks: int = 0
 var resimulated_ticks: int = 0
 var max_rollback_depth: int = 0
 var stalls: int = 0
+var time_sync_waits: int = 0
 var desyncs: int = 0
 var snapshots_sent: int = 0
 var snapshots_applied: int = 0
@@ -71,6 +72,8 @@ func _init(sim: Simulation, state: SimState, local_peer: int, player_owner: Pack
 				"last_time": -1,
 				"last_time_at": 0,
 				"rtt": -1,
+				"remote_tick": -1, # tick the peer was at when it sent its newest packet
+				"remote_tick_at": 0,
 				"checksums": {},
 				"snapshot_applied": -1,
 			}
@@ -94,6 +97,23 @@ func get_ping(peer: int) -> int:
 
 func get_remote_peers() -> Array:
 	return _peers.keys()
+
+## How many ticks we run ahead of the slowest remote peer, estimated from its newest packet and the ping.
+## Positive means we are ahead and should slow down a little, so the predictions stay short.
+func get_frame_advantage(now_ms: int) -> float:
+	var advantage := 0.0
+	var tick_ms := 1000.0 / Simulation.TICK_RATE
+	for peer in _peers.values():
+		if peer["remote_tick"] < 0 or peer["rtt"] < 0:
+			continue
+		var travel_ms: float = peer["rtt"] / 2.0 + (now_ms - peer["remote_tick_at"])
+		var remote_now: float = peer["remote_tick"] + travel_ms / tick_ms
+		advantage = maxf(advantage, current_tick - remote_now)
+	return advantage
+
+## The newest state that can not change anymore (all inputs up to it are known).
+func get_confirmed_state() -> SimState:
+	return _state_after(mini(get_confirmed_tick(), current_tick))
 
 #region inputs
 ## Sets the input of a local player for the next tick to be scheduled (current tick + 1 + input_delay).
@@ -305,6 +325,7 @@ func make_packet(now_ms: int) -> Dictionary:
 	var packet := {
 		"peer": local_peer,
 		"time": now_ms,
+		"tick": current_tick,
 		"echoes": echoes,
 		"acks": acks,
 		"players": local_players,
@@ -336,6 +357,9 @@ func receive_packet(packet: Dictionary, now_ms: int) -> void:
 	if packet["time"] > peer["last_time"]:
 		peer["last_time"] = packet["time"]
 		peer["last_time_at"] = now_ms
+	if packet["tick"] > peer["remote_tick"]:
+		peer["remote_tick"] = packet["tick"]
+		peer["remote_tick_at"] = now_ms
 	peer["snapshot_applied"] = maxi(peer["snapshot_applied"], packet["snapshot_applied"])
 	var players: PackedInt32Array = packet["players"]
 	var inputs: PackedInt32Array = packet["inputs"]

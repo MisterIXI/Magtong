@@ -14,39 +14,20 @@ var state: Simulation.Polarity = Simulation.Polarity.IDLE
 var player_input: PlayerInput
 var is_in_lobby: bool = false
 var mm: MatchManager
-var gl: GameLobby
 var map: MapScript
+var _skin: int = -1
 var _last_pulse_tick: int = -1
 var _last_ability_tick: int = -1
-var _last_reset_tick: int = -1
+var _last_reset_tick: int = -2 # so the first update always resets the interpolation
 
+## player_input is null for players controlled on another machine.
 func setup_player(map: MapScript, player_input: PlayerInput, is_in_lobby: bool = false):
 	self.map = map
 	self.player_input = player_input
 	self.is_in_lobby = is_in_lobby
-	player_input.input_received.connect(on_input)
-	if is_in_lobby:
-		gl = globGameManager.scene_root.current_scene as GameLobby
-	else:
+	if not is_in_lobby:
 		mm = globGameManager.scene_root.current_scene as MatchManager
-	set_skin(player_input.player_sprite_id)
 	setup_completed.emit(self)
-
-func _exit_tree():
-	if player_input != null and player_input.input_received.is_connected(on_input):
-		player_input.input_received.disconnect(on_input)
-
-## Inputs that are not part of the simulation (lobby menu actions).
-func on_input(input_info: InputInfo):
-	if not is_in_lobby or not input_info.is_pressed:
-		return
-	match input_info.input_type:
-		InputInfo.InputType.MENU:
-			gl.request_game_start()
-		InputInfo.InputType.AUX_LEFT:
-			cycle_skin(-1)
-		InputInfo.InputType.AUX_RIGHT:
-			cycle_skin(1)
 
 ## Called every tick after the simulation stepped.
 func update_from_sim(sim_state: SimState, body: int, player: int) -> void:
@@ -54,6 +35,9 @@ func update_from_sim(sim_state: SimState, body: int, player: int) -> void:
 	if sim_state.reset_tick != _last_reset_tick:
 		_last_reset_tick = sim_state.reset_tick
 		reset_physics_interpolation()
+	if sim_state.skin[player] != _skin:
+		_skin = sim_state.skin[player]
+		set_skin(_skin)
 	var new_pol: Simulation.Polarity = sim_state.polarity[player]
 	if new_pol != state:
 		state = new_pol
@@ -67,9 +51,5 @@ func update_from_sim(sim_state: SimState, body: int, player: int) -> void:
 		impulse_emitted.emit(global_position, state)
 
 func set_skin(player_sprite_id: int):
-	player_skin.texture = globResourceManager.icons.player_sprites[player_sprite_id]
-
-func cycle_skin(dir: int):
-	var count: int = globResourceManager.icons.player_sprites.size()
-	player_input.player_sprite_id = posmod(player_input.player_sprite_id + dir, count)
-	set_skin(player_input.player_sprite_id)
+	var sprites: Array = globResourceManager.icons.player_sprites
+	player_skin.texture = sprites[posmod(player_sprite_id, sprites.size())]

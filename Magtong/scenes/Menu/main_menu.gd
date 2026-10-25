@@ -5,11 +5,18 @@ extends Control
 @export var settings_menu: Control
 @export var settings_entry_focus: Control
 @export var mm_background: PackedScene
+@export var address_edit: LineEdit
+@export var host_steam_button: Button
+@export var message_panel: Control
+@export var message_label: Label
+@export var message_ok_button: Button
 var curr_mm_bg: MMBackground
 var previous_menu: Control
 var current_menu: Control
 
 func _ready() -> void:
+	hide_message()
+	host_steam_button.disabled = not globSteamHandler.is_initialized
 	hide_all()
 	current_menu = start_menu
 	current_menu.show()
@@ -60,8 +67,25 @@ func _on_settings_pressed() -> void:
 func _on_start_local_pressed() -> void:
 	globGameManager.start_local_game()
 
-func boot_to_menu_with_message(_message: String) -> void:
-	switch_to_menu(start_menu)
+func _on_host_steam_pressed() -> void:
+	globGameManager.host_steam()
+
+func _on_host_direct_pressed() -> void:
+	globGameManager.host_direct()
+
+func _on_join_direct_pressed() -> void:
+	var address := address_edit.text.strip_edges()
+	globGameManager.join_direct(address if address != "" else "127.0.0.1")
+
+func show_message(message: String, with_ok_button: bool = true) -> void:
+	message_label.text = message
+	message_ok_button.visible = with_ok_button
+	message_panel.show()
+	if with_ok_button:
+		message_ok_button.grab_focus.call_deferred()
+
+func hide_message() -> void:
+	message_panel.hide()
 
 
 func _on_quit_pressed() -> void:

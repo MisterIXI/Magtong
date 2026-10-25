@@ -125,15 +125,38 @@ deterministic). So the gameplay sim gets its own small physics in plain GDScript
   (both fake peers share one clock, phase D); the lobby still runs without a session.
 
 ### Phase D: transport and session
-- [ ] Packet format: tick plus the last N inputs (redundant), sent **unreliable** every tick, plus acks.
+- [x] Packet format: tick plus the last N inputs (redundant), sent **unreliable** every tick, plus acks.
       No reliable channel for inputs, so one lost packet doesn't stall everything behind it.
-- [ ] Transport layer with two backends: ENet direct connect (testing, LAN) and Steam
+- [x] Transport layer with two backends: ENet direct connect (testing, LAN) and Steam
       (`SteamMultiplayerPeer` or Steam Networking Messages). Restore the lobby code from git history.
 - [ ] Check whether Steam traffic goes through Steam's relay servers (the 30 → 70 ms jump) and whether a
-      direct P2P connection is possible.
-- [ ] Session flow: lobby → agree on settings and seed → synchronized start tick → match → rematch.
-- [ ] Mixed local and online: several local players per machine, so each machine sends multiple input slots.
-- [ ] Disconnects and timeouts. Stall when too far ahead of the remote ("frame advantage" throttling).
+      direct P2P connection is possible. *Needs two Steam accounts: test with a friend.*
+- [x] Session flow: lobby → agree on settings and seed → synchronized start tick → match → rematch.
+- [x] Mixed local and online: several local players per machine, so each machine sends multiple input slots.
+- [x] Disconnects and timeouts. Stall when too far ahead of the remote ("frame advantage" throttling).
+
+**Status after phase D (2026-10-25):**
+- Code: `netcode/net_transport.gd` (raw packets over any `MultiplayerPeer`, ENet or Steam), `netcode/net_game.gd`
+  (autoload `globNet`: connection, roster, lobby epochs, packet routing, host relay, keepalive and 5 s timeout),
+  `global/steam/steam_handler.gd` (friends-only Steam lobby + invite dialog, join via invite / `+connect_lobby`).
+- Lobby online: the host owns the roster. Joins and leaves send the host's lobby state to everyone, and every
+  machine rebuilds its lobby session from it. Starting the match (MENU) and skins (AUX) are simulation
+  inputs now, so the start is decided inside the simulation; every machine starts the same match (same teams, skins,
+  seed and session id) from the same *confirmed* lobby tick. No extra messages needed.
+- Time sync: each machine estimates how far it runs ahead (`RollbackSession.get_frame_advantage`) and skips a tick
+  now and then while ahead.
+- A machine leaving: the lobby removes its players; during a match the host sends everybody back to the lobby;
+  if the host leaves, clients go back to the menu with a message.
+- Menu: Play Local, Host Online (Steam), Host Direct (IP), address field + Join Direct.
+  Command line: `--host[=port]`, `--join=ip[:port]`, `--input-delay=n`, and for testing two local processes like a
+  real connection `--net-lag=ms --net-loss=0..1` (applies to everything that machine sends).
+- Verified: two separate game processes over ENet (localhost) run lobby → join → teams → start → match and end on
+  the same checksum at tick 400, also with `--net-lag=100 --net-loss=0.1` each (rollbacks happen, no desyncs);
+  the client leaving mid-match sends the host back to the lobby. Time sync is covered in `tests/rollback_test.gd`.
+- Not tested yet: Steam (needs a second account), 3+ machines over ENet (host relay; only covered by the
+  3-peer harness test), real internet connections (NAT: direct connect needs port forwarding on the host).
+- Known limits: the lobby hitches briefly on every join/leave (rebuild); returning to the lobby only happens on a
+  disconnect (no "back to lobby" button after a match yet); clients relay through the host (adds latency with 3+ machines).
 
 ### Phase E: polish
 - [ ] Hide rollback corrections visually (smooth the remote players' render position after a correction).

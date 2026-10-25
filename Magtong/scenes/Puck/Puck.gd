@@ -5,7 +5,7 @@ class_name Puck
 @export var plus_sprite: Sprite2D
 @export var minus_sprite: Sprite2D
 var is_plus_pol: bool = true
-var _last_reset_tick: int = -1
+var _last_reset_tick: int = -2 # so the first update always resets the interpolation
 
 ## Called every tick after the simulation stepped.
 func update_from_sim(sim_state: SimState, body: int) -> void:

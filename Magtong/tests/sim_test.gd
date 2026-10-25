@@ -14,6 +14,7 @@ func _init():
 	test_divider()
 	test_lobby_zones()
 	test_input_encoding()
+	test_lobby_skins_and_start()
 	print("FAILED: %d" % failures if failures > 0 else "ALL PASSED")
 	quit(1 if failures > 0 else 0)
 
@@ -189,3 +190,31 @@ func test_input_encoding():
 	var move := SimInput.get_move(input)
 	check(is_equal_approx(move.x, -1.0) and absf(move.y - 0.5) < 0.01, "move survives encoding (%s)" % move)
 	check(SimInput.get_buttons(input) == SimInput.PLUS | SimInput.MENU, "buttons survive encoding")
+
+func test_lobby_skins_and_start():
+	var rink := make_rink()
+	var sim := Simulation.new(settings, Simulation.Mode.LOBBY)
+	sim.skin_count = 4
+	var state := SimState.new()
+	sim.set_rink(rink, Transform2D.IDENTITY, false)
+	sim.add_team_area(Rect2(Vector2(-130, 225), Vector2(260, 60)), 0)
+	sim.add_team_area(Rect2(Vector2(-538, -125), Vector2(145, 250)), 1)
+	sim.add_team_area(Rect2(Vector2(393, -125), Vector2(145, 250)), 2)
+	sim.add_puck(state, Vector2(0, -200))
+	sim.add_player(state, Vector2(-100, 0), 0, 0, 3)
+	sim.add_player(state, Vector2(100, 0), 0, 0, 0)
+	var right := SimInput.encode(Vector2.ZERO, SimInput.AUX_RIGHT)
+	sim.step(state, PackedInt32Array([right, 0]))
+	check(state.skin[0] == 0, "AUX_RIGHT cycles the skin and wraps around (%d)" % state.skin[0])
+	sim.step(state, PackedInt32Array([right, 0]))
+	check(state.skin[0] == 0, "holding the button does not cycle again")
+	var menu := SimInput.encode(Vector2.ZERO, SimInput.MENU)
+	sim.step(state, PackedInt32Array([menu, 0]))
+	check(state.start_tick == -1, "MENU does nothing while not everybody is in a team")
+	# walk into the team areas
+	for t in 90:
+		sim.step(state, PackedInt32Array([SimInput.encode(Vector2.LEFT, 0), SimInput.encode(Vector2.RIGHT, 0)]))
+	check(sim.is_lobby_ready(state), "lobby is ready with one player per team (sizes %s)" % sim.lobby_team_sizes(state))
+	sim.step(state, PackedInt32Array([0, menu]))
+	check(state.start_tick == state.tick, "MENU starts the match once everybody is ready")
+	rink.free()

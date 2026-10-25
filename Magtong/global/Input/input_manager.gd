@@ -35,5 +35,12 @@ func register_player(device_id: int) -> PlayerInput:
 	player_input_registered.emit(player_input)
 	return player_input
 
+## Forget all local players (back to the main menu).
+func clear_players() -> void:
+	for player_input in player_inputs.values():
+		player_input.queue_free()
+	player_inputs.clear()
+	next_player_id = 1
+
 func get_all_player_inputs() -> Array:
 	return player_inputs.values()

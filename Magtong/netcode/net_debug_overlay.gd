@@ -51,14 +51,22 @@ func _process(_delta):
 		NetDebug.ping_ms, NetDebug.jitter_ms, roundi(NetDebug.loss * 100), NetDebug.input_delay])
 	var session := map.session
 	if session == null:
-		lines.append("no rollback session (lobby)")
+		lines.append("no rollback session")
+	elif globNet.is_online():
+		lines.append("ONLINE as %s (peer %d), session %s" % [NetGame.Mode.keys()[globNet.mode], globNet.get_local_peer(), map.session_id])
+		lines.append("tick %d, confirmed %d (%d ahead), input delay %d, frame advantage %.1f" % [
+			session.current_tick, session.get_confirmed_tick(), session.current_tick - session.get_confirmed_tick(),
+			session.input_delay, session.get_frame_advantage(Time.get_ticks_msec())])
+		lines.append("rollbacks %d (%d/s), max depth %d, stalls %d, time sync waits %d" % [
+			session.rollbacks, _rollbacks_per_second(session), session.max_rollback_depth, session.stalls, session.time_sync_waits])
+		lines.append("desyncs %d (last at tick %d), snapshots sent %d / applied %d" % [
+			session.desyncs, session.last_desync_tick, session.snapshots_sent, session.snapshots_applied])
+		for peer in session.get_remote_peers():
+			lines.append("ping to peer %d: %d ms" % [peer, session.get_ping(peer)])
 	elif map.harness == null:
 		lines.append("local session: tick %d, input delay %d, no remote players" % [session.current_tick, session.input_delay])
 	else:
-		_rollback_window.append(session.rollbacks)
-		if _rollback_window.size() > Simulation.TICK_RATE:
-			_rollback_window.pop_front()
-		var per_second := _rollback_window[-1] - _rollback_window[0]
+		var per_second := _rollbacks_per_second(session)
 		lines.append("tick %d, confirmed %d (%d ahead), input delay %d" % [
 			session.current_tick, session.get_confirmed_tick(), session.current_tick - session.get_confirmed_tick(), session.input_delay])
 		lines.append("rollbacks %d (%d/s), max depth %d, resimulated ticks %d" % [
@@ -69,3 +77,9 @@ func _process(_delta):
 			session.get_ping(1), map.harness.network.packets_lost, map.harness.network.packets_sent])
 	lines.append("[F4: hide]")
 	_label.text = "\n".join(lines)
+
+func _rollbacks_per_second(session: RollbackSession) -> int:
+	_rollback_window.append(session.rollbacks)
+	if _rollback_window.size() > Simulation.TICK_RATE:
+		_rollback_window.pop_front()
+	return _rollback_window[-1] - _rollback_window[0]

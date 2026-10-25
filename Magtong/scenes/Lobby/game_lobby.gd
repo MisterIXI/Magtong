@@ -1,5 +1,9 @@
 extends Node2D
 class_name GameLobby
+## Lobby playground. Runs on the same simulation as the match. Teams come from the team areas players
+## stand in, the match starts when a player presses MENU while everybody is ready (both decided inside the
+## simulation, so all machines agree). The authority (host or local game) manages the roster: joins and
+## leaves rebuild the lobby on every machine from the state the authority sends.
 
 var current_map: MapScript
 @export var map_root: Node2D
@@ -10,14 +14,22 @@ var map_id: int = 0
 var team_count: int
 var team_max_size: int
 var puck_count: int
-var curr_team_sizes: Array[int] = []
+var _starting: bool = false
 
 signal all_ready_changed(all_ready: bool)
 
 func _ready():
 	map_pack = globResourceManager.standard_maps
-	globInputManager.player_input_registered.connect(on_player_input_registered)
+	globInputManager.player_input_registered.connect(_on_player_input_registered)
+	globNet.lobby_reset.connect(_on_lobby_reset)
 	_switch_map(0)
+	if globNet.is_authority():
+		globNet.player_join_requested.connect(_on_player_join_requested)
+		globNet.peer_hello.connect(_on_peer_hello)
+		globNet.peer_left.connect(_on_peer_left)
+		globNet.reset_lobby(globNet.roster, current_map.make_lobby_state(globNet.roster).to_bytes())
+	else:
+		globNet.send_hello()
 
 func _switch_map(id: int):
 	if current_map != null:
@@ -29,60 +41,72 @@ func _switch_map(id: int):
 	team_count = current_map.get_team_count()
 	team_max_size = current_map.get_max_team_size()
 	puck_count = current_map.get_max_pucks()
-	curr_team_sizes = []
-	for i in team_count + 1: # +1 for spectator_team
-		curr_team_sizes.append(0)
-	current_map.player_entered_team_area.connect(on_player_entered_team_area)
-	current_map.player_left_team_area.connect(on_player_exited_team_area)
 
-func on_player_input_registered(player_input: PlayerInput):
-	current_map.spawn_player(player_input)
-	ready_check()
+func _on_player_input_registered(player_input: PlayerInput):
+	globNet.request_add_player(player_input.device_id)
 
-func on_player_entered_team_area(player_input: PlayerInput, team: int):
-	# print("Player entered team area")
-	player_input.team = team
-	curr_team_sizes[team] += 1
-	team_update()
+func _on_lobby_reset(epoch: int, roster: Array, state_bytes: PackedByteArray):
+	current_map.rebuild_lobby(roster, state_bytes, epoch)
 
-func on_player_exited_team_area(player_input: PlayerInput, team: int):
-	# print("Player exited team area")
-	player_input.team = -1
-	curr_team_sizes[team] -= 1
-	team_update()
+#region authority
+func _on_player_join_requested(peer: int, device: int):
+	for entry in globNet.roster:
+		if entry["peer"] == peer and entry["device"] == device:
+			return
+	var skin: int = randi() % globResourceManager.icons.player_sprites.size()
+	var roster := globNet.roster.duplicate(true)
+	roster.append({"peer": peer, "device": device, "skin": skin})
+	globNet.reset_lobby(roster, current_map.add_player_to_state(current_map.state, skin).to_bytes())
 
-func team_update():
-	_update_lobby_labels(curr_team_sizes)
-	ready_check()
+func _on_peer_hello(_peer: int):
+	globNet.reset_lobby(globNet.roster, current_map.state.to_bytes())
 
-func _update_lobby_labels(team_sizes: Array):
-	# print(team_sizes)
+func _on_peer_left(peer: int):
+	var roster := []
+	var new_state := current_map.state.copy()
+	for i in range(globNet.roster.size() - 1, -1, -1):
+		if globNet.roster[i]["peer"] == peer:
+			new_state.remove_player(MapScript.LOBBY_PUCKS + i, i)
+		else:
+			roster.push_front(globNet.roster[i])
+	globNet.reset_lobby(roster, new_state.to_bytes())
+#endregion
+
+func _process(_delta):
+	if current_map.session == null:
+		return
+	var team_sizes := current_map.sim.lobby_team_sizes(current_map.state)
+	_update_lobby_labels(team_sizes)
+	var now_ready := current_map.sim.is_lobby_ready(current_map.state)
+	if now_ready != all_ready:
+		all_ready = now_ready
+		all_ready_changed.emit(all_ready)
+	if not _starting:
+		# only start from a confirmed state, a predicted start could still be rolled back
+		var confirmed := current_map.session.get_confirmed_state()
+		if confirmed != null and confirmed.start_tick != -1:
+			_start_match(confirmed)
+
+func _update_lobby_labels(team_sizes: PackedInt32Array):
 	for i in current_map.lobby_labels.size():
-		var text = str(team_sizes[i])
+		var text = str(team_sizes[i] if i < team_sizes.size() else 0)
 		if i > 0:
 			text += "/" + str(team_max_size)
 		current_map.lobby_labels[i].text = text
 
-# func _setup_lobby_labels(team_max_sizes: Array):
-
-func ready_check():
-	var now_ready = _are_all_players_ready()
-	for i in team_count:
-		if curr_team_sizes[i + 1] == 0:
-			now_ready = false
-	if all_ready != now_ready:
-		all_ready = now_ready
-		emit_ready(all_ready)
-
-func emit_ready(value:bool):
-	all_ready_changed.emit(value)
-
-func _are_all_players_ready() -> bool:
-	for p_i in globInputManager.get_all_player_inputs():
-		if p_i.team == - 1:
-			return false
-	return true
-
-func request_game_start():
-	if all_ready:
-		globGameManager.start_game()
+## Every machine calls this with the same confirmed state, so they all set up the same match.
+func _start_match(confirmed: SimState) -> void:
+	_starting = true
+	var match_players := []
+	for i in globNet.roster.size():
+		globNet.roster[i]["skin"] = confirmed.skin[i]
+		var entry: Dictionary = globNet.roster[i].duplicate()
+		entry["team"] = confirmed.zone[i]
+		if entry["team"] > 0: # spectators do not play
+			match_players.append(entry)
+	globNet.match_setup = {
+		"session": "M%d_%d" % [globNet.epoch, confirmed.start_tick],
+		"seed": confirmed.rng | 1,
+		"players": match_players,
+	}
+	globGameManager.start_game()

@@ -28,6 +28,14 @@ func _ready():
 	gm = globGameManager
 	ms.setup(self, match_time)
 	_set_score_labels(ms.state.scores)
+	if globNet.mode == NetGame.Mode.HOST:
+		globNet.peer_left.connect(_on_peer_left)
+
+## Host: a machine left, its players can not be simulated anymore, so everybody goes back to the lobby.
+func _on_peer_left(peer: int) -> void:
+	globNet.roster = globNet.roster.filter(func(entry): return entry["peer"] != peer)
+	gm.print_message("A player left, back to the lobby")
+	globNet.request_return_to_lobby()
 
 func _process(_delta):
 	var state := ms.state

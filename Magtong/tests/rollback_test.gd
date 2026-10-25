@@ -17,6 +17,7 @@ func _init():
 	test_bad_network_three_peers()
 	test_stall_and_recover()
 	test_desync_recovery()
+	test_time_sync()
 	rink.free()
 	print("FAILED: %d" % failures if failures > 0 else "ALL PASSED")
 	quit(1 if failures > 0 else 0)
@@ -170,3 +171,31 @@ func test_desync_recovery():
 	check(s0.desyncs > 0 or s1.desyncs > 0, "desync is detected (%s)" % stats(harness))
 	check(s0.snapshots_sent > 0 and s1.snapshots_applied > 0, "authority sends a snapshot and the other peer applies it")
 	check_matches_reference(harness, 2, "after desync recovery")
+
+func test_time_sync():
+	var harness := make_harness(PackedInt32Array([0, 1]), 2)
+	harness.network.ping_ms = 80
+	var s0 := harness.sessions[0]
+	# peer 1 starts 12 ticks late, like a machine that loaded the match later
+	for frame in 12:
+		harness.tick(script_input, frame * 1000 / Simulation.TICK_RATE, [1])
+	for frame in range(12, 60):
+		harness.tick(script_input, frame * 1000 / Simulation.TICK_RATE)
+	var now := 60 * 1000 / Simulation.TICK_RATE
+	var advantage := s0.get_frame_advantage(now)
+	check(absf(advantage - 12) <= 3, "frame advantage shows peer 0 running 12 ticks ahead (%.1f)" % advantage)
+	# the same policy as MapScript: skip a tick now and then while ahead
+	var smoothed := advantage
+	var since_wait := 0
+	for frame in range(60, 600):
+		now = frame * 1000 / Simulation.TICK_RATE
+		smoothed = lerpf(smoothed, s0.get_frame_advantage(now), 0.1)
+		since_wait += 1
+		var skip := []
+		if smoothed > 1.0 and since_wait > 4:
+			since_wait = 0
+			skip.append(0)
+		harness.tick(script_input, now, skip)
+	advantage = s0.get_frame_advantage(now)
+	check(absf(advantage) < 2.0, "skipping ticks brings the peers back in step (advantage %.1f)" % advantage)
+	check_matches_reference(harness, 2, "after time sync")

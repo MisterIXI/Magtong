@@ -43,6 +43,7 @@ var player_team_slot: PackedInt32Array = PackedInt32Array() # index of the playe
 var puck_spawns: PackedVector2Array = PackedVector2Array()
 var player_spawn_groups: Array[PackedVector2Array] = [] # [group][team - 1]
 var match_length_ticks: int = 0
+var skin_count: int = 1
 
 var pulse_cd_ticks: int
 var ability_cd_ticks: int
@@ -98,7 +99,7 @@ func add_puck(state: SimState, pos: Vector2, is_plus: bool = true) -> int:
 	return puck_count - 1
 
 ## Adds a player and returns its player index (body index is puck_count + player index).
-func add_player(state: SimState, pos: Vector2, team: int = 0, team_slot: int = 0) -> int:
+func add_player(state: SimState, pos: Vector2, team: int = 0, team_slot: int = 0, skin: int = 0) -> int:
 	radius.append(settings.player_radius)
 	inv_mass.append(1.0 / settings.player_mass)
 	player_team.append(team)
@@ -112,6 +113,7 @@ func add_player(state: SimState, pos: Vector2, team: int = 0, team_slot: int = 0
 	state.last_pulse_tick.append(-1)
 	state.last_ability_tick.append(-1)
 	state.zone.append(-1)
+	state.skin.append(skin)
 	player_count += 1
 	return player_count - 1
 
@@ -146,6 +148,11 @@ func step(state: SimState, inputs: PackedInt32Array) -> void:
 		state.prev_buttons[i] = buttons
 		if pressed & SimInput.MENU:
 			menu_pressed = true
+		if mode == Mode.LOBBY:
+			if pressed & SimInput.AUX_LEFT:
+				state.skin[i] = posmod(state.skin[i] - 1, skin_count)
+			if pressed & SimInput.AUX_RIGHT:
+				state.skin[i] = posmod(state.skin[i] + 1, skin_count)
 		if state.pulse_cd[i] > 0:
 			state.pulse_cd[i] -= 1
 		if state.ability_cd[i] > 0:
@@ -171,6 +178,8 @@ func step(state: SimState, inputs: PackedInt32Array) -> void:
 	match mode:
 		Mode.LOBBY:
 			_update_zones(state)
+			if menu_pressed and state.start_tick == -1 and is_lobby_ready(state):
+				state.start_tick = state.tick
 		Mode.MATCH:
 			_step_match(state, menu_pressed)
 
@@ -323,6 +332,28 @@ func _update_zones(state: SimState) -> void:
 				zone = team_area_team[a]
 				break
 		state.zone[i] = zone
+
+## Players per lobby team area, index = team (0 = spectators).
+func lobby_team_sizes(state: SimState) -> PackedInt32Array:
+	var sizes := PackedInt32Array()
+	for team in team_area_team:
+		if team >= sizes.size():
+			sizes.resize(team + 1)
+	for i in player_count:
+		if state.zone[i] >= 0:
+			sizes[state.zone[i]] += 1
+	return sizes
+
+## Every player stands in a team area and every team has at least one player.
+func is_lobby_ready(state: SimState) -> bool:
+	for i in player_count:
+		if state.zone[i] == -1:
+			return false
+	var sizes := lobby_team_sizes(state)
+	for team in range(1, sizes.size()):
+		if sizes[team] == 0:
+			return false
+	return player_count > 0
 
 func _step_match(state: SimState, menu_pressed: bool) -> void:
 	match state.phase:

@@ -1,8 +1,11 @@
 extends Node2D
 class_name MapScript
-## Owns the Simulation of a map. Builds it from the map nodes (rink, spawn points, lobby areas),
-## steps it every physics tick with the sampled player inputs and updates the player and puck views.
+## Owns the Simulation of a map and the RollbackSession that runs it. Builds the simulation from the
+## map nodes (rink, spawn points, lobby areas) and the roster, feeds the inputs of this machine's players
+## into the session every physics tick, sends and receives session packets and updates the views.
 ## Simulation coordinates are the local coordinates of mp_root.
+
+const LOBBY_PUCKS: int = 2
 
 @export var player_spawn_groups: Array[SpawnPointGroup] = []
 @export var ball_spawn_group: SpawnPointGroup
@@ -15,71 +18,103 @@ class_name MapScript
 
 var is_lobby_map: bool = false
 
-signal player_entered_team_area(player_input: PlayerInput, team: int)
-signal player_left_team_area(player_input: PlayerInput, team: int)
-
 var sim: Simulation
 var state: SimState # the state that is shown
-## matches run through a rollback session (local only, or the rollback test with a fake remote peer)
 var session: RollbackSession
+## only in the offline rollback test (NetDebug): two sessions in this process
 var harness: LocalNetHarness
+var session_id: String = ""
 var players: Array[PlayerBody] = []
-var player_inputs: Array[PlayerInput] = []
 var pucks: Array[Puck] = []
-var _zones: PackedInt32Array = PackedInt32Array()
+## player slot -> PlayerInput, for the players controlled on this machine
+var local_inputs: Dictionary = {}
 var im: InputManager
+var _advantage: float = 0.0
+var _ticks_since_wait: int = 0
 
 func _ready():
 	im = globInputManager
 	add_child(NetDebugOverlay.new(self))
 
+func _exit_tree():
+	if session_id != "":
+		globNet.unregister_session(session_id)
+
+#region lobby
 func set_lobby_mode() -> void:
 	is_lobby_map = true
-	_create_sim(Simulation.Mode.LOBBY)
-	for team in lobby_areas.size():
-		sim.add_team_area(_area_rect(lobby_areas[team]), team)
-	# spawn two pucks for players to play around with
-	_spawn_puck(Vector2.LEFT * 50)
-	_spawn_puck(Vector2.RIGHT * 50)
-	_update_views()
 
 func disable_lobby_features() -> void:
 	for area in lobby_areas:
 		area.visible = false
 
-func spawn_player(player_input: PlayerInput) -> PlayerBody:
-	return _spawn_player(player_input, Vector2.ZERO, 0, 0)
+## A fresh lobby state with the pucks and a player for every roster entry.
+func make_lobby_state(roster: Array) -> SimState:
+	var new_state := SimState.new()
+	new_state.rng = _new_seed()
+	_add_lobby_bodies(_new_lobby_sim(), new_state, roster)
+	return new_state
 
+## Copy of the state with one more player (in the middle of the field).
+func add_player_to_state(source: SimState, skin: int) -> SimState:
+	var new_state := source.copy()
+	Simulation.new(globResourceManager.player_settings, Simulation.Mode.LOBBY).add_player(new_state, Vector2.ZERO, 0, 0, skin)
+	return new_state
+
+## Rebuilds the lobby simulation and session. Every machine does this with the same roster and state.
+func rebuild_lobby(roster: Array, state_bytes: PackedByteArray, epoch: int) -> void:
+	_clear_players()
+	sim = _new_lobby_sim()
+	_add_lobby_bodies(sim, SimState.new(), roster) # only for the static data, the state comes from the bytes
+	state = SimState.from_bytes(state_bytes)
+	_start_session(_owners(roster), "L%d" % epoch, globNet.get_input_delay())
+	if pucks.is_empty():
+		_add_puck_views(LOBBY_PUCKS)
+	for i in roster.size():
+		_add_player_view(roster[i], i, true)
+	_update_views()
+
+func _new_lobby_sim() -> Simulation:
+	var lobby_sim := _new_sim(Simulation.Mode.LOBBY)
+	for team in lobby_areas.size():
+		lobby_sim.add_team_area(_area_rect(lobby_areas[team]), team)
+	return lobby_sim
+
+func _add_lobby_bodies(target_sim: Simulation, target_state: SimState, roster: Array) -> void:
+	# two pucks for players to play around with
+	target_sim.add_puck(target_state, Vector2.LEFT * 50)
+	target_sim.add_puck(target_state, Vector2.RIGHT * 50)
+	for entry in roster:
+		target_sim.add_player(target_state, Vector2.ZERO, 0, 0, entry.get("skin", 0))
+#endregion
+
+#region match
 func setup(_match_manager: MatchManager, match_time: float) -> void:
 	disable_lobby_features()
-	var match_inputs: Array[PlayerInput] = []
-	for player_input in im.get_all_player_inputs():
-		if player_input.team > 0: # skip spectators and invalid team
-			match_inputs.append(player_input)
-	var seed := _new_seed()
-	var pair := _build_match_sim(match_time, seed, match_inputs)
+	var match_setup: Dictionary = globNet.match_setup
+	var match_players: Array = match_setup["players"]
+	var seed: int = match_setup["seed"]
+	var pair := _build_match_sim(match_time, seed, match_players)
 	sim = pair[0]
 	state = pair[1]
-	var owners := PackedInt32Array()
-	if NetDebug.enabled:
+	if not globNet.is_online() and NetDebug.enabled:
 		# rollback test: team 1 plays on this machine, team 2 on a fake remote one with its own simulation
-		for player_input in match_inputs:
-			owners.append(0 if player_input.team == 1 else 1)
-		var remote_pair := _build_match_sim(match_time, seed, match_inputs)
+		var owners := PackedInt32Array()
+		for entry in match_players:
+			owners.append(0 if entry["team"] == 1 else 1)
+		var remote_pair := _build_match_sim(match_time, seed, match_players)
 		harness = LocalNetHarness.new([pair, remote_pair], owners, NetDebug.input_delay, seed)
 		NetDebug.apply_network(harness.network)
 		session = harness.sessions[0]
 	else:
-		for player_input in match_inputs:
-			owners.append(0)
-		session = RollbackSession.new(sim, state, 0, owners, 0)
-	_add_puck_view()
-	for player_input in match_inputs:
-		_add_player_view(player_input)
+		_start_session(_owners(match_players), match_setup["session"], globNet.get_input_delay())
+	_add_puck_views(1)
+	for i in match_players.size():
+		_add_player_view(match_players[i], i, false)
 	_update_views()
 
-## A match simulation, built the same way every time for the same seed and players.
-func _build_match_sim(match_time: float, seed: int, match_inputs: Array[PlayerInput]) -> Array:
+## A match simulation, built the same way on every machine for the same seed and players.
+func _build_match_sim(match_time: float, seed: int, match_players: Array) -> Array:
 	var match_sim := _new_sim(Simulation.Mode.MATCH)
 	var match_state := SimState.new()
 	match_state.rng = seed
@@ -93,71 +128,93 @@ func _build_match_sim(match_time: float, seed: int, match_inputs: Array[PlayerIn
 		match_sim.player_spawn_groups.append(points)
 	match_sim.add_puck(match_state, Vector2.ZERO)
 	var team_sizes := {}
-	for player_input in match_inputs:
-		var team: int = player_input.team
-		match_sim.add_player(match_state, Vector2.ZERO, team, team_sizes.get(team, 0))
+	for entry in match_players:
+		var team: int = entry["team"]
+		match_sim.add_player(match_state, Vector2.ZERO, team, team_sizes.get(team, 0), entry.get("skin", 0))
 		team_sizes[team] = team_sizes.get(team, 0) + 1
 	match_sim.start_match(match_state)
 	return [match_sim, match_state]
+#endregion
 
-func _create_sim(mode: Simulation.Mode) -> void:
-	sim = _new_sim(mode)
-	state = SimState.new()
-	state.rng = _new_seed()
+#region session
+func _start_session(owners: PackedInt32Array, id: String, input_delay: int) -> void:
+	if session_id != "":
+		globNet.unregister_session(session_id)
+	session = RollbackSession.new(sim, state, globNet.get_local_peer(), owners, input_delay)
+	session_id = id
+	if globNet.is_online():
+		globNet.register_session(id, _on_session_packet)
 
-func _new_sim(mode: Simulation.Mode) -> Simulation:
-	var new_sim := Simulation.new(globResourceManager.player_settings, mode)
-	new_sim.set_rink(rink, _sim_transform(rink), mode == Simulation.Mode.MATCH)
-	return new_sim
+func _on_session_packet(packet: Dictionary, now_ms: int) -> void:
+	session.receive_packet(packet, now_ms)
 
-func _new_seed() -> int:
-	return hash(Time.get_ticks_usec()) & 0x7FFFFFFF | 1
-
-func _spawn_puck(pos: Vector2) -> Puck:
-	sim.add_puck(state, pos)
-	return _add_puck_view()
-
-func _spawn_player(player_input: PlayerInput, pos: Vector2, team: int, team_slot: int) -> PlayerBody:
-	sim.add_player(state, pos, team, team_slot)
-	var new_player := _add_player_view(player_input)
-	new_player.update_from_sim(state, sim.player_body(players.size() - 1), players.size() - 1)
-	return new_player
-
-func _add_puck_view() -> Puck:
-	var puck: Puck = globResourceManager.puck_scene.instantiate()
-	mp_root.add_child(puck, true)
-	pucks.append(puck)
-	return puck
-
-func _add_player_view(player_input: PlayerInput) -> PlayerBody:
-	var new_player: PlayerBody = globResourceManager.player_scene.instantiate()
-	mp_root.add_child(new_player, true)
-	new_player.setup_player(self, player_input, is_lobby_map)
-	players.append(new_player)
-	player_inputs.append(player_input)
-	_zones.append(-1)
-	return new_player
+func _owners(entries: Array) -> PackedInt32Array:
+	var owners := PackedInt32Array()
+	for entry in entries:
+		owners.append(entry["peer"])
+	return owners
 
 func _physics_process(_delta):
-	if sim == null:
+	if session == null:
 		return
-	var inputs := PackedInt32Array()
-	for player_input in player_inputs:
-		inputs.append(player_input.sample())
+	var now := Time.get_ticks_msec()
 	if harness != null:
-		harness.tick(func(player: int, _target_tick: int): return inputs[player], Time.get_ticks_msec())
-	elif session != null:
-		for p in inputs.size():
-			session.add_local_input(p, inputs[p])
-		session.advance()
+		harness.tick(func(player: int, _target_tick: int): return _sample(player), now)
 	else:
-		sim.step(state, inputs)
-	if session != null:
-		# rollbacks and snapshots replace the state object
-		state = session.state
+		if session.can_advance() and not _should_wait_for_peers(now):
+			for slot in local_inputs:
+				session.add_local_input(slot, local_inputs[slot].sample())
+			session.advance()
+		else:
+			if not session.can_advance():
+				session.stalls += 1
+			session.resolve_rollback()
+		if globNet.is_online():
+			globNet.send_session_packet(session_id, session.make_packet(now))
+	# rollbacks and snapshots replace the state object
+	state = session.state
 	_update_views()
-	if is_lobby_map:
-		_emit_zone_changes()
+
+func _sample(slot: int) -> int:
+	return local_inputs[slot].sample() if local_inputs.has(slot) else SimInput.EMPTY
+
+## Time sync: if we run ahead of the other machines, skip a tick now and then so they catch up.
+## Otherwise we would predict further and further ahead and roll back more and more.
+func _should_wait_for_peers(now_ms: int) -> bool:
+	if not globNet.is_online():
+		return false
+	_advantage = lerpf(_advantage, session.get_frame_advantage(now_ms), 0.1)
+	_ticks_since_wait += 1
+	if _advantage > 1.0 and _ticks_since_wait > 4:
+		_ticks_since_wait = 0
+		session.time_sync_waits += 1
+		return true
+	return false
+#endregion
+
+#region views
+func _add_puck_views(count: int) -> void:
+	for i in count:
+		var puck: Puck = globResourceManager.puck_scene.instantiate()
+		mp_root.add_child(puck, true)
+		pucks.append(puck)
+
+func _add_player_view(entry: Dictionary, slot: int, in_lobby: bool) -> void:
+	var view: PlayerBody = globResourceManager.player_scene.instantiate()
+	mp_root.add_child(view, true)
+	var player_input: PlayerInput = null
+	if entry["peer"] == globNet.get_local_peer():
+		player_input = im.player_inputs.get(entry["device"])
+	if player_input != null:
+		local_inputs[slot] = player_input
+	view.setup_player(self, player_input, in_lobby)
+	players.append(view)
+
+func _clear_players() -> void:
+	for view in players:
+		view.queue_free()
+	players.clear()
+	local_inputs.clear()
 
 func _update_views() -> void:
 	for k in pucks.size():
@@ -165,22 +222,21 @@ func _update_views() -> void:
 	for i in players.size():
 		players[i].update_from_sim(state, sim.player_body(i), i)
 
-func _emit_zone_changes() -> void:
-	for i in players.size():
-		var zone := state.zone[i]
-		if zone == _zones[i]:
-			continue
-		if _zones[i] != -1:
-			player_left_team_area.emit(player_inputs[i], _zones[i])
-		if zone != -1:
-			player_entered_team_area.emit(player_inputs[i], zone)
-		_zones[i] = zone
-
 func _unhandled_key_input(event: InputEvent) -> void:
 	if event.is_pressed() and event.keycode == KEY_F3:
 		rink.debug_draw_in_game = not rink.debug_draw_in_game
+#endregion
 
-#region coordinate helpers
+#region helpers
+func _new_sim(mode: Simulation.Mode) -> Simulation:
+	var new_sim := Simulation.new(globResourceManager.player_settings, mode)
+	new_sim.set_rink(rink, _sim_transform(rink), mode == Simulation.Mode.MATCH)
+	new_sim.skin_count = globResourceManager.icons.player_sprites.size()
+	return new_sim
+
+func _new_seed() -> int:
+	return hash(Time.get_ticks_usec()) & 0x7FFFFFFF | 1
+
 func _sim_transform(node: Node2D) -> Transform2D:
 	return mp_root.global_transform.affine_inverse() * node.global_transform
 
@@ -194,10 +250,10 @@ func _area_rect(area: Area2D) -> Rect2:
 			return _sim_transform(child) * Rect2(-size / 2, size)
 	push_warning("Lobby area without a RectangleShape2D: " + area.name)
 	return Rect2()
-#endregion
 
 func get_max_pucks() -> int: return ball_spawn_group.size()
 
 func get_team_count() -> int: return player_spawn_groups[0].size()
 
 func get_max_team_size() -> int: return player_spawn_groups.size()
+#endregion

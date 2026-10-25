@@ -22,6 +22,7 @@ var ability_cd: PackedInt32Array = PackedInt32Array()
 var last_pulse_tick: PackedInt32Array = PackedInt32Array()
 var last_ability_tick: PackedInt32Array = PackedInt32Array()
 var zone: PackedInt32Array = PackedInt32Array() # lobby team area the player touches, -1 = none
+var skin: PackedInt32Array = PackedInt32Array()
 
 # match
 var phase: int = Simulation.Phase.NONE
@@ -34,6 +35,9 @@ var winner: int = -1 # 0 = tie, 1/2 = team
 var last_goal_tick: int = -1
 var last_goal_team: int = 0
 var reset_tick: int = -1 # last tick bodies were teleported (views skip interpolation)
+
+# lobby
+var start_tick: int = -1 # tick a player started the match from the lobby
 
 func copy() -> SimState:
 	var c := SimState.new()
@@ -49,6 +53,7 @@ func copy() -> SimState:
 	c.last_pulse_tick = last_pulse_tick.duplicate()
 	c.last_ability_tick = last_ability_tick.duplicate()
 	c.zone = zone.duplicate()
+	c.skin = skin.duplicate()
 	c.phase = phase
 	c.phase_ticks = phase_ticks
 	c.match_ticks = match_ticks
@@ -59,12 +64,22 @@ func copy() -> SimState:
 	c.last_goal_tick = last_goal_tick
 	c.last_goal_team = last_goal_team
 	c.reset_tick = reset_tick
+	c.start_tick = start_tick
 	return c
+
+## Removes a player (lobby leave). body is the body index, player the player index.
+func remove_player(body: int, player: int) -> void:
+	pos.remove_at(body)
+	vel.remove_at(body)
+	for array_name in [&"polarity", &"prev_buttons", &"pulse_cd", &"ability_cd", &"last_pulse_tick", &"last_ability_tick", &"zone", &"skin"]:
+		var array: PackedInt32Array = get(array_name)
+		array.remove_at(player)
+		set(array_name, array)
 
 const FIELDS: Array[StringName] = [
 	&"tick", &"rng", &"pos", &"vel", &"puck_plus", &"polarity", &"prev_buttons", &"pulse_cd", &"ability_cd",
-	&"last_pulse_tick", &"last_ability_tick", &"zone", &"phase", &"phase_ticks", &"match_ticks", &"overtime",
-	&"overtime_ticks", &"scores", &"winner", &"last_goal_tick", &"last_goal_team", &"reset_tick",
+	&"last_pulse_tick", &"last_ability_tick", &"zone", &"skin", &"phase", &"phase_ticks", &"match_ticks", &"overtime",
+	&"overtime_ticks", &"scores", &"winner", &"last_goal_tick", &"last_goal_team", &"reset_tick", &"start_tick",
 ]
 
 ## Hash of the full state, used to detect desyncs between peers.

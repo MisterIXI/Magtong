@@ -8,7 +8,7 @@ func change_scene(new_scene: Node = null) -> void:
 	if new_scene == null and current_scene != start_scene:
 		if current_scene != null:
 			current_scene.queue_free()
-		new_scene = start_scene
+		current_scene = start_scene
 		start_scene.visible = true
 		return
 	if current_scene == start_scene:
