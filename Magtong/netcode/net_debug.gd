@@ -5,6 +5,7 @@ class_name NetDebug
 ## godot --path . -- --rollback-test --fake-ping=120 --fake-jitter=20 --fake-loss=0.05 --input-delay=2
 ## For real online sessions --net-lag=60 --net-loss=0.05 add lag and loss to everything this machine sends
 ## (two local game processes with --net-lag=60 each play like a 120 ms connection).
+## All of this only works in debug builds, release exports ignore the keys and arguments.
 
 const PING_STEPS: Array[int] = [0, 50, 100, 150, 250]
 const LOSS_STEPS: Array[float] = [0.0, 0.05, 0.2]
@@ -20,7 +21,13 @@ static var show_overlay: bool = false
 static var net_lag_ms: int = 0
 static var net_loss: float = 0.0
 
+## Debug keys, test command line arguments and the direct connect menu entries.
+static func dev_tools_enabled() -> bool:
+	return OS.is_debug_build()
+
 static func parse_args() -> void:
+	if not dev_tools_enabled():
+		return
 	for arg in OS.get_cmdline_user_args():
 		var parts := arg.split("=")
 		match parts[0]:

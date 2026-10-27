@@ -10,6 +10,8 @@ extends Control
 @export var message_panel: Control
 @export var message_label: Label
 @export var message_ok_button: Button
+## Host Direct / address / Join Direct, only shown in debug builds (testing, LAN)
+@export var direct_connect_controls: Array[Control]
 var curr_mm_bg: MMBackground
 var previous_menu: Control
 var current_menu: Control
@@ -17,10 +19,14 @@ var current_menu: Control
 func _ready() -> void:
 	hide_message()
 	host_steam_button.disabled = not SteamHandler.is_initialized
+	for control in direct_connect_controls:
+		control.visible = NetDebug.dev_tools_enabled()
 	hide_all()
 	current_menu = start_menu
 	current_menu.show()
 	spawn_mm_background()
+	if start_entry_focus != null:
+		start_entry_focus.call_deferred("grab_focus")
 
 func _process(_delta: float) -> void:
 	if Input.is_action_just_pressed("ui_cancel"):

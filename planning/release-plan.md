@@ -49,17 +49,22 @@ Step 0: commit the current WIP (connection icon, lobby return), then copy this p
         reimports and reports broken dependencies. Optional: run `gdlint` (gdtoolkit) and fix what it finds.
       - Check: both test scripts pass, the editor shows no missing dependencies, and a local match and a two-process ENet
         match still work.
-- [ ] `Settings` autoload: a `ConfigFile` at `user://settings.cfg` with Master/Music/SFX volume, window
+- [x] `Settings` autoload: a `ConfigFile` at `user://settings.cfg` with Master/Music/SFX volume, window
       mode (fullscreen/windowed/borderless), vsync. Applied at startup.
-- [ ] Audio buses (Master, Music, SFX) in `default_bus_layout.tres`; wire the existing sliders in the main
+- [x] Audio buses (Master, Music, SFX) in `default_bus_layout.tres`; wire the existing sliders in the main
       menu's Settings panel to them.
-- [ ] Add window mode + vsync controls to the Settings panel. Make the whole menu work with gamepad focus.
-- [ ] Release build flag: in non-debug builds (`OS.is_debug_build()` false), disable `NetDebugOverlay` keys
+- [x] Add window mode + vsync controls to the Settings panel. Make the whole menu work with gamepad focus.
+- [x] Release build flag: in non-debug builds (`OS.is_debug_build()` false), disable `NetDebugOverlay` keys
       F4–F9, the `--fake-*` / `--net-lag` command-line flags, and hide Host Direct / Join Direct (or keep them
       behind a setting, for LAN).
-- [ ] Remove or fix the leftover `print`/`gm.print_message` spam in `scenes/match_manager.gd` and other places.
-- [ ] Export presets: check Windows and Linux both export cleanly, with the icon and version
+      *Done: `NetDebug.dev_tools_enabled()` (= `OS.is_debug_build()`) gates the keys, all test arguments incl.
+      `--host`/`--join`, the F12 message log and the direct connect menu entries.*
+- [x] Remove or fix the leftover `print`/`gm.print_message` spam in `scenes/match_manager.gd` and other places.
+- [x] Export presets: check Windows and Linux both export cleanly, with the icon and version
       (`config/version` → `1.0.0`). Check that `addons/godot_rl_agents` isn't included in the export.
+      *Done: export excludes `addons/godot_rl_agents`, `tests`, `scenes/test`, `scenes/tools`, `script_templates`;
+      Windows icon `assets/icons/magtong.ico` (still needs a 256×256 size, the exporter warns).
+      The prints left are a few Steam init lines and the match log, kept.*
 
 ## Week 2: audio + game feel
 - [ ] Gather a CC0/royalty-free SFX pack plus 2–3 music tracks (menu, lobby, match). Keep the licenses in

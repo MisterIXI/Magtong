@@ -105,8 +105,10 @@ func return_to_menu(message: String = "") -> void:
 	if message != "":
 		main_menu.show_message(message)
 
-## --host[=port] / --join=ip[:port] start an online session right away (handy for testing)
+## --host[=port] / --join=ip[:port] start an online session right away (testing, debug builds only)
 func _handle_command_line() -> void:
+	if not NetDebug.dev_tools_enabled():
+		return
 	for arg in OS.get_cmdline_user_args():
 		if arg == "--host" or arg.begins_with("--host="):
 			host_direct(arg.get_slice("=", 1).to_int() if "=" in arg else NetGame.DEFAULT_PORT)
@@ -127,8 +129,8 @@ func print_message(message: String):
 	message_scrollbox.scroll_vertical = int(message_scrollbox.get_v_scroll_bar().max_value)
 
 func _input(event):
-	# check if F12 is pressed
-	if event is InputEventKey and event.pressed and event.keycode == KEY_F12:
+	# F12 shows the message log (debug builds only)
+	if NetDebug.dev_tools_enabled() and event is InputEventKey and event.pressed and event.keycode == KEY_F12:
 		toggle_message_panel()
 
 func toggle_message_panel():

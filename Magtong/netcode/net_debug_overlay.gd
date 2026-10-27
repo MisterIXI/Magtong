@@ -19,7 +19,7 @@ func _init(map: MapScript) -> void:
 	add_child(_label)
 
 func _unhandled_key_input(event: InputEvent) -> void:
-	if not event.is_pressed() or event.is_echo():
+	if not NetDebug.dev_tools_enabled() or not event.is_pressed() or event.is_echo():
 		return
 	match event.keycode:
 		KEY_F4:

@@ -1,15 +1,16 @@
-[gd_scene load_steps=6 format=3 uid="uid://c3ev5o6ua0dou"]
+[gd_scene load_steps=7 format=3 uid="uid://c3ev5o6ua0dou"]
 
 [ext_resource type="Script" uid="uid://f2kfb374alxr" path="res://scenes/menu/main_menu.gd" id="1_2slre"]
 [ext_resource type="StyleBox" uid="uid://de7p8np7j7h43" path="res://resources/default_box.tres" id="1_sw55l"]
 [ext_resource type="Theme" uid="uid://06fpobwh5q7a" path="res://scenes/menu/main_menu_theme.tres" id="2_8mcyk"]
 [ext_resource type="PackedScene" uid="uid://52s0ncdku17p" path="res://scenes/menu/mm_background.tscn" id="2_evs2v"]
+[ext_resource type="Script" path="res://scenes/menu/settings_menu.gd" id="3_setts"]
 
 [sub_resource type="Theme" id="Theme_i6drp"]
 GridContainer/constants/h_separation = 50
-GridContainer/constants/v_separation = 50
+GridContainer/constants/v_separation = 35
 
-[node name="MainMenu" type="Control" node_paths=PackedStringArray("start_menu", "start_entry_focus", "settings_menu", "settings_entry_focus", "address_edit", "host_steam_button", "message_panel", "message_label", "message_ok_button")]
+[node name="MainMenu" type="Control" node_paths=PackedStringArray("start_menu", "start_entry_focus", "settings_menu", "settings_entry_focus", "address_edit", "host_steam_button", "message_panel", "message_label", "message_ok_button", "direct_connect_controls")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -27,6 +28,7 @@ message_panel = NodePath("StartMenu/PanelContainer")
 message_label = NodePath("StartMenu/PanelContainer/VBoxContainer/MessageInfo")
 message_ok_button = NodePath("StartMenu/PanelContainer/VBoxContainer/Button")
 mm_background = ExtResource("2_evs2v")
+direct_connect_controls = [NodePath("StartMenu/VBoxContainer/HostDirect"), NodePath("StartMenu/VBoxContainer/AddressEdit"), NodePath("StartMenu/VBoxContainer/JoinDirect")]
 
 [node name="StartMenu" type="Control" parent="."]
 z_index = 1000
@@ -55,49 +57,37 @@ grow_vertical = 2
 
 [node name="StartLocal" type="Button" parent="StartMenu/VBoxContainer"]
 layout_mode = 2
-focus_neighbor_bottom = NodePath("../HostSteam")
 theme = ExtResource("2_8mcyk")
 text = "Play Local"
 
 [node name="HostSteam" type="Button" parent="StartMenu/VBoxContainer"]
 layout_mode = 2
-focus_neighbor_top = NodePath("../StartLocal")
-focus_neighbor_bottom = NodePath("../HostDirect")
 theme = ExtResource("2_8mcyk")
 text = "Host Online (Steam)"
 
 [node name="HostDirect" type="Button" parent="StartMenu/VBoxContainer"]
 layout_mode = 2
-focus_neighbor_top = NodePath("../HostSteam")
-focus_neighbor_bottom = NodePath("../AddressEdit")
 theme = ExtResource("2_8mcyk")
 text = "Host Direct (IP)"
 
 [node name="AddressEdit" type="LineEdit" parent="StartMenu/VBoxContainer"]
 layout_mode = 2
-focus_neighbor_top = NodePath("../HostDirect")
-focus_neighbor_bottom = NodePath("../JoinDirect")
 placeholder_text = "IP address[:port]"
 alignment = 1
 
 [node name="JoinDirect" type="Button" parent="StartMenu/VBoxContainer"]
 layout_mode = 2
-focus_neighbor_top = NodePath("../AddressEdit")
-focus_neighbor_bottom = NodePath("../Settings")
 theme = ExtResource("2_8mcyk")
 text = "Join Direct"
 
 [node name="Settings" type="Button" parent="StartMenu/VBoxContainer"]
 auto_translate_mode = 1
 layout_mode = 2
-focus_neighbor_top = NodePath("../JoinDirect")
-focus_neighbor_bottom = NodePath("../Quit")
 theme = ExtResource("2_8mcyk")
 text = "Settings"
 
 [node name="Quit" type="Button" parent="StartMenu/VBoxContainer"]
 layout_mode = 2
-focus_neighbor_top = NodePath("../Settings")
 theme = ExtResource("2_8mcyk")
 text = "Quit"
 
@@ -138,7 +128,7 @@ autowrap_mode = 3
 layout_mode = 2
 text = "Okay"
 
-[node name="Settings" type="Control" parent="."]
+[node name="Settings" type="Control" parent="." node_paths=PackedStringArray("master_slider", "music_slider", "sfx_slider", "window_mode_option", "vsync_check")]
 visible = false
 z_index = 1000
 layout_mode = 1
@@ -147,6 +137,12 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("3_setts")
+master_slider = NodePath("Panel/MarginContainer/GridContainer/MasterSlider")
+music_slider = NodePath("Panel/MarginContainer/GridContainer/MusicSlider")
+sfx_slider = NodePath("Panel/MarginContainer/GridContainer/SFXSlider")
+window_mode_option = NodePath("Panel/MarginContainer/GridContainer/WindowModeOption")
+vsync_check = NodePath("Panel/MarginContainer/GridContainer/VSyncCheck")
 
 [node name="Panel" type="Panel" parent="Settings"]
 layout_mode = 1
@@ -217,6 +213,22 @@ text = "Music Volume"
 auto_translate_mode = 1
 layout_mode = 2
 size_flags_horizontal = 3
+
+[node name="WindowMode" type="Label" parent="Settings/Panel/MarginContainer/GridContainer"]
+layout_mode = 2
+text = "Window Mode"
+
+[node name="WindowModeOption" type="OptionButton" parent="Settings/Panel/MarginContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VSync" type="Label" parent="Settings/Panel/MarginContainer/GridContainer"]
+layout_mode = 2
+text = "VSync"
+
+[node name="VSyncCheck" type="CheckButton" parent="Settings/Panel/MarginContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
 
 [node name="CloseButton" type="Button" parent="Settings/Panel"]
 layout_mode = 1
