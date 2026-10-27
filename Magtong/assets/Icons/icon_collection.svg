@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="256"
+   height="256"
+   viewBox="0 0 67.733332 67.733333"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4.4 (dcaf3e7d9e, 2026-05-05)"
+   sodipodi:docname="icon_collection.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#505050"
+     inkscape:document-units="px"
+     inkscape:zoom="0.77343754"
+     inkscape:cx="38.787877"
+     inkscape:cy="346.50503"
+     inkscape:window-width="1920"
+     inkscape:window-height="1003"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1">
+    <inkscape:page
+       x="0"
+       y="0"
+       width="67.73333"
+       height="67.73333"
+       id="page1"
+       margin="0"
+       bleed="0" />
+    <inkscape:page
+       x="77.73333"
+       y="0"
+       width="67.73333"
+       height="67.73333"
+       id="page2"
+       margin="0"
+       bleed="0" />
+    <inkscape:page
+       x="155.46666"
+       y="0"
+       width="67.73333"
+       height="67.73333"
+       id="page3"
+       margin="0"
+       bleed="0" />
+    <inkscape:page
+       x="233.2"
+       y="0"
+       width="67.73333"
+       height="67.73333"
+       id="page4"
+       margin="0"
+       bleed="0" />
+    <inkscape:page
+       x="310.93332"
+       y="0"
+       width="67.73333"
+       height="67.73333"
+       id="page5"
+       margin="0"
+       bleed="0" />
+  </sodipodi:namedview>
+  <defs
+     id="defs1">
+    <!-- cuts a gap around the connection lost slash -->
+    <mask
+       id="slash-gap"
+       maskUnits="userSpaceOnUse"
+       x="0"
+       y="0"
+       width="67.733332"
+       height="67.733333">
+      <rect
+         x="0"
+         y="0"
+         width="67.733332"
+         height="67.733333"
+         style="fill:#ffffff" />
+      <path
+         d="M 17.807,55.936 49.927,10.064"
+         style="fill:none;stroke:#000000;stroke-width:11;stroke-linecap:round" />
+    </mask>
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="connection-lost"
+       inkscape:label="connection lost">
+      <g
+         mask="url(#slash-gap)"
+         style="fill:none;stroke:#ffffff;stroke-width:6;stroke-linecap:round">
+        <path
+           d="M 10.931,25.940 A 28,28 0 0 1 56.803,25.940" />
+        <path
+           d="M 20.761,32.823 A 16,16 0 0 1 46.973,32.823" />
+        <circle
+           cx="33.867"
+           cy="42"
+           r="4.2"
+           style="fill:#ffffff;stroke:none" />
+      </g>
+      <path
+         d="M 17.807,55.936 49.927,10.064"
+         style="fill:none;stroke:#ffffff;stroke-width:6;stroke-linecap:round" />
+    </g>
+    <circle
+       style="fill:none;stroke:#212121;stroke-width:4.63897;stroke-miterlimit:1.9"
+       id="path5-1"
+       cx="114.03542"
+       cy="35.983334"
+       r="10.909681" />
+  </g>
+</svg>
