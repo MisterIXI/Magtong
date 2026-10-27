@@ -17,7 +17,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 config/name="Magtong"
 config/version="0.4"
 run/main_scene="uid://boymygteo4sj8"
-config/features=PackedStringArray("4.6", "Forward Plus")
+config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://assets/Textures/PlayerSkins/PlayerCharacter.png"
 
 [autoload]

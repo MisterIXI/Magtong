@@ -41,6 +41,8 @@ func execute_input(input_info: InputInfo) -> void:
 			_set_button(SimInput.AUX_LEFT, input_info.is_pressed)
 		InputInfo.InputType.AUX_RIGHT:
 			_set_button(SimInput.AUX_RIGHT, input_info.is_pressed)
+		InputInfo.InputType.BACK:
+			_set_button(SimInput.BACK, input_info.is_pressed)
 	# Emit the signal
 	input_received.emit(input_info)
 

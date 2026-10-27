@@ -31,7 +31,7 @@ func _ready():
 	NetDebug.parse_args()
 	globNet.connected_to_host.connect(_on_connected_to_host)
 	globNet.connection_ended.connect(return_to_menu)
-	globNet.return_to_lobby_requested.connect(_on_return_to_lobby_requested)
+	globNet.return_to_lobby_requested.connect(return_to_lobby)
 	_handle_command_line.call_deferred()
 
 func _change_state(new_state: State):
@@ -86,7 +86,9 @@ func wait_for_host() -> void:
 func _on_connected_to_host() -> void:
 	enter_online_lobby()
 
-func _on_return_to_lobby_requested() -> void:
+## Leaves the match. Online every machine calls this on its own (the match ended in the simulation, or
+## the host sent return_to_lobby), the lobby then syncs up through the host.
+func return_to_lobby() -> void:
 	if current_state == State.GAME:
 		_change_state(State.LOBBY)
 

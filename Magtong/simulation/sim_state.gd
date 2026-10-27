@@ -39,6 +39,9 @@ var reset_tick: int = -1 # last tick bodies were teleported (views skip interpol
 # lobby
 var start_tick: int = -1 # tick a player started the match from the lobby
 
+# match end
+var lobby_tick: int = -1 # tick a player chose to go back to the lobby after the game over
+
 func copy() -> SimState:
 	var c := SimState.new()
 	c.tick = tick
@@ -65,6 +68,7 @@ func copy() -> SimState:
 	c.last_goal_team = last_goal_team
 	c.reset_tick = reset_tick
 	c.start_tick = start_tick
+	c.lobby_tick = lobby_tick
 	return c
 
 ## Removes a player (lobby leave). body is the body index, player the player index.
@@ -80,6 +84,7 @@ const FIELDS: Array[StringName] = [
 	&"tick", &"rng", &"pos", &"vel", &"puck_plus", &"polarity", &"prev_buttons", &"pulse_cd", &"ability_cd",
 	&"last_pulse_tick", &"last_ability_tick", &"zone", &"skin", &"phase", &"phase_ticks", &"match_ticks", &"overtime",
 	&"overtime_ticks", &"scores", &"winner", &"last_goal_tick", &"last_goal_team", &"reset_tick", &"start_tick",
+	&"lobby_tick",
 ]
 
 ## Hash of the full state, used to detect desyncs between peers.

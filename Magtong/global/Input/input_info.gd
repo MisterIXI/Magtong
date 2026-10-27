@@ -47,4 +47,5 @@ enum InputType{
 	# BUMPER
 	B_LEFT = 10,
 	B_RIGHT = 11,
+	BACK = 12,
 }

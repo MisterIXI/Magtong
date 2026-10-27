@@ -140,6 +140,7 @@ func step(state: SimState, inputs: PackedInt32Array) -> void:
 	state.tick += 1
 	var controls_active := mode != Mode.MATCH or state.phase == Phase.PLAYING
 	var menu_pressed := false
+	var back_pressed := false
 	for i in player_count:
 		var body := puck_count + i
 		var input: int = inputs[i] if i < inputs.size() else SimInput.EMPTY
@@ -148,6 +149,8 @@ func step(state: SimState, inputs: PackedInt32Array) -> void:
 		state.prev_buttons[i] = buttons
 		if pressed & SimInput.MENU:
 			menu_pressed = true
+		if pressed & SimInput.BACK:
+			back_pressed = true
 		if mode == Mode.LOBBY:
 			if pressed & SimInput.AUX_LEFT:
 				state.skin[i] = posmod(state.skin[i] - 1, skin_count)
@@ -181,7 +184,7 @@ func step(state: SimState, inputs: PackedInt32Array) -> void:
 			if menu_pressed and state.start_tick == -1 and is_lobby_ready(state):
 				state.start_tick = state.tick
 		Mode.MATCH:
-			_step_match(state, menu_pressed)
+			_step_match(state, menu_pressed, back_pressed)
 
 func _apply_magnets(state: SimState) -> void:
 	var pos := state.pos
@@ -355,7 +358,7 @@ func is_lobby_ready(state: SimState) -> bool:
 			return false
 	return player_count > 0
 
-func _step_match(state: SimState, menu_pressed: bool) -> void:
+func _step_match(state: SimState, menu_pressed: bool, back_pressed: bool) -> void:
 	match state.phase:
 		Phase.COUNTDOWN:
 			state.phase_ticks -= 1
@@ -387,7 +390,12 @@ func _step_match(state: SimState, menu_pressed: bool) -> void:
 				else:
 					_game_over(state, leader)
 		Phase.GAME_OVER:
-			if menu_pressed:
+			# MENU: rematch, BACK: everybody goes back to the lobby (the views leave the match on that)
+			if state.lobby_tick != -1:
+				pass
+			elif back_pressed:
+				state.lobby_tick = state.tick
+			elif menu_pressed:
 				start_match(state)
 
 ## Returns the team that scored (the right goal counts for team 1, the left one for team 2), 0 if none.

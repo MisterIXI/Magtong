@@ -1,7 +1,8 @@
 extends Node
 class_name MatchManager
 ## Match UI. The match itself (countdown, clock, goals, overtime, game over, restart) runs in the
-## Simulation, this node only shows its state and reacts to changes.
+## Simulation, this node only shows its state and reacts to changes. After the game over a player can
+## send everybody back to the lobby, which is also decided in the simulation.
 
 var match_time: float = 180
 var gm: GameManager
@@ -23,6 +24,7 @@ var _shown_scores: PackedInt32Array = PackedInt32Array([0, 0])
 var _shown_phase: Simulation.Phase = Simulation.Phase.NONE
 var _shown_overtime: bool = false
 var _last_goal_time: int = 0
+var _leaving: bool = false
 
 func _ready():
 	gm = globGameManager
@@ -46,6 +48,12 @@ func _process(_delta):
 		_update_timer_label(float(state.overtime_ticks) / Simulation.TICK_RATE)
 	else:
 		_update_timer_label(float(state.match_ticks) / Simulation.TICK_RATE)
+	if not _leaving:
+		# only leave from a confirmed state, a predicted leave could still be rolled back
+		var confirmed := ms.session.get_confirmed_state() if ms.session != null else null
+		if confirmed != null and confirmed.lobby_tick != -1:
+			_leaving = true
+			gm.return_to_lobby()
 
 func _update_phase(state: SimState) -> void:
 	if state.overtime and not _shown_overtime:
@@ -89,7 +97,7 @@ func _update_countdown(state: SimState) -> void:
 		Simulation.Phase.GAME_OVER:
 			countdown_node.show()
 			countdown_node.scale = Vector2.ONE * 0.5
-			countdown_label.text = "Game Over!\n" + _winner_text(state.winner)
+			countdown_label.text = "Game Over!\n" + _winner_text(state.winner) + "\n\nStart / Esc: rematch\nSelect / Backspace: lobby"
 		_:
 			countdown_node.hide()
 

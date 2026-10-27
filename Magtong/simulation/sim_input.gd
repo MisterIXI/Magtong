@@ -13,6 +13,7 @@ const SECONDARY: int = 1 << 3
 const MENU: int = 1 << 4
 const AUX_LEFT: int = 1 << 5
 const AUX_RIGHT: int = 1 << 6
+const BACK: int = 1 << 7
 
 const EMPTY: int = 0
 

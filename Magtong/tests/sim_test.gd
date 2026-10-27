@@ -15,6 +15,7 @@ func _init():
 	test_lobby_zones()
 	test_input_encoding()
 	test_lobby_skins_and_start()
+	test_game_over_choices()
 	print("FAILED: %d" % failures if failures > 0 else "ALL PASSED")
 	quit(1 if failures > 0 else 0)
 
@@ -217,4 +218,28 @@ func test_lobby_skins_and_start():
 	check(sim.is_lobby_ready(state), "lobby is ready with one player per team (sizes %s)" % sim.lobby_team_sizes(state))
 	sim.step(state, PackedInt32Array([0, menu]))
 	check(state.start_tick == state.tick, "MENU starts the match once everybody is ready")
+	rink.free()
+
+func test_game_over_choices():
+	var rink := make_rink()
+	var setup := make_match(rink)
+	var sim: Simulation = setup[0]
+	var state: SimState = setup[1]
+	state.phase = Simulation.Phase.PLAYING
+	state.match_ticks = 1
+	state.scores = PackedInt32Array([1, 0])
+	sim.step(state, PackedInt32Array())
+	check(state.phase == Simulation.Phase.GAME_OVER and state.winner == 1, "time running out with a lead ends the game")
+	var rematch_state := state.copy()
+	var menu := SimInput.encode(Vector2.ZERO, SimInput.MENU)
+	sim.step(rematch_state, PackedInt32Array([0, menu]))
+	check(rematch_state.phase == Simulation.Phase.COUNTDOWN and rematch_state.scores == PackedInt32Array([0, 0]), "MENU after the game over starts a rematch")
+	check(rematch_state.lobby_tick == -1, "a rematch does not go back to the lobby")
+	var back := SimInput.encode(Vector2.ZERO, SimInput.BACK)
+	sim.step(state, PackedInt32Array([0, 0, back]))
+	check(state.lobby_tick == state.tick and state.phase == Simulation.Phase.GAME_OVER, "BACK after the game over goes back to the lobby")
+	var lobby_tick := state.lobby_tick
+	sim.step(state, PackedInt32Array([menu]))
+	check(state.lobby_tick == lobby_tick and state.phase == Simulation.Phase.GAME_OVER, "MENU does not restart once the lobby was chosen")
+	check(SimState.from_bytes(state.to_bytes()).lobby_tick == lobby_tick, "lobby_tick survives serialization")
 	rink.free()

@@ -12,6 +12,8 @@ const MAX_CLIENTS: int = 3
 const OFFLINE_PEER: int = 1
 const TIMEOUT_MS: int = 5000
 const KEEPALIVE_MS: int = 250
+## a peer this long silent shows the connection icon (a few keepalives missed)
+const SILENT_ICON_MS: int = 4 * KEEPALIVE_MS
 
 ## client connected to the host, enter the lobby
 signal connected_to_host()
@@ -45,10 +47,13 @@ var _last_heard: Dictionary = {} # peer id -> msec
 var _last_keepalive: int = 0
 var _was_connected: bool = false
 var _outgoing: Array = [] # [send_at_ms, to, bytes, reliable], only used with NetDebug.net_lag_ms
+var _connection_icon: ConnectionIcon
 
 func _ready():
 	# poll before the maps step their sessions, so arrived inputs are used in the same tick
 	process_physics_priority = -100
+	_connection_icon = ConnectionIcon.new()
+	add_child(_connection_icon)
 
 func is_online() -> bool:
 	return mode != Mode.OFFLINE
@@ -94,7 +99,8 @@ func start_with_peer(peer: MultiplayerPeer, as_host: bool) -> void:
 
 func leave() -> void:
 	if transport != null:
-		_send(0, {"type": "bye"}, true)
+		# sent right away (not through the --net-lag queue), so the others notice the leave without the timeout
+		transport.send(0, var_to_bytes({"type": "bye"}), true)
 		transport.peer.poll() # flush the bye
 		transport.close()
 	transport = null
@@ -105,6 +111,12 @@ func leave() -> void:
 	match_setup = {}
 	_sessions = {}
 	_last_heard = {}
+	_connection_icon.set_shown(false)
+
+## Closing the window says bye, so the other machines do not wait for the timeout.
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_CLOSE_REQUEST:
+		leave()
 
 func _end(reason: String) -> void:
 	leave()
@@ -129,9 +141,14 @@ func _physics_process(_delta):
 	if now - _last_keepalive > KEEPALIVE_MS:
 		_last_keepalive = now
 		_send(0, {"type": "keepalive"}, false)
+	var silent := false
 	for peer_id in _last_heard.keys():
 		if now - _last_heard[peer_id] > TIMEOUT_MS:
 			_on_peer_disconnected(peer_id)
+		elif now - _last_heard[peer_id] > SILENT_ICON_MS:
+			silent = true
+	if transport != null:
+		_connection_icon.set_shown(silent)
 
 func _handle(from: int, msg: Dictionary, now: int) -> void:
 	_last_heard[from] = now

@@ -129,8 +129,9 @@ deterministic). So the gameplay sim gets its own small physics in plain GDScript
       No reliable channel for inputs, so one lost packet doesn't stall everything behind it.
 - [x] Transport layer with two backends: ENet direct connect (testing, LAN) and Steam
       (`SteamMultiplayerPeer` or Steam Networking Messages). Restore the lobby code from git history.
-- [ ] Check whether Steam traffic goes through Steam's relay servers (the 30 → 70 ms jump) and whether a
-      direct P2P connection is possible. *Needs two Steam accounts: test with a friend.*
+- [x] Check whether Steam traffic goes through Steam's relay servers (the 30 → 70 ms jump) and whether a
+      direct P2P connection is possible. *Tested with a friend over a Steam invite (2026-10-25): about 50 ms,
+      no noticeable lag with either side hosting. Good enough, no need to dig into the relay further.*
 - [x] Session flow: lobby → agree on settings and seed → synchronized start tick → match → rematch.
 - [x] Mixed local and online: several local players per machine, so each machine sends multiple input slots.
 - [x] Disconnects and timeouts. Stall when too far ahead of the remote ("frame advantage" throttling).
@@ -153,12 +154,14 @@ deterministic). So the gameplay sim gets its own small physics in plain GDScript
 - Verified: two separate game processes over ENet (localhost) run lobby → join → teams → start → match and end on
   the same checksum at tick 400, also with `--net-lag=100 --net-loss=0.1` each (rollbacks happen, no desyncs);
   the client leaving mid-match sends the host back to the lobby. Time sync is covered in `tests/rollback_test.gd`.
-- Not tested yet: Steam (needs a second account), 3+ machines over ENet (host relay; only covered by the
+- Tested with a friend over Steam: about 50 ms, felt fine with either side hosting. Not tested yet: 3+ machines over ENet (host relay; only covered by the
   3-peer harness test), real internet connections (NAT: direct connect needs port forwarding on the host).
-- Known limits: the lobby hitches briefly on every join/leave (rebuild); returning to the lobby only happens on a
-  disconnect (no "back to lobby" button after a match yet); clients relay through the host (adds latency with 3+ machines).
+- Known limits: the lobby hitches briefly on every join/leave (rebuild); clients relay through the host (adds latency with 3+ machines).
 
 ### Phase E: polish
+- [x] Back to the lobby after a match: in the game over, Select / Backspace (`SimInput.BACK`) sets
+      `SimState.lobby_tick`, Start / Esc still starts a rematch. Decided in the simulation like the lobby start,
+      every machine leaves once the state with `lobby_tick` is confirmed, the lobby then syncs up through the host.
 - [ ] Hide rollback corrections visually (smooth the remote players' render position after a correction).
 - [ ] Sound and effect timing under rollback.
 - [ ] Optional: a replay system. It comes almost for free (seed plus input log).
