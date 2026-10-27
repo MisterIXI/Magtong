@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://bxxrr6vpknkfk"]
 
 [ext_resource type="Script" uid="uid://cq7bp2hifpblp" path="res://scenes/tools/shader_image_extractor.gd" id="1_bp2m7"]
-[ext_resource type="Material" uid="uid://b6kdhahtxkbxl" path="res://scenes/Maps/moving_background.tres" id="2_pywme"]
+[ext_resource type="Material" uid="uid://b6kdhahtxkbxl" path="res://scenes/maps/moving_background.tres" id="2_pywme"]
 [ext_resource type="Texture2D" uid="uid://clotytxpfaogh" path="res://cool_img.tres" id="3_pywme"]
 
 [node name="Node2D" type="Node2D"]

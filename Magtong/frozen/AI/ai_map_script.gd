@@ -22,7 +22,7 @@ const PUCK_STEP_REWARD = 3
 func _ready():
 	super._ready()
 	# local server setup
-	# globGameManager.host_game(true)
+	# GameManager.host_game(true)
 	disable_lobby_features()
 	pucks.append(spawn_puck())
 	# spawn players

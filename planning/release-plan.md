@@ -30,7 +30,7 @@ Step 0: commit the current WIP (connection icon, lobby return), then copy this p
 - [ ] Update the store description: "multiplayer only at launch, AI opponents coming in an update".
 
 ## Week 1: conventions refactor, settings, audio foundation, release hygiene
-- [ ] **Godot naming refactor (first, before any new code; timebox 1 day; one commit with renames only, no behavior changes).**
+- [x] **Godot naming refactor (first, before any new code; timebox 1 day; one commit with renames only, no behavior changes).**
       Follow the GDScript style guide: snake_case for files and folders, PascalCase for node names and `class_name`,
       snake_case for vars/funcs, CONSTANT_CASE for constants.
       - Files: `PlayerBody.gd`, `PlayerVisuals.gd`, `PulseEmitter.gd`, `Puck.gd`, `StartMenu.gd`, `Level_Scene.tscn`,

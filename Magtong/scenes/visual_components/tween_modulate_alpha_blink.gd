@@ -1,6 +1,6 @@
 @tool
 extends Node
-class_name VC_BlinkAlpha
+class_name VCBlinkAlpha
 @export var enabled: bool = true
 
 @export_range(0, 1, 0.01) var upper_bound: float = 0.1 :

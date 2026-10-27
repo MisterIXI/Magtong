@@ -2,9 +2,9 @@
 
 [ext_resource type="Script" uid="uid://l10utul52iv6" path="res://scenes/trailer/trailer_scene.gd" id="1_y203o"]
 [ext_resource type="Resource" uid="uid://dihjwejvr4qko" path="res://resources/p_settings_trailer.tres" id="2_h5tgp"]
-[ext_resource type="Texture2D" uid="uid://dcymw3v6t2x63" path="res://assets/Textures/PlayField/Field_default_v3_no_lines.png" id="3_4vjvv"]
-[ext_resource type="AudioStream" uid="uid://c3pn5d6hy1ata" path="res://assets/sounds/music/trailer1_swinging-electro-swing-funny-catchy-151280.mp3" id="4_t5d1l"]
-[ext_resource type="PackedScene" uid="uid://do0i7ixg4d7p1" path="res://scenes/Player/player_body.tscn" id="5_h5tgp"]
+[ext_resource type="Texture2D" uid="uid://dcymw3v6t2x63" path="res://assets/textures/play_field/field_default_v3_no_lines.png" id="3_4vjvv"]
+[ext_resource type="AudioStream" uid="uid://c3pn5d6hy1ata" path="res://assets/sounds/music/trailer1_swinging_electro_swing_funny_catchy_151280.mp3" id="4_t5d1l"]
+[ext_resource type="PackedScene" uid="uid://do0i7ixg4d7p1" path="res://scenes/player/player_body.tscn" id="5_h5tgp"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_akboc"]
 size = Vector2(2300, 100)

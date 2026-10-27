@@ -4,8 +4,8 @@
 [ext_resource type="Resource" uid="uid://cmntx6lne4hft" path="res://resources/player_settings.tres" id="2_6sxy0"]
 [ext_resource type="Resource" uid="uid://cnnrd1bk50cii" path="res://resources/icons.tres" id="2_b8a4s"]
 [ext_resource type="Resource" uid="uid://c6jbqja1eqltu" path="res://resources/maps/main_maps.tres" id="3_rjkfe"]
-[ext_resource type="PackedScene" uid="uid://do0i7ixg4d7p1" path="res://scenes/Player/player_body.tscn" id="5_or8t2"]
-[ext_resource type="PackedScene" uid="uid://dlc283cvpl3eh" path="res://scenes/Puck/puck.tscn" id="6_takqv"]
+[ext_resource type="PackedScene" uid="uid://do0i7ixg4d7p1" path="res://scenes/player/player_body.tscn" id="5_or8t2"]
+[ext_resource type="PackedScene" uid="uid://dlc283cvpl3eh" path="res://scenes/puck/puck.tscn" id="6_takqv"]
 
 [node name="ResourceManager" type="Node"]
 script = ExtResource("1_tpcej")

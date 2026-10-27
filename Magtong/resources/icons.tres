@@ -1,13 +1,13 @@
 [gd_resource type="Resource" script_class="IconPack" load_steps=9 format=3 uid="uid://cnnrd1bk50cii"]
 
 [ext_resource type="Script" uid="uid://b4rr4sij1sbpj" path="res://resources/icon_pack.gd" id="1_bts6i"]
-[ext_resource type="Texture2D" uid="uid://ci8l6erft2vsr" path="res://assets/Textures/PlayerSkins/01_skin_stripes.png" id="1_l3mlm"]
-[ext_resource type="Texture2D" uid="uid://bsf2w26s7ek5f" path="res://assets/Textures/PlayerSkins/02_skin_happy.png" id="2_gnrqn"]
-[ext_resource type="Texture2D" uid="uid://dl30scovigfb7" path="res://assets/Textures/PlayerSkins/03_skin_uwu.png" id="3_f7hma"]
-[ext_resource type="Texture2D" uid="uid://cxvxxpxfe1qyk" path="res://assets/Icons/wireframe-globe.png" id="3_fpkm4"]
-[ext_resource type="Texture2D" uid="uid://bxuo2kxs8lnx3" path="res://assets/Icons/gamepad.png" id="4_c3ncp"]
-[ext_resource type="Texture2D" uid="uid://cpcm7s6ueii1h" path="res://assets/Icons/keyboard.png" id="5_aqda8"]
-[ext_resource type="Texture2D" uid="uid://i3oerj161xnl" path="res://assets/Icons/exit-door.png" id="6_53k2d"]
+[ext_resource type="Texture2D" uid="uid://ci8l6erft2vsr" path="res://assets/textures/player_skins/01_skin_stripes.png" id="1_l3mlm"]
+[ext_resource type="Texture2D" uid="uid://bsf2w26s7ek5f" path="res://assets/textures/player_skins/02_skin_happy.png" id="2_gnrqn"]
+[ext_resource type="Texture2D" uid="uid://dl30scovigfb7" path="res://assets/textures/player_skins/03_skin_uwu.png" id="3_f7hma"]
+[ext_resource type="Texture2D" uid="uid://cxvxxpxfe1qyk" path="res://assets/icons/wireframe_globe.png" id="3_fpkm4"]
+[ext_resource type="Texture2D" uid="uid://bxuo2kxs8lnx3" path="res://assets/icons/gamepad.png" id="4_c3ncp"]
+[ext_resource type="Texture2D" uid="uid://cpcm7s6ueii1h" path="res://assets/icons/keyboard.png" id="5_aqda8"]
+[ext_resource type="Texture2D" uid="uid://i3oerj161xnl" path="res://assets/icons/exit_door.png" id="6_53k2d"]
 
 [resource]
 script = ExtResource("1_bts6i")

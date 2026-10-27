@@ -15,9 +15,9 @@ func _ready():
 	# check if in editor
 	if Engine.is_editor_hint():
 		return
-	globGameManager.host_game(true, true)
+	GameManager.host_game(true, true)
 	await get_tree().physics_frame
-	# globGameManager._change_state(GameManager.State.GAME)
+	# GameManager._change_state(GameManager.State.GAME)
 	#pass
 	respawn_scenes()
 

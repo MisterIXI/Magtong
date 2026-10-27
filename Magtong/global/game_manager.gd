@@ -1,5 +1,4 @@
 extends Node
-class_name GameManager
 
 enum State {
 	MENU,
@@ -29,9 +28,9 @@ signal state_changed(old_state: State, new_state: State)
 
 func _ready():
 	NetDebug.parse_args()
-	globNet.connected_to_host.connect(_on_connected_to_host)
-	globNet.connection_ended.connect(return_to_menu)
-	globNet.return_to_lobby_requested.connect(return_to_lobby)
+	NetGame.connected_to_host.connect(_on_connected_to_host)
+	NetGame.connection_ended.connect(return_to_menu)
+	NetGame.return_to_lobby_requested.connect(return_to_lobby)
 	_handle_command_line.call_deferred()
 
 func _change_state(new_state: State):
@@ -51,7 +50,7 @@ func start_local_game():
 
 #region online
 func host_direct(port: int = NetGame.DEFAULT_PORT) -> void:
-	var err := globNet.host_direct(port)
+	var err := NetGame.host_direct(port)
 	if err != OK:
 		main_menu.show_message("Could not host on port %d: %s" % [port, error_string(err)])
 		return
@@ -63,14 +62,14 @@ func join_direct(address: String) -> void:
 	if address.count(":") == 1:
 		port = address.get_slice(":", 1).to_int()
 		address = address.get_slice(":", 0)
-	var err := globNet.join_direct(address, port)
+	var err := NetGame.join_direct(address, port)
 	if err != OK:
 		main_menu.show_message("Could not connect to %s:%d: %s" % [address, port, error_string(err)])
 		return
 	wait_for_host()
 
 func host_steam() -> void:
-	globSteamHandler.create_lobby()
+	SteamHandler.create_lobby()
 	main_menu.show_message("Creating Steam lobby...", false)
 
 ## The host side is ready, go to the lobby.
@@ -94,9 +93,9 @@ func return_to_lobby() -> void:
 
 ## Leaves any online session and shows the main menu, optionally with a message.
 func return_to_menu(message: String = "") -> void:
-	globNet.leave()
-	globSteamHandler.leave_lobby()
-	globInputManager.clear_players()
+	NetGame.leave()
+	SteamHandler.leave_lobby()
+	InputManager.clear_players()
 	if current_state != State.MENU:
 		var old_state = current_state
 		current_state = State.MENU

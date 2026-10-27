@@ -1,4 +1,3 @@
-class_name SteamHandler
 extends Node
 
 const MAGTONG_STEAMID = 3044580
@@ -62,17 +61,17 @@ func leave_lobby() -> void:
 
 func _on_lobby_created(connect_result: int, new_lobby_id: int) -> void:
 	if connect_result != Steam.RESULT_OK:
-		globGameManager.return_to_menu("Could not create the Steam lobby (%d)" % connect_result)
+		GameManager.return_to_menu("Could not create the Steam lobby (%d)" % connect_result)
 		return
 	lobby_id = new_lobby_id
 	Steam.setLobbyJoinable(lobby_id, true)
 	var peer := SteamMultiplayerPeer.new()
 	var err: int = peer.host_with_lobby(lobby_id)
 	if err != OK:
-		globGameManager.return_to_menu("Could not host on the Steam lobby (%d)" % err)
+		GameManager.return_to_menu("Could not host on the Steam lobby (%d)" % err)
 		return
-	globNet.start_with_peer(peer, true)
-	globGameManager.enter_online_lobby()
+	NetGame.start_with_peer(peer, true)
+	GameManager.enter_online_lobby()
 	open_invite_dialog()
 
 ## A friend invited us (or we used "Join game" in the friends list).
@@ -81,7 +80,7 @@ func _on_join_requested(new_lobby_id: int, _friend_id: int) -> void:
 
 func _on_lobby_joined(new_lobby_id: int, _permissions: int, _locked: bool, response: int) -> void:
 	if response != Steam.CHAT_ROOM_ENTER_RESPONSE_SUCCESS:
-		globGameManager.return_to_menu("Could not join the Steam lobby (%d)" % response)
+		GameManager.return_to_menu("Could not join the Steam lobby (%d)" % response)
 		return
 	lobby_id = new_lobby_id
 	if Steam.getLobbyOwner(lobby_id) == steam_id:
@@ -89,10 +88,10 @@ func _on_lobby_joined(new_lobby_id: int, _permissions: int, _locked: bool, respo
 	var peer := SteamMultiplayerPeer.new()
 	var err: int = peer.connect_to_lobby(lobby_id)
 	if err != OK:
-		globGameManager.return_to_menu("Could not connect to the Steam lobby (%d)" % err)
+		GameManager.return_to_menu("Could not connect to the Steam lobby (%d)" % err)
 		return
-	globNet.start_with_peer(peer, false)
-	globGameManager.wait_for_host()
+	NetGame.start_with_peer(peer, false)
+	GameManager.wait_for_host()
 
 ## Steam starts the game with +connect_lobby <id> when it is launched from an invite.
 func _check_command_line() -> void:

@@ -52,8 +52,8 @@ func _process(_delta):
 	var session := map.session
 	if session == null:
 		lines.append("no rollback session")
-	elif globNet.is_online():
-		lines.append("ONLINE as %s (peer %d), session %s" % [NetGame.Mode.keys()[globNet.mode], globNet.get_local_peer(), map.session_id])
+	elif NetGame.is_online():
+		lines.append("ONLINE as %s (peer %d), session %s" % [NetGame.Mode.keys()[NetGame.mode], NetGame.get_local_peer(), map.session_id])
 		lines.append("tick %d, confirmed %d (%d ahead), input delay %d, frame advantage %.1f" % [
 			session.current_tick, session.get_confirmed_tick(), session.current_tick - session.get_confirmed_tick(),
 			session.input_delay, session.get_frame_advantage(Time.get_ticks_msec())])

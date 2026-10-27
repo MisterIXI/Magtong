@@ -1,9 +1,9 @@
 extends CanvasLayer
 class_name ConnectionIcon
 ## Connection problem icon (crossed out wifi symbol, top right). Shown while a peer has not been heard
-## from for a while, so a stalled game does not look like a freeze. Added by globNet.
+## from for a while, so a stalled game does not look like a freeze. Added by NetGame.
 
-const TEXTURE: Texture2D = preload("res://assets/Icons/connection_lost.svg")
+const TEXTURE: Texture2D = preload("res://assets/icons/connection_lost.svg")
 const SIZE: float = 48.0
 const MARGIN: float = 16.0
 const PULSE_SPEED: float = 4.0

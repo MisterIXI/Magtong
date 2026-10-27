@@ -29,7 +29,7 @@ func pulse():
 	p1 = players[-1]
 	p1.pulse_emitted.connect(on_player_pulse)
 	p1.setup_player(fake_map, fake_input)
-	pucks.append(globResourceManager.puck_scene.instantiate())
+	pucks.append(ResourceManager.puck_scene.instantiate())
 	add_child(pucks[-1])
 	pucks[-1].reset(Vector2.RIGHT * 290, false)
 	p1.current_ability.settings = settings
@@ -54,10 +54,10 @@ func switch():
 	players[-1].reset_once(Vector2.ZERO)
 	p1 = players[-1]
 	p1.pulse_emitted.connect(on_player_pulse)
-	pucks.append(globResourceManager.puck_scene.instantiate())
+	pucks.append(ResourceManager.puck_scene.instantiate())
 	add_child(pucks[-1])
 	pucks[-1].reset(Vector2.LEFT * 100, false)
-	pucks.append(globResourceManager.puck_scene.instantiate())
+	pucks.append(ResourceManager.puck_scene.instantiate())
 	add_child(pucks[-1])
 	pucks[-1].reset(Vector2.RIGHT * 100, false)
 	
@@ -75,10 +75,10 @@ func infographic_pull():
 	players[-1].reset_once(Vector2.ZERO)
 	p1 = players[-1]
 
-	pucks.append(globResourceManager.puck_scene.instantiate())
+	pucks.append(ResourceManager.puck_scene.instantiate())
 	add_child(pucks[-1])
 	pucks[-1].reset(Vector2.LEFT * 290, false)
-	pucks.append(globResourceManager.puck_scene.instantiate())
+	pucks.append(ResourceManager.puck_scene.instantiate())
 	add_child(pucks[-1])
 	pucks[-1].reset(Vector2.RIGHT * 290, false)
 	
@@ -114,16 +114,16 @@ func trailer_tween():
 	p3.set_skin(2)
 
 	#pucks
-	pucks.append(globResourceManager.puck_scene.instantiate())
+	pucks.append(ResourceManager.puck_scene.instantiate())
 	add_child(pucks[-1])
 	pucks[-1].reset(spawns[3].global_position, false)
-	pucks.append(globResourceManager.puck_scene.instantiate())
+	pucks.append(ResourceManager.puck_scene.instantiate())
 	add_child(pucks[-1])
 	pucks[-1].reset(spawns[4].global_position, false)
-	pucks.append(globResourceManager.puck_scene.instantiate())
+	pucks.append(ResourceManager.puck_scene.instantiate())
 	add_child(pucks[-1])
 	pucks[-1].reset(spawns[5].global_position, false)
-	pucks.append(globResourceManager.puck_scene.instantiate())
+	pucks.append(ResourceManager.puck_scene.instantiate())
 	add_child(pucks[-1])
 	pucks[-1].reset(spawns[6].global_position, false)
 
@@ -239,7 +239,7 @@ func input_info_switch() -> InputInfo:
 	})
 
 func spawn_player() -> PlayerBody:
-	var player_body = globResourceManager.player_scene
+	var player_body = ResourceManager.player_scene
 	var new_player: PlayerBody = player_body.instantiate()
 	add_child(new_player, true)
 	return new_player

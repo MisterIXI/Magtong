@@ -1,6 +1,5 @@
 extends Node
-class_name NetGame
-## Online play (autoload globNet). Owns the transport, the roster (which machine controls which player)
+## Online play (autoload NetGame). Owns the transport, the roster (which machine controls which player)
 ## and the lobby epochs, and routes packets to the rollback sessions. The host is the authority for the
 ## roster: joins, leaves and the lobby state everybody starts from. Offline the same bookkeeping happens
 ## locally, so the lobby has one code path for local and online play.

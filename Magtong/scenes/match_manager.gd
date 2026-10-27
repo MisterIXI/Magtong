@@ -5,7 +5,6 @@ class_name MatchManager
 ## send everybody back to the lobby, which is also decided in the simulation.
 
 var match_time: float = 180
-var gm: GameManager
 
 @export var overlay_left: Control
 @export var overlay_right: Control
@@ -27,17 +26,16 @@ var _last_goal_time: int = 0
 var _leaving: bool = false
 
 func _ready():
-	gm = globGameManager
 	ms.setup(self, match_time)
 	_set_score_labels(ms.state.scores)
-	if globNet.mode == NetGame.Mode.HOST:
-		globNet.peer_left.connect(_on_peer_left)
+	if NetGame.mode == NetGame.Mode.HOST:
+		NetGame.peer_left.connect(_on_peer_left)
 
 ## Host: a machine left, its players can not be simulated anymore, so everybody goes back to the lobby.
 func _on_peer_left(peer: int) -> void:
-	globNet.roster = globNet.roster.filter(func(entry): return entry["peer"] != peer)
-	gm.print_message("A player left, back to the lobby")
-	globNet.request_return_to_lobby()
+	NetGame.roster = NetGame.roster.filter(func(entry): return entry["peer"] != peer)
+	GameManager.print_message("A player left, back to the lobby")
+	NetGame.request_return_to_lobby()
 
 func _process(_delta):
 	var state := ms.state
@@ -53,21 +51,21 @@ func _process(_delta):
 		var confirmed := ms.session.get_confirmed_state() if ms.session != null else null
 		if confirmed != null and confirmed.lobby_tick != -1:
 			_leaving = true
-			gm.return_to_lobby()
+			GameManager.return_to_lobby()
 
 func _update_phase(state: SimState) -> void:
 	if state.overtime and not _shown_overtime:
-		gm.print_message("Tie! Game will be decided with the next goal!")
+		GameManager.print_message("Tie! Game will be decided with the next goal!")
 	_shown_overtime = state.overtime
 	if state.phase == _shown_phase:
 		return
 	if state.phase == Simulation.Phase.COUNTDOWN and _shown_phase in [Simulation.Phase.NONE, Simulation.Phase.GAME_OVER]:
-		gm.print_message("Starting new match!")
+		GameManager.print_message("Starting new match!")
 	elif state.phase == Simulation.Phase.PLAYING:
 		_last_goal_time = Time.get_ticks_msec()
 	elif state.phase == Simulation.Phase.GAME_OVER:
-		gm.print_message("Game Over!")
-		gm.print_message(_winner_text(state.winner))
+		GameManager.print_message("Game Over!")
+		GameManager.print_message(_winner_text(state.winner))
 	_shown_phase = state.phase
 
 func _update_scores(state: SimState) -> void:
@@ -76,8 +74,8 @@ func _update_scores(state: SimState) -> void:
 	for team in [1, 2]:
 		if state.scores[team - 1] > _shown_scores[team - 1]:
 			_flash_overlay(overlay_left if team == 1 else overlay_right)
-			gm.print_message("Player " + str(team) + " scored after " + str((Time.get_ticks_msec() - _last_goal_time) / 1000) + " seconds!")
-			gm.print_message("Score: " + str(state.scores[0]) + " - " + str(state.scores[1]))
+			GameManager.print_message("Player " + str(team) + " scored after " + str((Time.get_ticks_msec() - _last_goal_time) / 1000) + " seconds!")
+			GameManager.print_message("Score: " + str(state.scores[0]) + " - " + str(state.scores[1]))
 	_shown_scores = state.scores.duplicate()
 	_set_score_labels(state.scores)
 
