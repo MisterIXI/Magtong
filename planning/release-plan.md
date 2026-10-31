@@ -22,11 +22,18 @@ Step 0: commit the current WIP (connection icon, lobby return), then copy this p
 ---
 
 ## Week 0 (now): unblock
-- [ ] **Open the Steam support ticket**: move the release date to the target. Also check in Steamworks which
+- [X] **Open the Steam support ticket**: move the release date to the target. Also check in Steamworks which
       release checklist items are still open (build review, pricing, content survey, depots).
-- [ ] Decide the price and the launch discount. Optionally enable Remote Play Together (a cheap extra for
-      casual sessions; real online play is the native 1v1 mode).
-- [ ] Fill in the AI disclosure in the Steamworks content survey to match the actual AI use (read the current wording).
+      *Opened 27.10, no reply as of 31.10; the store still shows 30.10. Continue with the 08.12 target.
+      Follow up on the ticket if there's still no reply next week.*
+- [x] Decide the price.
+      *$6.99, auto pricing for the other currencies. Status "New prices reviewed, publish when ready":
+      publish before release.*
+  - [ ] Decide the launch discount. Optionally enable Remote Play Together (a cheap extra for
+        casual sessions; real online play is the native 1v1 mode).
+- [x] Fill in the AI disclosure in the Steamworks content survey to match the actual AI use (read the current wording).
+      *Set to "no": the survey excludes coding assistance, and all player-facing assets (visuals, texts,
+      translations) are made without genAI. Re-check if that ever changes.*
 - [ ] Update the store description: "multiplayer only at launch, AI opponents coming in an update".
 
 ## Week 1: conventions refactor, settings, audio foundation, release hygiene
@@ -67,6 +74,7 @@ Step 0: commit the current WIP (connection icon, lobby return), then copy this p
       The prints left are a few Steam init lines and the match log, kept.*
 
 ## Week 2: audio + game feel
+Sound list, sources and music direction: `planning/audio-plan.md`.
 - [ ] Gather a CC0/royalty-free SFX pack plus 2–3 music tracks (menu, lobby, match). Keep the licenses in
       `assets/sounds/LICENSES.md` and credit them.
 - [ ] Rollback-safe sound: trigger SFX from **state changes seen by the visuals**, the same pattern the
