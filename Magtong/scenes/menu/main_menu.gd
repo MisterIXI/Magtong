@@ -31,6 +31,7 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	if Input.is_action_just_pressed("ui_cancel"):
 		if current_menu == settings_menu:
+			UiSounds.play(UiSounds.Sound.BACK)
 			switch_to_menu(start_menu)
 		
 func hide_all() -> void:
@@ -88,6 +89,8 @@ func show_message(message: String, with_ok_button: bool = true) -> void:
 	message_ok_button.visible = with_ok_button
 	message_panel.show()
 	if with_ok_button:
+		# messages with an OK button are failures (could not host/connect, host left, ...)
+		UiSounds.play(UiSounds.Sound.ERROR)
 		message_ok_button.grab_focus.call_deferred()
 
 func hide_message() -> void:

@@ -23,6 +23,7 @@ config/icon="res://assets/textures/player_skins/player_character.png"
 [autoload]
 
 Settings="*res://global/settings.gd"
+UiSounds="*res://global/ui_sounds.gd"
 InputManager="*res://global/input/input_manager.gd"
 ResourceManager="*res://global/resource_manager.tscn"
 NetGame="*res://netcode/net_game.gd"
