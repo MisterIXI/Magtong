@@ -25,6 +25,11 @@ static var net_loss: float = 0.0
 static func dev_tools_enabled() -> bool:
 	return OS.is_debug_build()
 
+## Online play over Steam (Host Steam, invites, +connect_lobby). Not part of 1.0, so only in debug builds or in
+## an export with the custom feature tag "online" (e.g. a Steam beta branch for online testing).
+static func online_enabled() -> bool:
+	return dev_tools_enabled() or OS.has_feature("online")
+
 static func parse_args() -> void:
 	if not dev_tools_enabled():
 		return

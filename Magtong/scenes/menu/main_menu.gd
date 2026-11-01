@@ -18,6 +18,7 @@ var current_menu: Control
 
 func _ready() -> void:
 	hide_message()
+	host_steam_button.visible = NetDebug.online_enabled()
 	host_steam_button.disabled = not SteamHandler.is_initialized
 	for control in direct_connect_controls:
 		control.visible = NetDebug.dev_tools_enabled()

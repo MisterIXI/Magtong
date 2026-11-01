@@ -48,9 +48,11 @@ Order of work: **finish the game → polish → tutorial → bots.** Each step e
 
 ## Week 2 (02.–08.11): finish the game
 Goal: the game works start to finish and could ship as is, even if it isn't pretty yet.
-- [ ] **Hide online in release builds**: Host Steam in the main menu behind `NetDebug.dev_tools_enabled()` like the
+- [x] **Hide online in release builds**: Host Steam in the main menu behind `NetDebug.dev_tools_enabled()` like the
       direct connect entries, and make sure Steam invites / `+connect_lobby` don't open an online lobby in release
       builds. Keep all online code (see "Online after 1.0").
+      *`NetDebug.online_enabled()`: debug builds, or an export with the custom feature tag `online` (for a later
+      online beta branch). Gates the Host Steam button and the Steam lobby/invite callbacks; Steam itself stays on.*
 - [ ] **Play the full loop locally and list what's broken or missing**: main menu → lobby (join, team pick, ready)
       → countdown → match → goal → overtime → game over → back to lobby / main menu, with 2, 3 and 4 players and
       mixed keyboard/gamepads. Put the list here and fix the blockers.
