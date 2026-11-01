@@ -56,10 +56,20 @@ Goal: the game works start to finish and could ship as is, even if it isn't pret
 - [ ] **Play the full loop locally and list what's broken or missing**: main menu → lobby (join, team pick, ready)
       → countdown → match → goal → overtime → game over → back to lobby / main menu, with 2, 3 and 4 players and
       mixed keyboard/gamepads. Put the list here and fix the blockers.
-- [ ] Pause menu in local matches: resume / back to lobby / main menu.
+- [x] Pause menu in local matches: resume / back to lobby / main menu.
+      *`scenes/pause_menu.gd`: any player opens/closes it with Start / Esc during countdown and play (not after
+      the game over, where Start is rematch), any pad navigates. Buttons are released on resume, so the
+      confirm press doesn't pulse.*
+- [x] Gamepads in menus: A confirms and B goes back on every pad (`ui_accept`/`ui_cancel` had only keys,
+      so the game couldn't be started with a pad alone).
+- [x] Keyboard/mouse parts that show up as joypads (e.g. a Keychron's media keys) can't join as players.
 - [ ] **Feel-tuning pass** (rollback-plan phase B open item): speed, accel, magnet force, mass ratio,
       wall bounce/friction. Playtest locally. Keep `tests/sim_test.gd` green after every tuning change.
-- [ ] Gamepad hot-plugging and disconnects during a match don't break the game.
+- [x] Gamepad hot-plugging and disconnects during a match don't break the game.
+      *A disconnected pad lets go of everything (no drifting, no stuck magnet); replugged, it gets its device
+      id back and continues as the same player. Tested with virtual pads, also while paused.*
+- [x] **Automated input testing**: `tools/virtual_pads.py` (virtual Xbox pads via uinput, scripted or live) and
+      `tools/run_headless.sh` (game in headless gamescope, no window on the desktop).
 
 ## Week 3 (09.–15.11): polish
 Sound list, sources and music direction: `planning/audio-plan.md`.
