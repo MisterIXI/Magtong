@@ -53,6 +53,17 @@ func _set_button(button: int, pressed: bool) -> void:
 	else:
 		held_buttons &= ~button
 
+## Lets go of every held button and the stick (e.g. the pad was disconnected).
+func release_all() -> void:
+	move = Vector2.ZERO
+	held_buttons = 0
+	latched_buttons = 0
+
+## Lets go of every button but keeps the stick (e.g. after the pause menu, whose confirm button is a game button too).
+func release_buttons() -> void:
+	held_buttons = 0
+	latched_buttons = 0
+
 ## Returns the packed SimInput for the current tick.
 func sample() -> int:
 	var input := SimInput.encode(move, held_buttons | latched_buttons)
