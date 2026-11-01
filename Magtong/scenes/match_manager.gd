@@ -27,6 +27,8 @@ var _leaving: bool = false
 
 func _ready():
 	ms.setup(self, match_time)
+	if not NetGame.is_online():
+		add_child(PauseMenu.new(ms))
 	_set_score_labels(ms.state.scores)
 	if NetGame.mode == NetGame.Mode.HOST:
 		NetGame.peer_left.connect(_on_peer_left)
