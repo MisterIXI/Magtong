@@ -13,6 +13,12 @@ var vel: PackedVector2Array = PackedVector2Array()
 
 # pucks
 var puck_plus: PackedByteArray = PackedByteArray()
+# strongest impact of each puck in its last hit tick, only read by the views (sounds)
+var puck_hit_tick: PackedInt32Array = PackedInt32Array()
+var puck_hit_speed: PackedFloat32Array = PackedFloat32Array() # speed along the contact normal
+var puck_hit_wall: PackedByteArray = PackedByteArray() # 1 = wall, 0 = body
+var puck_wall_touch_tick: PackedInt32Array = PackedInt32Array() # last tick in contact with a wall
+var puck_body_touch_tick: PackedInt32Array = PackedInt32Array() # last tick in contact with a body
 
 # players
 var polarity: PackedInt32Array = PackedInt32Array()
@@ -49,6 +55,11 @@ func copy() -> SimState:
 	c.pos = pos.duplicate()
 	c.vel = vel.duplicate()
 	c.puck_plus = puck_plus.duplicate()
+	c.puck_hit_tick = puck_hit_tick.duplicate()
+	c.puck_hit_speed = puck_hit_speed.duplicate()
+	c.puck_hit_wall = puck_hit_wall.duplicate()
+	c.puck_wall_touch_tick = puck_wall_touch_tick.duplicate()
+	c.puck_body_touch_tick = puck_body_touch_tick.duplicate()
 	c.polarity = polarity.duplicate()
 	c.prev_buttons = prev_buttons.duplicate()
 	c.pulse_cd = pulse_cd.duplicate()
@@ -81,7 +92,8 @@ func remove_player(body: int, player: int) -> void:
 		set(array_name, array)
 
 const FIELDS: Array[StringName] = [
-	&"tick", &"rng", &"pos", &"vel", &"puck_plus", &"polarity", &"prev_buttons", &"pulse_cd", &"ability_cd",
+	&"tick", &"rng", &"pos", &"vel", &"puck_plus", &"puck_hit_tick", &"puck_hit_speed", &"puck_hit_wall",
+	&"puck_wall_touch_tick", &"puck_body_touch_tick", &"polarity", &"prev_buttons", &"pulse_cd", &"ability_cd",
 	&"last_pulse_tick", &"last_ability_tick", &"zone", &"skin", &"phase", &"phase_ticks", &"match_ticks", &"overtime",
 	&"overtime_ticks", &"scores", &"winner", &"last_goal_tick", &"last_goal_team", &"reset_tick", &"start_tick",
 	&"lobby_tick",

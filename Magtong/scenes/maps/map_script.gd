@@ -30,9 +30,12 @@ var pucks: Array[Puck] = []
 var local_inputs: Dictionary = {}
 var _advantage: float = 0.0
 var _ticks_since_wait: int = 0
+var _sounds: MapSounds
 
 func _ready():
 	add_child(NetDebugOverlay.new(self))
+	_sounds = MapSounds.new(self)
+	add_child(_sounds)
 
 func _exit_tree():
 	if session_id != "":
@@ -219,6 +222,8 @@ func _update_views() -> void:
 		pucks[k].update_from_sim(state, k)
 	for i in players.size():
 		players[i].update_from_sim(state, sim.player_body(i), i)
+	if _sounds != null:
+		_sounds.update(state)
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if event.is_pressed() and event.keycode == KEY_F3:

@@ -95,6 +95,11 @@ func add_puck(state: SimState, pos: Vector2, is_plus: bool = true) -> int:
 	state.pos.append(pos)
 	state.vel.append(Vector2.ZERO)
 	state.puck_plus.append(1 if is_plus else 0)
+	state.puck_hit_tick.append(-1)
+	state.puck_hit_speed.append(0.0)
+	state.puck_hit_wall.append(0)
+	state.puck_wall_touch_tick.append(-2)
+	state.puck_body_touch_tick.append(-2)
 	puck_count += 1
 	return puck_count - 1
 
@@ -255,13 +260,35 @@ func _integrate(state: SimState) -> void:
 	for s in SUBSTEPS:
 		for b in body_count:
 			pos[b] += vel[b] * sub_dt
-		_collide_bodies(pos, vel, body_count)
+		_collide_bodies(state, pos, vel, body_count)
 		# walls last, so they always win against body pushes
-		_collide_walls(pos, vel, body_count)
+		_collide_walls(state, pos, vel, body_count)
 	state.pos = pos
 	state.vel = vel
 
-func _collide_bodies(pos: PackedVector2Array, vel: PackedVector2Array, body_count: int) -> void:
+## Remembers the strongest new puck contact of this tick for the views. A contact that already existed in the
+## previous tick (pushing a puck, sliding along a wall) is not a hit. Never changes the physics.
+func _record_hit(state: SimState, puck: int, speed: float, is_wall: bool) -> void:
+	if state.puck_hit_tick[puck] == state.tick:
+		# an earlier substep of this tick already started a contact, keep the strongest
+		if speed > state.puck_hit_speed[puck]:
+			state.puck_hit_speed[puck] = speed
+			state.puck_hit_wall[puck] = 1 if is_wall else 0
+		return
+	var touch_ticks := state.puck_wall_touch_tick if is_wall else state.puck_body_touch_tick
+	var is_new_contact := touch_ticks[puck] < state.tick - 1
+	touch_ticks[puck] = state.tick
+	if is_wall:
+		state.puck_wall_touch_tick = touch_ticks
+	else:
+		state.puck_body_touch_tick = touch_ticks
+	if not is_new_contact:
+		return
+	state.puck_hit_tick[puck] = state.tick
+	state.puck_hit_speed[puck] = speed
+	state.puck_hit_wall[puck] = 1 if is_wall else 0
+
+func _collide_bodies(state: SimState, pos: PackedVector2Array, vel: PackedVector2Array, body_count: int) -> void:
 	for i in body_count:
 		for j in range(i + 1, body_count):
 			var r := radius[i] + radius[j]
@@ -284,8 +311,13 @@ func _collide_bodies(pos: PackedVector2Array, vel: PackedVector2Array, body_coun
 				var impulse := normal * (-(1.0 + settings.body_bounce) * vn / w)
 				vel[i] -= impulse * wi
 				vel[j] += impulse * wj
+				# pucks come first, so i is a puck whenever a puck is involved
+				if i < puck_count:
+					_record_hit(state, i, -vn, false)
+				if j < puck_count:
+					_record_hit(state, j, -vn, false)
 
-func _collide_walls(pos: PackedVector2Array, vel: PackedVector2Array, body_count: int) -> void:
+func _collide_walls(state: SimState, pos: PackedVector2Array, vel: PackedVector2Array, body_count: int) -> void:
 	for b in body_count:
 		var is_player := b >= puck_count
 		var r := radius[b]
@@ -320,6 +352,8 @@ func _collide_walls(pos: PackedVector2Array, vel: PackedVector2Array, body_count
 			var vn := vel[b].dot(normal)
 			if vn < 0.0:
 				vel[b] -= normal * vn * (1.0 + settings.wall_bounce)
+				if not is_player:
+					_record_hit(state, b, -vn, true)
 #endregion
 
 #region game modes
