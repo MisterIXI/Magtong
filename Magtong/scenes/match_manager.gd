@@ -5,6 +5,11 @@ class_name MatchManager
 ## send everybody back to the lobby, which is also decided in the simulation.
 
 var match_time: float = 180
+## The countdown label is sized for one big digit; the game over text needs a normal size
+const COUNTDOWN_FONT_SIZE: int = 416
+const COUNTDOWN_OUTLINE: int = 25
+const GAME_OVER_FONT_SIZE: int = 56
+const GAME_OVER_OUTLINE: int = 12
 
 @export var overlay_left: Control
 @export var overlay_right: Control
@@ -26,6 +31,8 @@ var _last_goal_time: int = 0
 var _leaving: bool = false
 
 func _ready():
+	if GameManager.test_match_time > 0.0 and not NetGame.is_online():
+		match_time = GameManager.test_match_time
 	ms.setup(self, match_time)
 	if not NetGame.is_online():
 		add_child(PauseMenu.new(ms))
@@ -89,6 +96,7 @@ func _update_countdown(state: SimState) -> void:
 	match state.phase:
 		Simulation.Phase.COUNTDOWN:
 			countdown_node.show()
+			_set_countdown_text_size(COUNTDOWN_FONT_SIZE, COUNTDOWN_OUTLINE)
 			var seconds_left := ceili(float(state.phase_ticks) / Simulation.TICK_RATE)
 			countdown_label.text = str(seconds_left)
 			# shrink during each second
@@ -96,10 +104,15 @@ func _update_countdown(state: SimState) -> void:
 			countdown_node.scale = Vector2.ONE * lerpf(0.05, 1.0, second_left)
 		Simulation.Phase.GAME_OVER:
 			countdown_node.show()
-			countdown_node.scale = Vector2.ONE * 0.5
+			countdown_node.scale = Vector2.ONE
+			_set_countdown_text_size(GAME_OVER_FONT_SIZE, GAME_OVER_OUTLINE)
 			countdown_label.text = "Game Over!\n" + _winner_text(state.winner) + "\n\nStart / Esc: rematch\nSelect / Backspace: lobby"
 		_:
 			countdown_node.hide()
+
+func _set_countdown_text_size(font_size: int, outline: int) -> void:
+	countdown_label.add_theme_font_size_override(&"font_size", font_size)
+	countdown_label.add_theme_constant_override(&"outline_size", outline)
 
 func _flash_overlay(overlay: Control) -> void:
 	var tween = overlay.create_tween()

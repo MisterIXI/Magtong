@@ -16,6 +16,8 @@ var current_state: State = State.MENU
 @export var default_map_scene: PackedScene
 
 var message_log: Array = []
+## Seconds per match for the debug "Short Test Match" menu entry, 0 = the normal length.
+var test_match_time: float = 0.0
 
 signal state_changed(old_state: State, new_state: State)
 
@@ -44,8 +46,9 @@ func _change_state(new_state: State):
 		scene_root.change_scene(default_map_scene.instantiate())
 	state_changed.emit(old_state, new_state)
 
-func start_local_game():
+func start_local_game(match_time_override: float = 0.0):
 	assert(current_state == State.MENU)
+	test_match_time = match_time_override
 	_change_state(State.LOBBY)
 
 #region online
@@ -96,6 +99,7 @@ func return_to_menu(message: String = "") -> void:
 	NetGame.leave()
 	SteamHandler.leave_lobby()
 	InputManager.clear_players()
+	test_match_time = 0.0
 	if current_state != State.MENU:
 		var old_state = current_state
 		current_state = State.MENU

@@ -53,6 +53,13 @@ Goal: the game works start to finish and could ship as is, even if it isn't pret
       builds. Keep all online code (see "Online after 1.0").
       *`NetDebug.online_enabled()`: debug builds, or an export with the custom feature tag `online` (for a later
       online beta branch). Gates the Host Steam button and the Steam lobby/invite callbacks; Steam itself stays on.*
+- [x] Debug-only "Short Test Match (15 s)" menu entry (`GameManager.test_match_time`), for quick loop tests.
+- [x] Automated full loop with virtual pads (01.11): menu → lobby → countdown → match → tie → overtime →
+      goal → game over → rematch → game over → lobby works. Found and fixed: game over text far too big
+      (the countdown label's font size), unreadable.
+      Open from that run:
+  - [ ] Game over says "Player 1 Wins!" but it's a team: "Red wins" / "Blue wins" (or team names).
+  - [ ] Debug builds: the main menu runs off the bottom (Quit is cut off) with all dev entries visible.
 - [ ] **Play the full loop locally and list what's broken or missing**: main menu → lobby (join, team pick, ready)
       → countdown → match → goal → overtime → game over → back to lobby / main menu, with 2, 3 and 4 players and
       mixed keyboard/gamepads. Put the list here and fix the blockers.

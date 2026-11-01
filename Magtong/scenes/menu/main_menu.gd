@@ -12,6 +12,9 @@ extends Control
 @export var message_ok_button: Button
 ## Host Direct / address / Join Direct, only shown in debug builds (testing, LAN)
 @export var direct_connect_controls: Array[Control]
+## Debug builds only: local lobby whose matches last this many seconds, for quick testing
+const TEST_MATCH_TIME: float = 15.0
+@export var start_local_button: Button
 var curr_mm_bg: MMBackground
 var previous_menu: Control
 var current_menu: Control
@@ -22,6 +25,8 @@ func _ready() -> void:
 	host_steam_button.disabled = not SteamHandler.is_initialized
 	for control in direct_connect_controls:
 		control.visible = NetDebug.dev_tools_enabled()
+	if NetDebug.dev_tools_enabled():
+		_add_test_match_button()
 	hide_all()
 	current_menu = start_menu
 	current_menu.show()
@@ -74,6 +79,14 @@ func _on_settings_pressed() -> void:
 
 func _on_start_local_pressed() -> void:
 	GameManager.start_local_game()
+
+func _add_test_match_button() -> void:
+	var button := Button.new()
+	button.name = "StartTestMatch"
+	button.text = "Short Test Match (%d s)" % TEST_MATCH_TIME
+	button.theme = start_local_button.theme
+	button.pressed.connect(func(): GameManager.start_local_game(TEST_MATCH_TIME))
+	start_local_button.add_sibling(button)
 
 func _on_host_steam_pressed() -> void:
 	GameManager.host_steam()
