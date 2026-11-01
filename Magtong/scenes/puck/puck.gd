@@ -10,6 +10,7 @@ var _last_reset_tick: int = -2 # so the first update always resets the interpola
 ## Called every tick after the simulation stepped.
 func update_from_sim(sim_state: SimState, body: int) -> void:
 	position = sim_state.pos[body]
+	rotation = sim_state.puck_angle[body]
 	if sim_state.reset_tick != _last_reset_tick:
 		_last_reset_tick = sim_state.reset_tick
 		reset_physics_interpolation()

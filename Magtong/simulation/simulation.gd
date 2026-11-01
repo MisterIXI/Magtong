@@ -95,6 +95,8 @@ func add_puck(state: SimState, pos: Vector2, is_plus: bool = true) -> int:
 	state.pos.append(pos)
 	state.vel.append(Vector2.ZERO)
 	state.puck_plus.append(1 if is_plus else 0)
+	state.puck_angle.append(0.0)
+	state.puck_spin.append(0.0)
 	state.puck_hit_tick.append(-1)
 	state.puck_hit_speed.append(0.0)
 	state.puck_hit_wall.append(0)
@@ -252,19 +254,28 @@ func _falloff(x: float) -> float:
 func _integrate(state: SimState) -> void:
 	var pos := state.pos
 	var vel := state.vel
+	var spin := state.puck_spin
 	var body_count := puck_count + player_count
 	var damp := maxf(0.0, 1.0 - settings.linear_damp * DT)
 	for b in body_count:
 		vel[b] = (vel[b] * damp).limit_length(settings.max_speed)
+	var spin_damp := maxf(0.0, 1.0 - settings.puck_spin_damp * DT)
+	for k in puck_count:
+		spin[k] *= spin_damp
 	var sub_dt := DT / SUBSTEPS
 	for s in SUBSTEPS:
 		for b in body_count:
 			pos[b] += vel[b] * sub_dt
-		_collide_bodies(state, pos, vel, body_count)
+		_collide_bodies(state, pos, vel, spin, body_count)
 		# walls last, so they always win against body pushes
-		_collide_walls(state, pos, vel, body_count)
+		_collide_walls(state, pos, vel, spin, body_count)
+	var angle := state.puck_angle
+	for k in puck_count:
+		angle[k] = wrapf(angle[k] + spin[k] * DT, -PI, PI)
 	state.pos = pos
 	state.vel = vel
+	state.puck_spin = spin
+	state.puck_angle = angle
 
 ## Remembers the strongest new puck contact of this tick for the views. A contact that already existed in the
 ## previous tick (pushing a puck, sliding along a wall) is not a hit. Never changes the physics.
@@ -288,7 +299,13 @@ func _record_hit(state: SimState, puck: int, speed: float, is_wall: bool) -> voi
 	state.puck_hit_speed[puck] = speed
 	state.puck_hit_wall[puck] = 1 if is_wall else 0
 
-func _collide_bodies(state: SimState, pos: PackedVector2Array, vel: PackedVector2Array, body_count: int) -> void:
+## Friction at a contact turns sliding into puck spin, a part (grip) per substep. slip is how fast the puck's
+## surface slides along the contact, against the tangent perp(normal), normal pointing out of the other body.
+## Only the spin changes, the movement of the bodies stays as it is (spin is cosmetic).
+func _grip_spin(spin: PackedFloat32Array, puck: int, slip: float) -> void:
+	spin[puck] += settings.puck_spin_grip * slip / radius[puck]
+
+func _collide_bodies(state: SimState, pos: PackedVector2Array, vel: PackedVector2Array, spin: PackedFloat32Array, body_count: int) -> void:
 	for i in body_count:
 		for j in range(i + 1, body_count):
 			var r := radius[i] + radius[j]
@@ -305,6 +322,15 @@ func _collide_bodies(state: SimState, pos: PackedVector2Array, vel: PackedVector
 			var push := normal * ((r - dist) / w)
 			pos[i] -= push * wi
 			pos[j] += push * wj
+			# spin: surface of i at the contact moves with vel_i + spin_i * r_i * tangent, j's with
+			# vel_j - spin_j * r_j * tangent, friction turns both pucks by the same sign
+			if i < puck_count:
+				var tangent := Vector2(-normal.y, normal.x)
+				var slip := (vel[j] - vel[i]).dot(tangent) - spin[i] * radius[i]
+				if j < puck_count:
+					slip -= spin[j] * radius[j]
+					_grip_spin(spin, j, slip)
+				_grip_spin(spin, i, slip)
 			# bounce
 			var vn := (vel[j] - vel[i]).dot(normal)
 			if vn < 0.0:
@@ -317,7 +343,7 @@ func _collide_bodies(state: SimState, pos: PackedVector2Array, vel: PackedVector
 				if j < puck_count:
 					_record_hit(state, j, -vn, false)
 
-func _collide_walls(state: SimState, pos: PackedVector2Array, vel: PackedVector2Array, body_count: int) -> void:
+func _collide_walls(state: SimState, pos: PackedVector2Array, vel: PackedVector2Array, spin: PackedFloat32Array, body_count: int) -> void:
 	for b in body_count:
 		var is_player := b >= puck_count
 		var r := radius[b]
@@ -349,6 +375,8 @@ func _collide_walls(state: SimState, pos: PackedVector2Array, vel: PackedVector2
 					normal = Vector2(-ab.y, ab.x).normalized()
 				depth = r - dist
 			pos[b] += normal * depth
+			if not is_player:
+				_grip_spin(spin, b, vel[b].dot(Vector2(-normal.y, normal.x)) - spin[b] * r)
 			var vn := vel[b].dot(normal)
 			if vn < 0.0:
 				vel[b] -= normal * vn * (1.0 + settings.wall_bounce)
@@ -460,6 +488,8 @@ func _game_over(state: SimState, winner: int) -> void:
 	state.winner = winner
 	for b in puck_count + player_count:
 		state.vel[b] = Vector2.ZERO
+	for k in puck_count:
+		state.puck_spin[k] = 0.0
 
 func _reset_field(state: SimState) -> void:
 	if puck_spawns.size() > 0:
@@ -468,6 +498,8 @@ func _reset_field(state: SimState) -> void:
 			state.pos[k] = puck_spawns[order[k % order.size()]]
 			state.vel[k] = Vector2.ZERO
 			state.puck_plus[k] = 1
+			state.puck_angle[k] = 0.0
+			state.puck_spin[k] = 0.0
 	if player_spawn_groups.size() > 0:
 		var order := _shuffled_indices(state, player_spawn_groups.size())
 		for i in player_count:

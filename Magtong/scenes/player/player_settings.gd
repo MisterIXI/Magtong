@@ -24,6 +24,10 @@ class_name PlayerSettings
 @export var max_speed: float = 3000.0
 ## if true, the magnet pulls/pushes the player as well as the puck
 @export var magnet_recoil: bool = true
+## how much of the sliding at a contact (wall, player, puck) turns into puck spin per substep, 1 = rolls instantly
+@export_range(0, 0.5, 0.01) var puck_spin_grip: float = 0.25
+## spin slowdown per second, like linear_damp
+@export var puck_spin_damp: float = 1.0
 
 # category: Visuals
 @export_group("Visuals")

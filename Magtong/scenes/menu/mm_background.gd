@@ -3,6 +3,9 @@ extends Node2D
 ## Main menu background: a sandbox simulation (no walls, no match) with scripted player inputs.
 
 const PUCK_PAIRS: int = 8
+## The background is zoomed out by scaling itself around the screen center. A Camera2D would move and scale the
+## menu UI next to it as well.
+const ZOOM: float = 0.64
 
 var players: Array[PlayerBody] = []
 var pucks: Array[Puck] = []
@@ -22,6 +25,8 @@ var moves: Array[Vector2] = []
 var buttons: PackedInt32Array = PackedInt32Array()
 
 func _ready():
+	position = get_viewport_rect().size / 2
+	scale = Vector2.ONE * ZOOM
 	sim = Simulation.new(settings, Simulation.Mode.SANDBOX)
 	state = SimState.new()
 	# spawn pucks (the simulation needs them before the players)

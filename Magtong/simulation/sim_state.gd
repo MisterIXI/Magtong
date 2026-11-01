@@ -13,6 +13,9 @@ var vel: PackedVector2Array = PackedVector2Array()
 
 # pucks
 var puck_plus: PackedByteArray = PackedByteArray()
+# spin is cosmetic: contacts change it, it never changes how bodies move
+var puck_angle: PackedFloat32Array = PackedFloat32Array()
+var puck_spin: PackedFloat32Array = PackedFloat32Array() # radians per second, positive = clockwise on screen
 # strongest impact of each puck in its last hit tick, only read by the views (sounds)
 var puck_hit_tick: PackedInt32Array = PackedInt32Array()
 var puck_hit_speed: PackedFloat32Array = PackedFloat32Array() # speed along the contact normal
@@ -55,6 +58,8 @@ func copy() -> SimState:
 	c.pos = pos.duplicate()
 	c.vel = vel.duplicate()
 	c.puck_plus = puck_plus.duplicate()
+	c.puck_angle = puck_angle.duplicate()
+	c.puck_spin = puck_spin.duplicate()
 	c.puck_hit_tick = puck_hit_tick.duplicate()
 	c.puck_hit_speed = puck_hit_speed.duplicate()
 	c.puck_hit_wall = puck_hit_wall.duplicate()
@@ -92,7 +97,7 @@ func remove_player(body: int, player: int) -> void:
 		set(array_name, array)
 
 const FIELDS: Array[StringName] = [
-	&"tick", &"rng", &"pos", &"vel", &"puck_plus", &"puck_hit_tick", &"puck_hit_speed", &"puck_hit_wall",
+	&"tick", &"rng", &"pos", &"vel", &"puck_plus", &"puck_angle", &"puck_spin", &"puck_hit_tick", &"puck_hit_speed", &"puck_hit_wall",
 	&"puck_wall_touch_tick", &"puck_body_touch_tick", &"polarity", &"prev_buttons", &"pulse_cd", &"ability_cd",
 	&"last_pulse_tick", &"last_ability_tick", &"zone", &"skin", &"phase", &"phase_ticks", &"match_ticks", &"overtime",
 	&"overtime_ticks", &"scores", &"winner", &"last_goal_tick", &"last_goal_team", &"reset_tick", &"start_tick",

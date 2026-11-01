@@ -16,6 +16,7 @@ func _init():
 	test_input_encoding()
 	test_lobby_skins_and_start()
 	test_game_over_choices()
+	test_puck_spin()
 	print("FAILED: %d" % failures if failures > 0 else "ALL PASSED")
 	quit(1 if failures > 0 else 0)
 
@@ -243,3 +244,31 @@ func test_game_over_choices():
 	check(state.lobby_tick == lobby_tick and state.phase == Simulation.Phase.GAME_OVER, "MENU does not restart once the lobby was chosen")
 	check(SimState.from_bytes(state.to_bytes()).lobby_tick == lobby_tick, "lobby_tick survives serialization")
 	rink.free()
+
+## A glancing shot along the top wall: the puck spins, and spin never changes where anything goes.
+func run_glancing_shot(grip: float) -> SimState:
+	var default_settings := settings
+	settings = default_settings.duplicate()
+	settings.puck_spin_grip = grip
+	var rink := make_rink()
+	var a: Array = make_match(rink)
+	settings = default_settings
+	var sim: Simulation = a[0]
+	var state: SimState = a[1]
+	for t in Simulation.COUNTDOWN_TICKS + 1:
+		sim.step(state, PackedInt32Array())
+	state.pos[0] = Vector2(-150, 0)
+	state.vel[0] = Vector2(900, -900)
+	for t in 30:
+		sim.step(state, PackedInt32Array())
+	rink.free()
+	return state
+
+func test_puck_spin():
+	var spinning := run_glancing_shot(0.25)
+	var still := run_glancing_shot(0.0)
+	# moving right along the top wall (normal points down), its top rolls on the wall: it turns counterclockwise
+	check(spinning.puck_spin[0] < -1.0, "a glancing wall hit makes the puck spin (spin %.2f)" % spinning.puck_spin[0])
+	check(spinning.puck_angle[0] != 0.0, "the spin turns the puck (angle %.2f)" % spinning.puck_angle[0])
+	check(still.puck_spin[0] == 0.0, "without grip the puck does not spin")
+	check(spinning.pos == still.pos and spinning.vel == still.vel, "spin does not change how bodies move")

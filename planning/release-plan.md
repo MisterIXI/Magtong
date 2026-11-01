@@ -58,8 +58,11 @@ Goal: the game works start to finish and could ship as is, even if it isn't pret
       goal → game over → rematch → game over → lobby works. Found and fixed: game over text far too big
       (the countdown label's font size), unreadable.
       Open from that run:
-  - [ ] Game over says "Player 1 Wins!" but it's a team: "Red wins" / "Blue wins" (or team names).
-  - [ ] Debug builds: the main menu runs off the bottom (Quit is cut off) with all dev entries visible.
+  - [x] Game over says "Player 1 Wins!" but it's a team: now "Team Red Wins!" / "Team Blue Wins!".
+  - [x] Debug builds: the main menu runs off the bottom (Quit is cut off). Cause: the background's Camera2D also
+    shrank the menu and pushed it to the lower right (in release builds too); the background now scales itself.
+- [x] Pucks spin: contacts with walls, players and pucks turn sliding into spin (cosmetic, in the simulation so
+  rollback stays in sync; tune with `puck_spin_grip` / `puck_spin_damp` in PlayerSettings).
 - [ ] **Play the full loop locally and list what's broken or missing**: main menu → lobby (join, team pick, ready)
       → countdown → match → goal → overtime → game over → back to lobby / main menu, with 2, 3 and 4 players and
       mixed keyboard/gamepads. Put the list here and fix the blockers.

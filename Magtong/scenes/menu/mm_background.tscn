@@ -19,9 +19,6 @@ modulate = Color(2, 2, 2, 1)
 scale = Vector2(1.34851, 1.34851)
 texture = ExtResource("3_6gjy1")
 
-[node name="Camera2D" type="Camera2D" parent="."]
-zoom = Vector2(0.64, 0.64)
-
 [node name="PlaygroundBounds" type="StaticBody2D" parent="."]
 
 [node name="TopWall" type="CollisionShape2D" parent="PlaygroundBounds"]

@@ -83,7 +83,7 @@ func _update_scores(state: SimState) -> void:
 	for team in [1, 2]:
 		if state.scores[team - 1] > _shown_scores[team - 1]:
 			_flash_overlay(overlay_left if team == 1 else overlay_right)
-			GameManager.print_message("Player " + str(team) + " scored after " + str((Time.get_ticks_msec() - _last_goal_time) / 1000) + " seconds!")
+			GameManager.print_message("Team " + TEAM_NAMES[team - 1] + " scored after " + str((Time.get_ticks_msec() - _last_goal_time) / 1000) + " seconds!")
 			GameManager.print_message("Score: " + str(state.scores[0]) + " - " + str(state.scores[1]))
 	_shown_scores = state.scores.duplicate()
 	_set_score_labels(state.scores)
@@ -120,9 +120,12 @@ func _flash_overlay(overlay: Control) -> void:
 	tween.tween_property(overlay, "modulate", Color(1,1,1,0),0.25)
 	tween.set_loops(3)
 
+## Team 1 plays red, team 2 blue (score bar, lobby areas).
+const TEAM_NAMES: PackedStringArray = ["Red", "Blue"]
+
 func _winner_text(winner: int) -> String:
 	if winner == 1 or winner == 2:
-		return "Player " + str(winner) + " Wins!"
+		return "Team " + TEAM_NAMES[winner - 1] + " Wins!"
 	return "It's a tie!"
 
 func _update_timer_label(time: float):
