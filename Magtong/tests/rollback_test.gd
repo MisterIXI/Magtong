@@ -16,6 +16,7 @@ func _init():
 	test_bad_network()
 	test_bad_network_three_peers()
 	test_stall_and_recover()
+	test_one_way_loss()
 	test_desync_recovery()
 	test_time_sync()
 	rink.free()
@@ -159,6 +160,20 @@ func test_stall_and_recover():
 	check(s0.stalls > 0, "peers stall when the connection drops (%s)" % stats(harness))
 	check(max_lead[0] <= RollbackSession.MAX_ROLLBACK, "never predicts further than MAX_ROLLBACK ahead (max %d)" % max_lead[0])
 	check_matches_reference(harness, 2, "after a 2 second connection drop")
+
+func test_one_way_loss():
+	# only one direction drops for a second: the other peer keeps running ahead until it stalls, and the
+	# inputs from the start of the drop must still be sent again once the connection is back
+	var harness := make_harness(PackedInt32Array([0, 1]), 2)
+	harness.network.ping_ms = 40
+	harness.network.loss_from = 1
+	run(harness, 0, 600, func(frame):
+		harness.network.loss = 1.0 if frame >= 200 and frame < 260 else 0.0)
+	var s0 := harness.sessions[0]
+	check(s0.stalls > 0, "peer stalls while it hears nothing (%s)" % stats(harness))
+	check(s0.current_tick > 500 and harness.sessions[1].current_tick > 500,
+		"both peers recover after one-way loss (%s)" % stats(harness))
+	check_matches_reference(harness, 2, "after one-way loss")
 
 func test_desync_recovery():
 	var harness := make_harness(PackedInt32Array([0, 1]), 2)

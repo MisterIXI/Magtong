@@ -10,7 +10,6 @@ const MAX_ROLLBACK: int = 16 # max ticks we simulate ahead of a remote player's 
 const HISTORY: int = MAX_ROLLBACK * 4 # how many ticks of states and inputs are kept
 const CHECKSUM_INTERVAL: int = 10
 const CHECKSUMS_PER_PACKET: int = 8
-const MAX_INPUT_TICKS_PER_PACKET: int = MAX_ROLLBACK * 2
 const SNAPSHOT_COOLDOWN: int = 60
 
 var sim: Simulation
@@ -300,8 +299,11 @@ func make_packet(now_ms: int) -> Dictionary:
 	var oldest := newest
 	for peer in _peers.values():
 		oldest = mini(oldest, peer["ack"])
-	var start := maxi(oldest + 1, newest - MAX_INPUT_TICKS_PER_PACKET + 1)
-	start = maxi(start, _pruned_until + 1)
+	# Every input a peer has not acked must be sent again, however old: if one is left out, that peer can never
+	# confirm past it and both sides stall forever. The ack is at most about 2 * MAX_ROLLBACK + input_delay ticks
+	# behind (we can only run MAX_ROLLBACK ticks ahead of the peer and it can only run MAX_ROLLBACK ahead of us),
+	# which is less than HISTORY, so these inputs are never pruned yet.
+	var start := maxi(oldest + 1, _pruned_until + 1)
 	var inputs := PackedInt32Array()
 	for t in range(start, newest + 1):
 		for p in local_players:

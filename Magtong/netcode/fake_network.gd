@@ -7,6 +7,7 @@ extends RefCounted
 var ping_ms: int = 0 # round trip, every packet takes half of it one way
 var jitter_ms: int = 0 # random extra one-way delay of 0..jitter_ms
 var loss: float = 0.0 # 0..1 chance a packet is dropped
+var loss_from: int = -1 # if set, only packets sent by this peer are dropped (one-way loss)
 var keep_order: bool = false # if true, packets of one connection never overtake each other
 
 var packets_sent: int = 0
@@ -21,7 +22,7 @@ func _init(seed: int = 0) -> void:
 
 func send(from: int, to: int, packet: Dictionary, now_ms: int) -> void:
 	packets_sent += 1
-	if loss > 0.0 and _rng.randf() < loss:
+	if loss > 0.0 and (loss_from == -1 or from == loss_from) and _rng.randf() < loss:
 		packets_lost += 1
 		return
 	var deliver_at := now_ms + ping_ms / 2
