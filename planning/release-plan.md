@@ -117,7 +117,8 @@ Sound list, sources and music direction: `planning/audio-plan.md`.
       keyboard (guest keyboards may merge into the host's keyboard, check the keyboard split still works).
       *First test 08.11 with the `dev_beta` build (first SteamPipe upload with `tools/steam_upload.sh`): latency
       and feel surprisingly good on good internet, hosting and being the guest felt about the same.
-      Still open: guest on keyboard, more than one guest, a weaker connection.*
+      Two guests at once worked; one guest with bad internet had problems, as expected.
+      Still open: guest on keyboard.*
 - [ ] Steamworks: depots for Windows + Linux, upload with SteamPipe, set the build live on `dev_beta`,
       test-install it from Steam on a clean machine.
       *Upload script `tools/steam_upload.sh` and notes in `planning/steam-upload.md` (08.11).*
