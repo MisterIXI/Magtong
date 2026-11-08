@@ -10,8 +10,6 @@ extends Control
 @export var message_panel: Control
 @export var message_label: Label
 @export var message_ok_button: Button
-## Host Direct / address / Join Direct, only shown in debug builds (testing, LAN)
-@export var direct_connect_controls: Array[Control]
 ## Debug builds only: local lobby whose matches last this many seconds, for quick testing
 const TEST_MATCH_TIME: float = 15.0
 @export var start_local_button: Button
@@ -21,10 +19,7 @@ var current_menu: Control
 
 func _ready() -> void:
 	hide_message()
-	host_steam_button.visible = NetDebug.online_enabled()
 	host_steam_button.disabled = not SteamHandler.is_initialized
-	for control in direct_connect_controls:
-		control.visible = NetDebug.dev_tools_enabled()
 	if NetDebug.dev_tools_enabled():
 		_add_test_match_button()
 	hide_all()

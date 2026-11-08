@@ -11,7 +11,13 @@ both peers stalled forever after a short one-way packet loss (fixed in `c79a55d`
 `test_one_way_loss`). The fix was quick, but the real bottleneck is testing online with real people over Steam, and
 that would eat the time needed to finish the game itself. Online comes after launch (see "Online after 1.0").
 
-Agreed scope for 1.0: local multiplayer (keyboard + gamepads), **Steam Remote Play Together** as the way to play
+**Scope change 09.11: online is back in 1.0.** An online test build over Steam with a friend (08./09.11) worked
+and felt clearly better than Remote Play Together, where the guest side was noticeably worse after swapping hosts.
+So every build now has Host Steam (lobbies, invites) and Host/Join Direct (`NetDebug.online_enabled()` and the
+"(online)" presets are gone). Online stays "with friends": Steam invites or direct IP, no public matchmaking.
+The open online items are in "Online for 1.0" below.
+
+Agreed scope for 1.0 (01.11, online added 09.11): local multiplayer (keyboard + gamepads), **Steam Remote Play Together** as the way to play
 with friends over the internet, audio from licensed/CC0 packs, the existing rink and skins, a tutorial.
 **Simple bots only if they fit before the release candidate**, otherwise they're the first post-launch update.
 Store page is already live as "Coming soon".
@@ -136,21 +142,26 @@ Sound list, sources and music direction: `planning/audio-plan.md`.
 - [ ] Set the build live on default, press Release on the target date.
 - [ ] Watch reviews/discussions for the first days; ship a hotfix build if needed.
 
-## Online after 1.0
-The code stays in the repo and should keep working, but it gets no focus until after launch.
+## Online for 1.0
+- [ ] **Online menu**: the pause menu is local only (pausing can't work online), so online there's no way to
+      leave a lobby or match from inside the game. Needs a non-pausing menu: Resume, Leave (client), Back to
+      Lobby / Main Menu (host).
+- [ ] Online UX states: connecting, host left, timed out, can't connect (direct connect without port forwarding).
+- [ ] More online tests: 2v2 (two machines with two local players each), a weaker connection, host on Windows and
+      on Linux.
+- [ ] Store page: mention online play with friends (Steam invites), add the online multiplayer features/tags.
+- `tests/rollback_test.gd` is now a release blocker, not just a determinism check.
+
+Still true from the "online after launch" days:
 - **Design for it, don't work on it**: gameplay stays in `Simulation.step` with all changing data in `SimState`
   (no `randf()`, use `state.rng`; nothing from views, the engine or the clock inside the step). Views and sounds
   only react to state changes. Then online stays cheap to bring back.
-- `tests/rollback_test.gd` stays in the weekly verification as a determinism check. A failure there isn't a release
-  blocker, but note it here, because every unnoticed break makes online more expensive later.
-- After launch: an opt-in Steam beta branch with online 1v1 via Steam invites (friends only, no public
-  matchmaking), so interested players do the real-network testing. Then: smooth rollback corrections (phase E),
-  online UX states (connecting, host left, timed out), desync logs to `user://`, 2v2 online.
+- After launch: smooth rollback corrections (phase E), desync logs to `user://`, maybe public matchmaking.
 - Own the netcode: walk through `rollback_session.gd`, `net_game.gd` and `net_transport.gd` with Claude until
   you can explain the design (prediction, re-sim, time sync, desync recovery).
 
 ## Cut from 1.0 (post-launch backlog)
-Online play (see above), bots if they miss the cut line (first update), more rinks, more skins, 3v3, replays,
+Public matchmaking, bots if they miss the cut line (first update), more rinks, more skins, 3v3, replays,
 own music/SFX replacing the packs.
 
 ## Risk notes
@@ -162,4 +173,4 @@ own music/SFX replacing the packs.
 ## Verification (every week)
 - `~/Applications/Godot/godot --headless --path Magtong -s res://tests/sim_test.gd` passes.
 - `.../rollback_test.gd` passes (determinism check, see "Online after 1.0").
-- Exported release build launches, F4–F9 do nothing, no online entries in the menu, settings persist after a restart.
+- Exported release build launches, F4–F9 do nothing, Host Steam and direct connect work, settings persist after a restart.

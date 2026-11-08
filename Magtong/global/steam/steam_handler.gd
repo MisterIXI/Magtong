@@ -11,8 +11,7 @@ var lobby_id: int = 0
 
 func _ready():
 	initilize_steam()
-	# Steam itself stays on (overlay, Remote Play Together), only the online lobbies are off
-	if is_initialized and NetDebug.online_enabled():
+	if is_initialized:
 		Steam.lobby_created.connect(_on_lobby_created)
 		Steam.lobby_joined.connect(_on_lobby_joined)
 		Steam.join_requested.connect(_on_join_requested)
