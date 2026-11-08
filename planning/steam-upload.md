@@ -54,6 +54,19 @@ Notes for getting back into Steam uploads (written 08.11.2026, setup from Dec 20
 5. **Install and test**: Steam client → Magtong → Properties → Betas → `dev_beta`, let it update, start it.
    In a release build F4–F9 do nothing and there are no online entries in the menu.
 
+## Online test builds
+Online play (Host Steam in the main menu, Steam invites, `+connect_lobby`) is hidden in normal release builds.
+The export presets **"Windows Desktop (online)"** and **"Linux (online)"** are the same as the normal ones plus
+the custom feature tag `online`, which turns it on (`NetDebug.online_enabled()`). Same export paths, so:
+```
+cd Magtong && rm -rf build/windows build/linux && mkdir -p build/windows build/linux
+~/Applications/Godot/godot --headless --path . --export-release "Linux (online)" build/linux/Magtong.x86_64
+~/Applications/Godot/godot --headless --path . --export-release "Windows Desktop (online)" build/windows/Magtong.exe
+cd .. && tools/steam_upload.sh YOUR_STEAM_USERNAME --note online
+```
+Only upload online builds to `dev_beta` (or a later online beta branch), never to what goes live on default.
+The direct connect menu entries stay debug-only; online release builds connect through Steam lobbies/invites.
+
 ## Pitfalls
 - **Launch options** (Steamworks → *Installation* → *General Installation*): the old Linux debug build had a
   `Magtong.sh` wrapper, the release build doesn't. The Linux launch option must point to `Magtong.x86_64`, the

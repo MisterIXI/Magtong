@@ -2,10 +2,11 @@
 # Upload the exported release builds in Magtong/build/{windows,linux} to Steam (app 3044580) with SteamPipe.
 # Notes and the whole workflow: planning/steam-upload.md
 #
-# Usage: tools/steam_upload.sh STEAM_USERNAME [--preview] [--branch NAME]
+# Usage: tools/steam_upload.sh STEAM_USERNAME [--preview] [--branch NAME] [--note TEXT]
 #   --preview      dry run: steamcmd lists what would be uploaded, nothing leaves the machine
 #   --branch NAME  beta branch to set the build live on (default dev_beta). Never the default branch,
 #                  Steam doesn't allow that from a script; release day is done by hand in Steamworks.
+#   --note TEXT    added to the build description, e.g. --note online for an export of the "(online)" presets
 # steamcmd asks for the password and Steam Guard itself; nothing secret is passed or stored here.
 set -euo pipefail
 
@@ -22,16 +23,18 @@ BUILD="$REPO/Magtong/build"
 user=""
 preview=0
 branch="dev_beta"
+note=""
 while [[ $# -gt 0 ]]; do
 	case "$1" in
 		--preview) preview=1 ;;
 		--branch) branch="$2"; shift ;;
+		--note) note="$2"; shift ;;
 		-*) echo "unknown option $1" >&2; exit 2 ;;
 		*) user="$1" ;;
 	esac
 	shift
 done
-[[ -n "$user" ]] || { sed -n '2,9p' "$0"; exit 2; }
+[[ -n "$user" ]] || { sed -n '2,10p' "$0"; exit 2; }
 [[ "$branch" != "default" && "$branch" != "public" ]] || { echo "won't set live on the default branch, do that in Steamworks" >&2; exit 2; }
 
 # --- checks: refuse to upload something broken or a debug build ---
@@ -51,7 +54,7 @@ commit="$(git -C "$REPO" rev-parse --short HEAD)"
 dirty=""
 git -C "$REPO" diff --quiet HEAD -- Magtong || dirty="+dirty"
 built="$(date -r "$BUILD/linux/Magtong.pck" '+%Y-%m-%d %H:%M')"
-desc="Magtong $version ($commit$dirty, exported $built)"
+desc="Magtong $version ($commit$dirty, exported $built)${note:+ [$note]}"
 
 newest_commit=$(git -C "$REPO" log -1 --format=%ct)
 if [[ $(date -r "$BUILD/linux/Magtong.pck" +%s) -lt $newest_commit ]]; then
