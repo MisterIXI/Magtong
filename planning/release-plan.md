@@ -32,7 +32,7 @@ Order of work: **finish the game → polish → tutorial → bots.** Each step e
 - [x] Fill in the AI disclosure in the Steamworks content survey to match the actual AI use (read the current wording).
       *Set to "no": the survey excludes coding assistance, and all player-facing assets (visuals, texts,
       translations) are made without genAI. Re-check if that ever changes.*
-- [ ] **Enable Remote Play Together** in Steamworks (now the online answer for 1.0, no longer optional).
+- [x] **Enable Remote Play Together** in Steamworks (now the online answer for 1.0, no longer optional).
 - [ ] Update the store description and tags: local multiplayer, Remote Play Together. Don't mention online play
       or bots until they ship (only promise what's in the build).
 
@@ -115,8 +115,12 @@ Sound list, sources and music direction: `planning/audio-plan.md`.
       keyboard + 1–3 gamepads, hot-plugging a gamepad, alt-tab/fullscreen.
 - [ ] **Remote Play Together test** with at least one friend: guests can join the lobby with gamepad and with
       keyboard (guest keyboards may merge into the host's keyboard, check the keyboard split still works).
-- [ ] Steamworks: depots for Windows + Linux, upload with SteamPipe (`steamcmd` + an app build VDF script
-      in the repo), set the build live on a `beta` branch, test-install it from Steam on a clean machine.
+      *First test 08.11 with the `dev_beta` build (first SteamPipe upload with `tools/steam_upload.sh`): latency
+      and feel surprisingly good on good internet, hosting and being the guest felt about the same.
+      Still open: guest on keyboard, more than one guest, a weaker connection.*
+- [ ] Steamworks: depots for Windows + Linux, upload with SteamPipe, set the build live on `dev_beta`,
+      test-install it from Steam on a clean machine.
+      *Upload script `tools/steam_upload.sh` and notes in `planning/steam-upload.md` (08.11).*
 - [ ] **Submit the build for review by ~Mon 30.11** (review can take several business days).
 
 ## Week 6 (30.11–08.12): launch
