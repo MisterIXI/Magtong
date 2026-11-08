@@ -15,6 +15,7 @@ func _init():
 	test_lobby_zones()
 	test_input_encoding()
 	test_lobby_skins_and_start()
+	test_lobby_hold_to_start()
 	test_game_over_choices()
 	test_puck_spin()
 	test_puck_bounce()
@@ -211,15 +212,65 @@ func test_lobby_skins_and_start():
 	check(state.skin[0] == 0, "AUX_RIGHT cycles the skin and wraps around (%d)" % state.skin[0])
 	sim.step(state, PackedInt32Array([right, 0]))
 	check(state.skin[0] == 0, "holding the button does not cycle again")
-	var menu := SimInput.encode(Vector2.ZERO, SimInput.MENU)
-	sim.step(state, PackedInt32Array([menu, 0]))
-	check(state.start_tick == -1, "MENU does nothing while not everybody is in a team")
+	rink.free()
+
+## Lobby with two team players and a spectator (player 2, starts in the spectator area).
+func make_hold_lobby() -> Array:
+	var rink := make_rink()
+	var sim := Simulation.new(settings, Simulation.Mode.LOBBY)
+	sim.skin_count = 4
+	var state := SimState.new()
+	sim.set_rink(rink, Transform2D.IDENTITY, false)
+	sim.add_team_area(Rect2(Vector2(-130, 225), Vector2(260, 60)), 0)
+	sim.add_team_area(Rect2(Vector2(-538, -125), Vector2(145, 250)), 1)
+	sim.add_team_area(Rect2(Vector2(393, -125), Vector2(145, 250)), 2)
+	sim.add_puck(state, Vector2(0, -200))
+	sim.add_player(state, Vector2(-100, 0), 0, 0, 0)
+	sim.add_player(state, Vector2(100, 0), 0, 0, 1)
+	sim.add_player(state, Vector2(0, 255), 0, 0, 2)
+	return [rink, sim, state]
+
+func hold_inputs(p0: int, p1: int, p2: int = 0) -> PackedInt32Array:
+	return PackedInt32Array([SimInput.encode(Vector2.ZERO, p0), SimInput.encode(Vector2.ZERO, p1), SimInput.encode(Vector2.ZERO, p2)])
+
+func test_lobby_hold_to_start():
+	var a := make_hold_lobby()
+	var rink: RinkOutline = a[0]
+	var sim: Simulation = a[1]
+	var state: SimState = a[2]
+	var both := SimInput.PLUS | SimInput.MINUS
+	for t in 30:
+		sim.step(state, hold_inputs(both, both))
+	check(not sim.is_lobby_ready(state) and state.start_hold_plus[0] == 0 and state.start_tick == -1,
+		"the bars stay empty while the lobby isn't ready")
 	# walk into the team areas
 	for t in 90:
-		sim.step(state, PackedInt32Array([SimInput.encode(Vector2.LEFT, 0), SimInput.encode(Vector2.RIGHT, 0)]))
-	check(sim.is_lobby_ready(state), "lobby is ready with one player per team (sizes %s)" % sim.lobby_team_sizes(state))
-	sim.step(state, PackedInt32Array([0, menu]))
-	check(state.start_tick == state.tick, "MENU starts the match once everybody is ready")
+		sim.step(state, PackedInt32Array([SimInput.encode(Vector2.LEFT, 0), SimInput.encode(Vector2.RIGHT, 0), 0]))
+	check(sim.is_lobby_ready(state) and state.zone[2] == 0, "lobby is ready, player 2 is a spectator (zones %s)" % state.zone)
+	sim.step(state, hold_inputs(SimInput.MENU, SimInput.MENU))
+	check(state.start_tick == -1, "MENU doesn't start a ready lobby")
+	for t in Simulation.START_HOLD_TICKS * 3:
+		sim.step(state, hold_inputs(both, 0))
+	check(state.start_tick == -1 and state.start_hold_plus[0] == Simulation.START_HOLD_TICKS,
+		"one player holding both magnets doesn't start the match")
+	for t in Simulation.START_HOLD_TICKS:
+		sim.step(state, hold_inputs(both, SimInput.PLUS))
+	check(state.start_tick == -1 and state.start_hold_plus[1] == Simulation.START_HOLD_TICKS and state.start_hold_minus[1] == 0,
+		"holding only plus fills only the plus bar")
+	sim.step(state, hold_inputs(both, 0))
+	check(state.start_hold_plus[1] == Simulation.START_HOLD_TICKS - Simulation.START_HOLD_DRAIN, "a released bar drains")
+	var copy := SimState.from_bytes(state.to_bytes())
+	check(copy.start_hold_plus == state.start_hold_plus and copy.start_hold_minus == state.start_hold_minus,
+		"the bars survive serialization")
+	# player 1's plus bar is almost full, its minus bar empty: it needs START_HOLD_TICKS more
+	for t in Simulation.START_HOLD_TICKS - 1:
+		sim.step(state, hold_inputs(both, both))
+	check(state.start_tick == -1, "no start one tick before everybody's bars are full")
+	sim.step(state, hold_inputs(both, both))
+	check(state.start_tick == state.tick, "every team player holding both magnets starts the match")
+	check(state.start_hold_plus[2] == 0 and state.start_hold_minus[2] == 0, "the spectator doesn't have to hold")
+	state.remove_player(sim.player_body(1), 1)
+	check(state.start_hold_plus.size() == 2 and state.start_hold_minus.size() == 2, "removing a player removes its bars")
 	rink.free()
 
 func test_game_over_choices():

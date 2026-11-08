@@ -1,8 +1,11 @@
 extends CanvasLayer
 class_name PauseMenu
-## Pause menu of local matches. Any player opens it with Start / Esc during the countdown or the match, and any
-## player can navigate, resume or leave (local players are trusted to behave). Pausing pauses the whole scene
-## tree, so the simulation simply stops ticking. Online there is no pause, MatchManager doesn't add it there.
+## Pause menu of local matches and the local lobby. Any player opens it with Start / Esc (in a match during the
+## countdown or the match), and any player can navigate, resume or leave (local players are trusted to behave).
+## Pausing pauses the whole scene tree, so the simulation simply stops ticking. Online there is no pause,
+## MatchManager and GameLobby don't add it there.
+## In the lobby it has "Remove Player" instead of "Back to Lobby": a list of the players, picking one takes it
+## out of the lobby (its next button press joins it again).
 
 const THEME: Theme = preload("res://scenes/menu/main_menu_theme.tres")
 const PANEL_STYLE: StyleBox = preload("res://resources/default_box.tres")
@@ -10,9 +13,16 @@ const DIM_COLOR := Color(0, 0, 0, 0.55)
 
 var map: MapScript
 var _resume_button: Button
+## lobby only: removes the local player with this device id
+var _remove_player: Callable
+var _main_box: VBoxContainer
+var _player_box: VBoxContainer
+var _remove_button: Button
 
-func _init(map: MapScript) -> void:
+## remove_player: lobby only, (device: int) -> void. Without it this is the match pause menu.
+func _init(map: MapScript, remove_player: Callable = Callable()) -> void:
 	self.map = map
+	_remove_player = remove_player
 	name = "PauseMenu"
 	layer = 10
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -38,17 +48,32 @@ func _build() -> void:
 	for side in [&"margin_left", &"margin_right", &"margin_top", &"margin_bottom"]:
 		margin.add_theme_constant_override(side, 32)
 	panel.add_child(margin)
+	var stack := VBoxContainer.new()
+	margin.add_child(stack)
+	_main_box = _add_box(stack, "Paused")
+	_resume_button = _add_button(_main_box, "Resume", resume)
+	if _is_lobby():
+		_remove_button = _add_button(_main_box, "Remove Player", _show_players)
+	else:
+		_add_button(_main_box, "Back to Lobby", _leave.bind(GameManager.return_to_lobby))
+	_add_button(_main_box, "Main Menu", _leave.bind(GameManager.return_to_menu.bind("")))
+	if _is_lobby():
+		_player_box = _add_box(stack, "Remove Player")
+		_player_box.visible = false
+
+func _add_box(parent: Control, title_text: String) -> VBoxContainer:
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override(&"separation", 12)
-	margin.add_child(box)
+	parent.add_child(box)
 	var title := Label.new()
-	title.text = "Paused"
+	title.text = title_text
 	title.theme_type_variation = &"HeaderLarge"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(title)
-	_resume_button = _add_button(box, "Resume", resume)
-	_add_button(box, "Back to Lobby", _leave.bind(GameManager.return_to_lobby))
-	_add_button(box, "Main Menu", _leave.bind(GameManager.return_to_menu.bind("")))
+	return box
+
+func _is_lobby() -> bool:
+	return _remove_player.is_valid()
 
 func _add_button(box: VBoxContainer, text: String, on_pressed: Callable) -> Button:
 	var button := Button.new()
@@ -60,7 +85,11 @@ func _add_button(box: VBoxContainer, text: String, on_pressed: Callable) -> Butt
 
 func _input(event: InputEvent) -> void:
 	if visible:
-		if _is_pause_button(event) or event.is_action_pressed(&"ui_cancel"):
+		if _player_box != null and _player_box.visible and event.is_action_pressed(&"ui_cancel"):
+			get_viewport().set_input_as_handled()
+			UiSounds.play(UiSounds.Sound.BACK)
+			_show_main(_remove_button)
+		elif _is_pause_button(event) or event.is_action_pressed(&"ui_cancel"):
 			get_viewport().set_input_as_handled()
 			UiSounds.play(UiSounds.Sound.BACK)
 			resume()
@@ -69,8 +98,11 @@ func _input(event: InputEvent) -> void:
 		UiSounds.play(UiSounds.Sound.CONFIRM)
 		open()
 
-## Only during the countdown and the match: after the game over Start means rematch (in the simulation).
+## Lobby: until the match start is decided. Match: only during the countdown and the match, after the game
+## over Start means rematch (in the simulation).
 func _can_pause() -> bool:
+	if _is_lobby():
+		return map.state.start_tick == -1
 	var phase := map.state.phase
 	return phase == Simulation.Phase.COUNTDOWN or phase == Simulation.Phase.PLAYING
 
@@ -86,7 +118,38 @@ func _is_pause_button(event: InputEvent) -> bool:
 func open() -> void:
 	get_tree().paused = true
 	visible = true
-	_resume_button.grab_focus.call_deferred()
+	_show_main(_resume_button)
+
+func _show_main(focus: Button) -> void:
+	_main_box.visible = true
+	if _player_box != null:
+		_player_box.visible = false
+	focus.grab_focus.call_deferred()
+
+## One button per local player (sim order = roster order), plus Back.
+func _show_players() -> void:
+	for child in _player_box.get_children():
+		if child is Button:
+			child.queue_free()
+	var first: Button = null
+	var local_peer := NetGame.get_local_peer()
+	for i in NetGame.roster.size():
+		var entry: Dictionary = NetGame.roster[i]
+		if entry["peer"] != local_peer:
+			continue
+		var device: int = entry["device"]
+		var kind := "Keyboard" if device == InputManager.KEYBOARD_DEVICE_ID else "Gamepad"
+		var button := _add_button(_player_box, "Player %d (%s)" % [i + 1, kind], _on_remove_pressed.bind(device))
+		if first == null:
+			first = button
+	var back := _add_button(_player_box, "Back", _show_main.bind(_remove_button))
+	_main_box.visible = false
+	_player_box.visible = true
+	(first if first != null else back).grab_focus.call_deferred()
+
+func _on_remove_pressed(device: int) -> void:
+	_remove_player.call(device)
+	_show_main(_remove_button)
 
 func resume() -> void:
 	visible = false

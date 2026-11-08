@@ -23,6 +23,8 @@ func _ready():
 	InputManager.player_input_registered.connect(_on_player_input_registered)
 	NetGame.lobby_reset.connect(_on_lobby_reset)
 	_switch_map(0)
+	if not NetGame.is_online():
+		add_child(PauseMenu.new(current_map, remove_local_player))
 	if NetGame.is_authority():
 		NetGame.player_join_requested.connect(_on_player_join_requested)
 		NetGame.peer_hello.connect(_on_peer_hello)
@@ -47,6 +49,23 @@ func _on_player_input_registered(player_input: PlayerInput):
 
 func _on_lobby_reset(epoch: int, roster: Array, state_bytes: PackedByteArray):
 	current_map.rebuild_lobby(roster, state_bytes, epoch)
+
+## Local lobby: takes a local player out of the lobby (pause menu "Remove Player"). The device is forgotten,
+## so its next button press joins it again.
+func remove_local_player(device: int) -> void:
+	var local_peer := NetGame.get_local_peer()
+	var roster := []
+	var new_state := current_map.state.copy()
+	for i in range(NetGame.roster.size() - 1, -1, -1):
+		var entry: Dictionary = NetGame.roster[i]
+		if entry["peer"] == local_peer and entry["device"] == device:
+			new_state.remove_player(MapScript.LOBBY_PUCKS + i, i)
+		else:
+			roster.push_front(entry)
+	if roster.size() == NetGame.roster.size():
+		return
+	NetGame.reset_lobby(roster, new_state.to_bytes())
+	InputManager.unregister_player(device)
 
 #region authority
 func _on_player_join_requested(peer: int, device: int):

@@ -19,6 +19,7 @@ var _skin: int = -1
 var _last_pulse_tick: int = -1
 var _last_ability_tick: int = -1
 var _last_reset_tick: int = -2 # so the first update always resets the interpolation
+var _start_bars: StartHoldBars # lobby only
 
 ## player_input is null for players controlled on another machine.
 func setup_player(map: MapScript, player_input: PlayerInput, is_in_lobby: bool = false):
@@ -27,6 +28,9 @@ func setup_player(map: MapScript, player_input: PlayerInput, is_in_lobby: bool =
 	self.is_in_lobby = is_in_lobby
 	if not is_in_lobby:
 		mm = GameManager.scene_root.current_scene as MatchManager
+	else:
+		_start_bars = StartHoldBars.new()
+		add_child(_start_bars)
 	setup_completed.emit(self)
 
 ## Called every tick after the simulation stepped.
@@ -49,6 +53,16 @@ func update_from_sim(sim_state: SimState, body: int, player: int) -> void:
 	if sim_state.last_ability_tick[player] > _last_ability_tick:
 		_last_ability_tick = sim_state.last_ability_tick[player]
 		impulse_emitted.emit(global_position, state)
+	if _start_bars != null:
+		_update_start_bars(sim_state, player)
+
+## Spectators and players outside a ready lobby get no bars.
+func _update_start_bars(sim_state: SimState, player: int) -> void:
+	var shown := sim_state.zone[player] > 0 and map.sim.is_lobby_ready(sim_state)
+	_start_bars.visible = shown
+	if shown:
+		var full := float(Simulation.START_HOLD_TICKS)
+		_start_bars.set_progress(sim_state.start_hold_plus[player] / full, sim_state.start_hold_minus[player] / full)
 
 func set_skin(player_sprite_id: int):
 	var sprites: Array = ResourceManager.icons.player_sprites

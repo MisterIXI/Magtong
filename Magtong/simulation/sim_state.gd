@@ -32,6 +32,9 @@ var last_pulse_tick: PackedInt32Array = PackedInt32Array()
 var last_ability_tick: PackedInt32Array = PackedInt32Array()
 var zone: PackedInt32Array = PackedInt32Array() # lobby team area the player touches, -1 = none
 var skin: PackedInt32Array = PackedInt32Array()
+# lobby hold-to-start: ticks each magnet button was held while the lobby is ready, 0..START_HOLD_TICKS
+var start_hold_plus: PackedInt32Array = PackedInt32Array()
+var start_hold_minus: PackedInt32Array = PackedInt32Array()
 
 # match
 var phase: int = Simulation.Phase.NONE
@@ -73,6 +76,8 @@ func copy() -> SimState:
 	c.last_ability_tick = last_ability_tick.duplicate()
 	c.zone = zone.duplicate()
 	c.skin = skin.duplicate()
+	c.start_hold_plus = start_hold_plus.duplicate()
+	c.start_hold_minus = start_hold_minus.duplicate()
 	c.phase = phase
 	c.phase_ticks = phase_ticks
 	c.match_ticks = match_ticks
@@ -91,7 +96,8 @@ func copy() -> SimState:
 func remove_player(body: int, player: int) -> void:
 	pos.remove_at(body)
 	vel.remove_at(body)
-	for array_name in [&"polarity", &"prev_buttons", &"pulse_cd", &"ability_cd", &"last_pulse_tick", &"last_ability_tick", &"zone", &"skin"]:
+	for array_name in [&"polarity", &"prev_buttons", &"pulse_cd", &"ability_cd", &"last_pulse_tick", &"last_ability_tick", &"zone", &"skin",
+			&"start_hold_plus", &"start_hold_minus"]:
 		var array: PackedInt32Array = get(array_name)
 		array.remove_at(player)
 		set(array_name, array)
@@ -99,7 +105,7 @@ func remove_player(body: int, player: int) -> void:
 const FIELDS: Array[StringName] = [
 	&"tick", &"rng", &"pos", &"vel", &"puck_plus", &"puck_angle", &"puck_spin", &"puck_hit_tick", &"puck_hit_speed", &"puck_hit_wall",
 	&"puck_wall_touch_tick", &"puck_body_touch_tick", &"polarity", &"prev_buttons", &"pulse_cd", &"ability_cd",
-	&"last_pulse_tick", &"last_ability_tick", &"zone", &"skin", &"phase", &"phase_ticks", &"match_ticks", &"overtime",
+	&"last_pulse_tick", &"last_ability_tick", &"zone", &"skin", &"start_hold_plus", &"start_hold_minus", &"phase", &"phase_ticks", &"match_ticks", &"overtime",
 	&"overtime_ticks", &"scores", &"winner", &"last_goal_tick", &"last_goal_team", &"reset_tick", &"start_tick",
 	&"lobby_tick",
 ]

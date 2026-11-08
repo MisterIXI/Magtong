@@ -67,6 +67,12 @@ func register_player(device_id: int) -> PlayerInput:
 	player_input_registered.emit(player_input)
 	return player_input
 
+## Forget one local player (removed from the lobby). Its next button press registers it again.
+func unregister_player(device_id: int) -> void:
+	if player_inputs.has(device_id):
+		player_inputs[device_id].queue_free()
+		player_inputs.erase(device_id)
+
 ## Forget all local players (back to the main menu).
 func clear_players() -> void:
 	for player_input in player_inputs.values():

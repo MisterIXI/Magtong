@@ -13,6 +13,10 @@ const TICK_RATE: int = 60
 const DT: float = 1.0 / TICK_RATE
 const SUBSTEPS: int = 4
 const COUNTDOWN_TICKS: int = 3 * TICK_RATE
+## Lobby: every team player holds both magnets this long to start the match
+const START_HOLD_TICKS: int = TICK_RATE
+## how fast a released magnet's start bar empties again, in ticks per tick
+const START_HOLD_DRAIN: int = 3
 const FALLOFF_SAMPLES: int = 256
 
 var settings: PlayerSettings
@@ -121,6 +125,8 @@ func add_player(state: SimState, pos: Vector2, team: int = 0, team_slot: int = 0
 	state.last_ability_tick.append(-1)
 	state.zone.append(-1)
 	state.skin.append(skin)
+	state.start_hold_plus.append(0)
+	state.start_hold_minus.append(0)
 	player_count += 1
 	return player_count - 1
 
@@ -188,8 +194,7 @@ func step(state: SimState, inputs: PackedInt32Array) -> void:
 	match mode:
 		Mode.LOBBY:
 			_update_zones(state)
-			if menu_pressed and state.start_tick == -1 and is_lobby_ready(state):
-				state.start_tick = state.tick
+			_update_start_hold(state)
 		Mode.MATCH:
 			_step_match(state, menu_pressed, back_pressed)
 
@@ -408,6 +413,30 @@ func lobby_team_sizes(state: SimState) -> PackedInt32Array:
 		if state.zone[i] >= 0:
 			sizes[state.zone[i]] += 1
 	return sizes
+
+## Hold-to-start: while the lobby is ready, each team player's plus and minus bars fill while that magnet is
+## held and drain when it's released. The match starts once every team player has both bars full.
+## Spectators (zone 0) don't take part. Reads the buttons step() stored in prev_buttons this tick.
+func _update_start_hold(state: SimState) -> void:
+	var ready := is_lobby_ready(state)
+	var everyone_full := ready
+	for i in player_count:
+		if not ready or state.zone[i] <= 0:
+			state.start_hold_plus[i] = 0
+			state.start_hold_minus[i] = 0
+			continue
+		var buttons := state.prev_buttons[i]
+		state.start_hold_plus[i] = _hold_bar(state.start_hold_plus[i], (buttons & SimInput.PLUS) != 0)
+		state.start_hold_minus[i] = _hold_bar(state.start_hold_minus[i], (buttons & SimInput.MINUS) != 0)
+		if state.start_hold_plus[i] < START_HOLD_TICKS or state.start_hold_minus[i] < START_HOLD_TICKS:
+			everyone_full = false
+	if everyone_full and state.start_tick == -1:
+		state.start_tick = state.tick
+
+func _hold_bar(value: int, held: bool) -> int:
+	if held:
+		return mini(value + 1, START_HOLD_TICKS)
+	return maxi(value - START_HOLD_DRAIN, 0)
 
 ## Every player stands in a team area and every team has at least one player.
 func is_lobby_ready(state: SimState) -> bool:

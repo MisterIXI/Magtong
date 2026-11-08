@@ -75,7 +75,7 @@ grow_vertical = 2
 [node name="Label" type="Label" parent="CanvasLayer/ReadyBanner/LowerBanner"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 50
-text = "PRESS START"
+text = "HOLD BOTH MAGNETS"
 horizontal_alignment = 1
 vertical_alignment = 1
 
