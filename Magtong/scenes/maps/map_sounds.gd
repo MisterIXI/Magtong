@@ -14,6 +14,7 @@ const PUCK_HITS: Array[AudioStream] = [
 const MAGNET_LOOP: AudioStream = preload("res://assets/sounds/sfx/magnet_loop.ogg")
 const COUNTDOWN_BEEP: AudioStream = preload("res://assets/sounds/sfx/countdown_beep.ogg")
 const MATCH_END: AudioStream = preload("res://assets/sounds/sfx/match_end.ogg")
+const GOAL: AudioStream = preload("res://assets/sounds/sfx/goal.ogg")
 const LOBBY_JOIN: AudioStream = preload("res://assets/sounds/ui/lobby_join.ogg")
 const LOBBY_READY: AudioStream = preload("res://assets/sounds/ui/lobby_ready.ogg")
 
@@ -28,6 +29,8 @@ const MAGNET_VOLUME_DB: float = -14.0
 const MAGNET_NEG_PITCH: float = 0.8
 const GO_PITCH: float = 1.5
 const UNREADY_PITCH: float = 0.8
+## the goal is the loudest sound in the game
+const GOAL_VOLUME_DB: float = 3.0
 
 var map: MapScript
 var _hit_stream := AudioStreamRandomizer.new()
@@ -36,6 +39,8 @@ var _played_hit_tick: PackedInt32Array = PackedInt32Array()
 var _hums: Array[AudioStreamPlayer] = []
 var _beep: AudioStreamPlayer
 var _match_end: AudioStreamPlayer
+var _goal: AudioStreamPlayer
+var _shown_goal_tick: int = -2 # -2: not seen yet, so a goal from before (e.g. a rejoin) doesn't play
 var _join: AudioStreamPlayer
 var _ready_sound: AudioStreamPlayer
 var _last_tick: int = 0
@@ -52,6 +57,8 @@ func _init(map: MapScript) -> void:
 	_hit_stream.random_pitch = HIT_RANDOM_PITCH
 	_beep = _new_player(COUNTDOWN_BEEP)
 	_match_end = _new_player(MATCH_END)
+	_goal = _new_player(GOAL)
+	_goal.volume_db = GOAL_VOLUME_DB
 	_join = _new_player(LOBBY_JOIN)
 	_ready_sound = _new_player(LOBBY_READY)
 
@@ -106,6 +113,12 @@ func _update_magnets(state: SimState) -> void:
 			hum.play()
 
 func _update_match(state: SimState) -> void:
+	# only newer goals: a rollback can move last_goal_tick back, the sound must not play twice
+	if _shown_goal_tick == -2:
+		_shown_goal_tick = state.last_goal_tick
+	elif state.last_goal_tick > _shown_goal_tick:
+		_shown_goal_tick = state.last_goal_tick
+		_play(_goal, 1.0)
 	if state.phase == Simulation.Phase.COUNTDOWN:
 		var seconds := ceili(float(state.phase_ticks) / Simulation.TICK_RATE)
 		if _shown_phase != Simulation.Phase.COUNTDOWN or seconds != _shown_seconds:

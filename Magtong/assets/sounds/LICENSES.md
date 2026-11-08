@@ -17,6 +17,7 @@ Credit is not required, but Kenney goes into the credits screen anyway.
 | `sfx/magnet_loop.ogg` | `spaceEngine_002.ogg` | Sci-Fi Sounds |
 | `sfx/countdown_beep.ogg` | `switch_001.ogg` | Interface Sounds |
 | `sfx/match_end.ogg` | `scroll_004.ogg` | Interface Sounds |
+| `sfx/goal.ogg` | `jingles-saxophone_06.ogg` | Music Jingles |
 
 ## Other
 | File | Source | License |
