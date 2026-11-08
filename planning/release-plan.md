@@ -96,6 +96,12 @@ Goal: the game works start to finish and could ship as is, even if it isn't pret
 - [x] **Automated input testing**: `tools/virtual_pads.py` (virtual Xbox pads via uinput, scripted or live) and
       `tools/run_headless.sh` (game in headless gamescope, no window on the desktop).
 
+## Known bugs
+- [ ] **Main menu backgrounds stack** (found 09.11): every return to the main menu spawns more background players
+      on top of each other. Likely cause: `MainMenu.switch_to_menu(start_menu)` (`scenes/menu/main_menu.gd`)
+      calls `spawn_mm_background()` without freeing the old background, and twice when there is none
+      (once for `curr_mm_bg == null`, once for `start_menu`).
+
 ## Week 3 (09.–15.11): polish
 Sound list, sources and music direction: `planning/audio-plan.md`.
 - [x] Rollback-safe gameplay sound: `MapSounds` reacts to state changes seen by the views, never from inside
