@@ -249,8 +249,12 @@ func test_lobby_hold_to_start():
 	check(sim.is_lobby_ready(state) and state.zone[2] == 0, "lobby is ready, player 2 is a spectator (zones %s)" % state.zone)
 	sim.step(state, hold_inputs(SimInput.MENU, SimInput.MENU))
 	check(state.start_tick == -1, "MENU doesn't start a ready lobby")
+	var pos_before := state.pos[sim.player_body(0)]
 	for t in Simulation.START_HOLD_TICKS * 3:
 		sim.step(state, hold_inputs(both, 0))
+	check(state.polarity[0] == Simulation.Polarity.IDLE, "holding both magnets turns the magnet off")
+	check(state.pos[sim.player_body(0)].distance_to(pos_before) < 1.0,
+		"a player holding both magnets isn't pulled away (moved %.2f)" % state.pos[sim.player_body(0)].distance_to(pos_before))
 	check(state.start_tick == -1 and state.start_hold_plus[0] == Simulation.START_HOLD_TICKS,
 		"one player holding both magnets doesn't start the match")
 	for t in Simulation.START_HOLD_TICKS:

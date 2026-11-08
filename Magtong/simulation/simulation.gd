@@ -177,10 +177,12 @@ func step(state: SimState, inputs: PackedInt32Array) -> void:
 		var pol := Polarity.IDLE
 		if controls_active:
 			target_vel = SimInput.get_move(input).limit_length(1.0) * settings.speed
-			# plus has priority
-			if buttons & SimInput.PLUS:
+			# both held = magnet off (in the lobby that's the start gesture, the player must not be pulled away)
+			var plus := (buttons & SimInput.PLUS) != 0
+			var minus := (buttons & SimInput.MINUS) != 0
+			if plus and not minus:
 				pol = Polarity.POS
-			elif buttons & SimInput.MINUS:
+			elif minus and not plus:
 				pol = Polarity.NEG
 		state.polarity[i] = pol
 		state.vel[body] = state.vel[body].move_toward(target_vel, settings.accell * DT)
