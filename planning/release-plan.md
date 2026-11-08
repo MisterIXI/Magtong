@@ -143,9 +143,13 @@ Sound list, sources and music direction: `planning/audio-plan.md`.
 - [ ] Watch reviews/discussions for the first days; ship a hotfix build if needed.
 
 ## Online for 1.0
-- [ ] **Online menu**: the pause menu is local only (pausing can't work online), so online there's no way to
+- [x] **Online menu**: the pause menu is local only (pausing can't work online), so online there's no way to
       leave a lobby or match from inside the game. Needs a non-pausing menu: Resume, Leave (client), Back to
       Lobby / Main Menu (host).
+      *09.11: the pause menu now also works online, titled "Menu", without pausing; this machine's players send
+      empty input while it's open. Host: Remove Player (lobby) / Back to Lobby (match) + Main Menu; client:
+      Leave. A host who leaves on purpose now shows "The host left" instead of "Lost the connection". Tested
+      with two local instances over direct connect (client leaves lobby and match).*
 - [ ] Online UX states: connecting, host left, timed out, can't connect (direct connect without port forwarding).
 - [ ] More online tests: 2v2 (two machines with two local players each), a weaker connection, host on Windows and
       on Linux.

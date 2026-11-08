@@ -1,11 +1,13 @@
 extends CanvasLayer
 class_name PauseMenu
-## Pause menu of local matches and the local lobby. Any player opens it with Start / Esc (in a match during the
-## countdown or the match), and any player can navigate, resume or leave (local players are trusted to behave).
-## Pausing pauses the whole scene tree, so the simulation simply stops ticking. Online there is no pause,
-## MatchManager and GameLobby don't add it there.
-## In the lobby it has "Remove Player" instead of "Back to Lobby": a list of the players, picking one takes it
-## out of the lobby (its next button press joins it again).
+## Menu of the lobby and the match. Any local player opens it with Start / Esc (in a match during the countdown
+## or the match), and any local player can navigate, resume or leave (local players are trusted to behave).
+## Local games pause the whole scene tree, so the simulation simply stops ticking. Online the game can't pause:
+## it keeps running, and this machine's players send empty input while the menu is open.
+## Lobby: Resume, Remove Player (host / local game: a list of this machine's players, picking one takes it out of
+## the lobby, its next button press joins it again), Main Menu.
+## Match: Resume, Back to Lobby (host / local game, for everybody), Main Menu.
+## A client gets "Leave" instead of Main Menu: the host then removes its players (lobby) or ends the match.
 
 const THEME: Theme = preload("res://scenes/menu/main_menu_theme.tres")
 const PANEL_STYLE: StyleBox = preload("res://resources/default_box.tres")
@@ -13,16 +15,20 @@ const DIM_COLOR := Color(0, 0, 0, 0.55)
 
 var map: MapScript
 var _resume_button: Button
-## lobby only: removes the local player with this device id
+var _in_lobby: bool
+var _online: bool
+## lobby, host / local game only: removes the local player with this device id
 var _remove_player: Callable
 var _main_box: VBoxContainer
 var _player_box: VBoxContainer
 var _remove_button: Button
 
-## remove_player: lobby only, (device: int) -> void. Without it this is the match pause menu.
-func _init(map: MapScript, remove_player: Callable = Callable()) -> void:
+## remove_player: lobby only, (device: int) -> void.
+func _init(map: MapScript, in_lobby: bool = false, remove_player: Callable = Callable()) -> void:
 	self.map = map
-	_remove_player = remove_player
+	_in_lobby = in_lobby
+	_online = NetGame.is_online()
+	_remove_player = remove_player if NetGame.is_authority() else Callable()
 	name = "PauseMenu"
 	layer = 10
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -50,16 +56,17 @@ func _build() -> void:
 	panel.add_child(margin)
 	var stack := VBoxContainer.new()
 	margin.add_child(stack)
-	_main_box = _add_box(stack, "Paused")
+	_main_box = _add_box(stack, "Menu" if _online else "Paused")
 	_resume_button = _add_button(_main_box, "Resume", resume)
-	if _is_lobby():
+	if _in_lobby and _remove_player.is_valid():
 		_remove_button = _add_button(_main_box, "Remove Player", _show_players)
-	else:
-		_add_button(_main_box, "Back to Lobby", _leave.bind(GameManager.return_to_lobby))
-	_add_button(_main_box, "Main Menu", _leave.bind(GameManager.return_to_menu.bind("")))
-	if _is_lobby():
 		_player_box = _add_box(stack, "Remove Player")
 		_player_box.visible = false
+	if not _in_lobby and NetGame.is_authority():
+		# NetGame sends the clients along, offline it just goes back
+		_add_button(_main_box, "Back to Lobby", _leave.bind(NetGame.request_return_to_lobby))
+	var leave_text := "Leave" if not NetGame.is_authority() else "Main Menu"
+	_add_button(_main_box, leave_text, _leave.bind(GameManager.return_to_menu.bind("")))
 
 func _add_box(parent: Control, title_text: String) -> VBoxContainer:
 	var box := VBoxContainer.new()
@@ -71,9 +78,6 @@ func _add_box(parent: Control, title_text: String) -> VBoxContainer:
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(title)
 	return box
-
-func _is_lobby() -> bool:
-	return _remove_player.is_valid()
 
 func _add_button(box: VBoxContainer, text: String, on_pressed: Callable) -> Button:
 	var button := Button.new()
@@ -101,7 +105,7 @@ func _input(event: InputEvent) -> void:
 ## Lobby: until the match start is decided. Match: only during the countdown and the match, after the game
 ## over Start means rematch (in the simulation).
 func _can_pause() -> bool:
-	if _is_lobby():
+	if _in_lobby:
 		return map.state.start_tick == -1
 	var phase := map.state.phase
 	return phase == Simulation.Phase.COUNTDOWN or phase == Simulation.Phase.PLAYING
@@ -116,7 +120,9 @@ func _is_pause_button(event: InputEvent) -> bool:
 	return false
 
 func open() -> void:
-	get_tree().paused = true
+	if not _online:
+		get_tree().paused = true
+	map.inputs_blocked = true
 	visible = true
 	_show_main(_resume_button)
 
@@ -153,7 +159,9 @@ func _on_remove_pressed(device: int) -> void:
 
 func resume() -> void:
 	visible = false
-	get_tree().paused = false
+	if not _online:
+		get_tree().paused = false
+	map.inputs_blocked = false
 	# the button that confirmed (A, Space, Start, ...) is a game button too, it must not act in the first tick
 	for player_input in InputManager.get_all_player_inputs():
 		player_input.release_buttons()

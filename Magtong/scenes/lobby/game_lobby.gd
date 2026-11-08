@@ -23,8 +23,7 @@ func _ready():
 	InputManager.player_input_registered.connect(_on_player_input_registered)
 	NetGame.lobby_reset.connect(_on_lobby_reset)
 	_switch_map(0)
-	if not NetGame.is_online():
-		add_child(PauseMenu.new(current_map, remove_local_player))
+	add_child(PauseMenu.new(current_map, true, remove_local_player))
 	if NetGame.is_authority():
 		NetGame.player_join_requested.connect(_on_player_join_requested)
 		NetGame.peer_hello.connect(_on_peer_hello)

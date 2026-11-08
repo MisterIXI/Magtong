@@ -34,8 +34,7 @@ func _ready():
 	if GameManager.test_match_time > 0.0 and not NetGame.is_online():
 		match_time = GameManager.test_match_time
 	ms.setup(self, match_time)
-	if not NetGame.is_online():
-		add_child(PauseMenu.new(ms))
+	add_child(PauseMenu.new(ms))
 	_set_score_labels(ms.state.scores)
 	if NetGame.mode == NetGame.Mode.HOST:
 		NetGame.peer_left.connect(_on_peer_left)

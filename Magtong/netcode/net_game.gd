@@ -176,7 +176,10 @@ func _handle(from: int, msg: Dictionary, now: int) -> void:
 			if mode == Mode.CLIENT:
 				return_to_lobby_requested.emit()
 		"bye":
-			_on_peer_disconnected(from)
+			if mode == Mode.CLIENT and from == NetTransport.HOST_ID:
+				_end("The host left")
+			else:
+				_on_peer_disconnected(from)
 
 func _on_peer_connected(peer_id: int) -> void:
 	_last_heard[peer_id] = Time.get_ticks_msec()

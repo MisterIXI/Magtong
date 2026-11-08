@@ -28,6 +28,8 @@ var players: Array[PlayerBody] = []
 var pucks: Array[Puck] = []
 ## player slot -> PlayerInput, for the players controlled on this machine
 var local_inputs: Dictionary = {}
+## the online menu is open: local players send empty input (online the game keeps running behind the menu)
+var inputs_blocked: bool = false
 var _advantage: float = 0.0
 var _ticks_since_wait: int = 0
 var _sounds: MapSounds
@@ -164,7 +166,7 @@ func _physics_process(_delta):
 	else:
 		if session.can_advance() and not _should_wait_for_peers(now):
 			for slot in local_inputs:
-				session.add_local_input(slot, local_inputs[slot].sample())
+				session.add_local_input(slot, _sample(slot))
 			session.advance()
 		else:
 			if not session.can_advance():
@@ -177,7 +179,9 @@ func _physics_process(_delta):
 	_update_views()
 
 func _sample(slot: int) -> int:
-	return local_inputs[slot].sample() if local_inputs.has(slot) else SimInput.EMPTY
+	if inputs_blocked or not local_inputs.has(slot):
+		return SimInput.EMPTY
+	return local_inputs[slot].sample()
 
 ## Time sync: if we run ahead of the other machines, skip a tick now and then so they catch up.
 ## Otherwise we would predict further and further ahead and roll back more and more.
