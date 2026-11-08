@@ -8,6 +8,10 @@ const VOLUME_BUSES: Array[String] = ["Master", "Music", "SFX"]
 enum WindowMode { WINDOWED, FULLSCREEN, EXCLUSIVE_FULLSCREEN }
 const WINDOW_MODE_NAMES: Array[String] = ["Windowed", "Fullscreen", "Exclusive Fullscreen"]
 
+## MSAA for 2D, index = Viewport.MSAA value. 8x is what the project was tuned with; lower helps weak GPUs.
+const ANTI_ALIASING_NAMES: Array[String] = ["Off", "2x", "4x", "8x"]
+const DEFAULT_ANTI_ALIASING: int = Viewport.MSAA_8X
+
 var _config := ConfigFile.new()
 
 func _ready() -> void:
@@ -16,6 +20,7 @@ func _ready() -> void:
 		_apply_volume(bus, get_volume(bus))
 	_apply_window_mode(get_window_mode())
 	_apply_vsync(get_vsync())
+	_apply_anti_aliasing(get_anti_aliasing())
 
 func get_volume(bus: String) -> float:
 	return _config.get_value("audio", bus.to_lower(), 0.8)
@@ -41,6 +46,14 @@ func set_vsync(enabled: bool) -> void:
 	_apply_vsync(enabled)
 	_save()
 
+func get_anti_aliasing() -> int:
+	return clampi(_config.get_value("display", "anti_aliasing", DEFAULT_ANTI_ALIASING), 0, ANTI_ALIASING_NAMES.size() - 1)
+
+func set_anti_aliasing(level: int) -> void:
+	_config.set_value("display", "anti_aliasing", level)
+	_apply_anti_aliasing(level)
+	_save()
+
 func _apply_volume(bus: String, value: float) -> void:
 	var index := AudioServer.get_bus_index(bus)
 	if index == -1:
@@ -64,6 +77,11 @@ func _apply_vsync(enabled: bool) -> void:
 	if DisplayServer.get_name() == "headless":
 		return
 	DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED if enabled else DisplayServer.VSYNC_DISABLED)
+
+func _apply_anti_aliasing(level: int) -> void:
+	if DisplayServer.get_name() == "headless":
+		return
+	get_tree().root.msaa_2d = level as Viewport.MSAA
 
 func _save() -> void:
 	var err := _config.save(PATH)

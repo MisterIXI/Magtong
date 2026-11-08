@@ -7,6 +7,7 @@ class_name SettingsMenu
 @export var sfx_slider: HSlider
 @export var window_mode_option: OptionButton
 @export var vsync_check: CheckButton
+@export var anti_aliasing_option: OptionButton
 
 func _ready() -> void:
 	_bind_volume(master_slider, "Master")
@@ -18,6 +19,10 @@ func _ready() -> void:
 	window_mode_option.item_selected.connect(func(index: int): Settings.set_window_mode(index))
 	vsync_check.button_pressed = Settings.get_vsync()
 	vsync_check.toggled.connect(Settings.set_vsync)
+	for i in Settings.ANTI_ALIASING_NAMES.size():
+		anti_aliasing_option.add_item(Settings.ANTI_ALIASING_NAMES[i], i)
+	anti_aliasing_option.select(Settings.get_anti_aliasing())
+	anti_aliasing_option.item_selected.connect(Settings.set_anti_aliasing)
 
 func _bind_volume(slider: HSlider, bus: String) -> void:
 	slider.min_value = 0.0

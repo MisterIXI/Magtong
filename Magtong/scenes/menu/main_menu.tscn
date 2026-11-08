@@ -129,7 +129,7 @@ autowrap_mode = 3
 layout_mode = 2
 text = "Okay"
 
-[node name="Settings" type="Control" parent="." node_paths=PackedStringArray("master_slider", "music_slider", "sfx_slider", "window_mode_option", "vsync_check")]
+[node name="Settings" type="Control" parent="." node_paths=PackedStringArray("master_slider", "music_slider", "sfx_slider", "window_mode_option", "vsync_check", "anti_aliasing_option")]
 visible = false
 z_index = 1000
 layout_mode = 1
@@ -144,6 +144,7 @@ music_slider = NodePath("Panel/MarginContainer/GridContainer/MusicSlider")
 sfx_slider = NodePath("Panel/MarginContainer/GridContainer/SFXSlider")
 window_mode_option = NodePath("Panel/MarginContainer/GridContainer/WindowModeOption")
 vsync_check = NodePath("Panel/MarginContainer/GridContainer/VSyncCheck")
+anti_aliasing_option = NodePath("Panel/MarginContainer/GridContainer/AntiAliasingOption")
 
 [node name="Panel" type="Panel" parent="Settings"]
 layout_mode = 1
@@ -230,6 +231,14 @@ text = "VSync"
 [node name="VSyncCheck" type="CheckButton" parent="Settings/Panel/MarginContainer/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 0
+
+[node name="AntiAliasing" type="Label" parent="Settings/Panel/MarginContainer/GridContainer"]
+layout_mode = 2
+text = "Anti-Aliasing"
+
+[node name="AntiAliasingOption" type="OptionButton" parent="Settings/Panel/MarginContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="CloseButton" type="Button" parent="Settings/Panel"]
 layout_mode = 1
