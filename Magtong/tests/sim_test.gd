@@ -16,6 +16,7 @@ func _init():
 	test_input_encoding()
 	test_lobby_skins_and_start()
 	test_lobby_hold_to_start()
+	test_last_magnet_wins()
 	test_game_over_choices()
 	test_puck_spin()
 	test_puck_bounce()
@@ -249,12 +250,8 @@ func test_lobby_hold_to_start():
 	check(sim.is_lobby_ready(state) and state.zone[2] == 0, "lobby is ready, player 2 is a spectator (zones %s)" % state.zone)
 	sim.step(state, hold_inputs(SimInput.MENU, SimInput.MENU))
 	check(state.start_tick == -1, "MENU doesn't start a ready lobby")
-	var pos_before := state.pos[sim.player_body(0)]
 	for t in Simulation.START_HOLD_TICKS * 3:
 		sim.step(state, hold_inputs(both, 0))
-	check(state.polarity[0] == Simulation.Polarity.IDLE, "holding both magnets turns the magnet off")
-	check(state.pos[sim.player_body(0)].distance_to(pos_before) < 1.0,
-		"a player holding both magnets isn't pulled away (moved %.2f)" % state.pos[sim.player_body(0)].distance_to(pos_before))
 	check(state.start_tick == -1 and state.start_hold_plus[0] == Simulation.START_HOLD_TICKS,
 		"one player holding both magnets doesn't start the match")
 	for t in Simulation.START_HOLD_TICKS:
@@ -365,3 +362,26 @@ func test_puck_bounce():
 	var no_body := run_bounce_shot(0.0, 0.0, true)
 	var body := run_bounce_shot(0.0, 0.3, true)
 	check(body.x < no_body.x, "with body bounce the puck comes off a player slower or backwards (vx %.1f vs %.1f)" % [body.x, no_body.x])
+
+## With both magnet buttons held, the one pressed last decides the polarity.
+func test_last_magnet_wins():
+	var a := make_hold_lobby()
+	var rink: RinkOutline = a[0]
+	var sim: Simulation = a[1]
+	var state: SimState = a[2]
+	var P := Simulation.Polarity
+	var steps := [
+		[SimInput.PLUS, P.POS, "plus alone"],
+		[SimInput.PLUS | SimInput.MINUS, P.NEG, "minus pressed while plus is held switches to minus"],
+		[SimInput.PLUS | SimInput.MINUS, P.NEG, "holding both keeps the last pressed one"],
+		[SimInput.PLUS, P.POS, "releasing minus goes back to plus"],
+		[0, P.IDLE, "nothing held: off"],
+		[SimInput.MINUS, P.NEG, "minus alone"],
+		[SimInput.PLUS | SimInput.MINUS, P.POS, "plus pressed while minus is held switches to plus"],
+		[0, P.IDLE, "off again"],
+		[SimInput.PLUS | SimInput.MINUS, P.POS, "both pressed on the same tick: plus"],
+	]
+	for step in steps:
+		sim.step(state, hold_inputs(step[0], 0))
+		check(state.polarity[0] == step[1], "%s (polarity %d)" % [step[2], state.polarity[0]])
+	rink.free()

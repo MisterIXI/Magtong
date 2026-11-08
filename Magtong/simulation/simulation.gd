@@ -177,13 +177,7 @@ func step(state: SimState, inputs: PackedInt32Array) -> void:
 		var pol := Polarity.IDLE
 		if controls_active:
 			target_vel = SimInput.get_move(input).limit_length(1.0) * settings.speed
-			# both held = magnet off (in the lobby that's the start gesture, the player must not be pulled away)
-			var plus := (buttons & SimInput.PLUS) != 0
-			var minus := (buttons & SimInput.MINUS) != 0
-			if plus and not minus:
-				pol = Polarity.POS
-			elif minus and not plus:
-				pol = Polarity.NEG
+			pol = _choose_polarity(buttons, pressed, state.polarity[i])
 		state.polarity[i] = pol
 		state.vel[body] = state.vel[body].move_toward(target_vel, settings.accell * DT)
 		if controls_active:
@@ -199,6 +193,23 @@ func step(state: SimState, inputs: PackedInt32Array) -> void:
 			_update_start_hold(state)
 		Mode.MATCH:
 			_step_match(state, menu_pressed, back_pressed)
+
+## One magnet button gives its polarity. With both held the last pressed one wins, so switching doesn't need a
+## release; pressed on the same tick (or held since before the controls were active) plus wins.
+func _choose_polarity(buttons: int, pressed: int, previous: Polarity) -> Polarity:
+	var plus := (buttons & SimInput.PLUS) != 0
+	var minus := (buttons & SimInput.MINUS) != 0
+	if plus and minus:
+		if pressed & SimInput.PLUS:
+			return Polarity.POS
+		if pressed & SimInput.MINUS:
+			return Polarity.NEG
+		return previous if previous != Polarity.IDLE else Polarity.POS
+	if plus:
+		return Polarity.POS
+	if minus:
+		return Polarity.NEG
+	return Polarity.IDLE
 
 func _apply_magnets(state: SimState) -> void:
 	var pos := state.pos
