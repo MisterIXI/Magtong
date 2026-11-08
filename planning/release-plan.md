@@ -23,8 +23,8 @@ Order of work: **finish the game → polish → tutorial → bots.** Each step e
 ## Week 0 (27.10): unblock
 - [X] **Open the Steam support ticket**: move the release date to the target. Also check in Steamworks which
       release checklist items are still open (build review, pricing, content survey, depots).
-      *Opened 27.10, no reply as of 31.10; the store still shows 30.10. Continue with the 08.12 target.
-      Follow up on the ticket if there's still no reply next week.*
+      *Opened 27.10. Valve answered 08.11: release date moved to 08.12.2026, and it can now be changed by hand
+      in Steamworks if needed. Aim to keep 08.12.*
 - [x] Decide the price.
       *$6.99, auto pricing for the other currencies. Status "New prices reviewed, publish when ready":
       publish before release.*
@@ -75,6 +75,8 @@ Goal: the game works start to finish and could ship as is, even if it isn't pret
 - [x] Keyboard/mouse parts that show up as joypads (e.g. a Keychron's media keys) can't join as players.
 - [ ] **Feel-tuning pass** (rollback-plan phase B open item): speed, accel, magnet force, mass ratio,
       wall bounce/friction. Playtest locally. Keep `tests/sim_test.gd` green after every tuning change.
+      *08.11: `wall_bounce` and `body_bounce` 0 → 0.3, feels better (test `test_puck_bounce`). They also apply to
+      players, but the fast steering (`accell` 6000) hides it. Split into puck-only values if that changes.*
 - [x] Gamepad hot-plugging and disconnects during a match don't break the game.
       *A disconnected pad lets go of everything (no drifting, no stuck magnet); replugged, it gets its device
       id back and continues as the same player. Tested with virtual pads, also while paused.*

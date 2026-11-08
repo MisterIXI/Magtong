@@ -17,6 +17,7 @@ func _init():
 	test_lobby_skins_and_start()
 	test_game_over_choices()
 	test_puck_spin()
+	test_puck_bounce()
 	print("FAILED: %d" % failures if failures > 0 else "ALL PASSED")
 	quit(1 if failures > 0 else 0)
 
@@ -272,3 +273,40 @@ func test_puck_spin():
 	check(spinning.puck_angle[0] != 0.0, "the spin turns the puck (angle %.2f)" % spinning.puck_angle[0])
 	check(still.puck_spin[0] == 0.0, "without grip the puck does not spin")
 	check(spinning.pos == still.pos and spinning.vel == still.vel, "spin does not change how bodies move")
+
+## A straight shot up into the top wall, or right into a standing player. Returns the puck's velocity once
+## the hit is over. The bounce values are set here, so the test doesn't depend on the tuned resource.
+func run_bounce_shot(wall_bounce: float, body_bounce: float, into_player: bool) -> Vector2:
+	var default_settings := settings
+	settings = default_settings.duplicate()
+	settings.wall_bounce = wall_bounce
+	settings.body_bounce = body_bounce
+	var rink := make_rink()
+	var a: Array = make_match(rink)
+	settings = default_settings
+	var sim: Simulation = a[0]
+	var state: SimState = a[1]
+	for t in Simulation.COUNTDOWN_TICKS + 1:
+		sim.step(state, PackedInt32Array())
+	for i in sim.player_count:
+		sim.teleport(state, sim.player_body(i), Vector2(-200 + i * 100, 230))
+	state.pos[0] = Vector2(0, 0)
+	if into_player:
+		sim.teleport(state, sim.player_body(0), Vector2(150, 0))
+		state.vel[0] = Vector2(600, 0)
+	else:
+		state.vel[0] = Vector2(0, -600)
+	for t in 30:
+		sim.step(state, PackedInt32Array())
+	rink.free()
+	return state.vel[0]
+
+func test_puck_bounce():
+	var dead := run_bounce_shot(0.0, 0.0, false)
+	var bouncy := run_bounce_shot(0.3, 0.0, false)
+	check(absf(dead.y) < 5.0, "without wall bounce the puck stops at the wall (vy %.1f)" % dead.y)
+	check(bouncy.y > 0.25 * 600 and bouncy.y < 0.3 * 600 + 1.0,
+		"with wall bounce 0.3 the puck comes back at about 30%% speed (vy %.1f of 600)" % bouncy.y)
+	var no_body := run_bounce_shot(0.0, 0.0, true)
+	var body := run_bounce_shot(0.0, 0.3, true)
+	check(body.x < no_body.x, "with body bounce the puck comes off a player slower or backwards (vx %.1f vs %.1f)" % [body.x, no_body.x])
