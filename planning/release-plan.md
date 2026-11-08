@@ -33,8 +33,10 @@ Order of work: **finish the game → polish → tutorial → bots.** Each step e
       *Set to "no": the survey excludes coding assistance, and all player-facing assets (visuals, texts,
       translations) are made without genAI. Re-check if that ever changes.*
 - [x] **Enable Remote Play Together** in Steamworks (now the online answer for 1.0, no longer optional).
-- [ ] Update the store description and tags: local multiplayer, Remote Play Together. Don't mention online play
+- [x] Update the store description and tags: local multiplayer, Remote Play Together. Don't mention online play
       or bots until they ship (only promise what's in the build).
+      *08.11: description, tags and system requirements (Windows + Linux) are in. The Linux launch option
+      points to `Magtong.x86_64` (checked).*
 
 ## Week 1 (27.10–01.11): conventions refactor, settings, audio foundation, release hygiene ✔
 - [x] Godot naming refactor (one commit, renames only).
@@ -63,9 +65,13 @@ Goal: the game works start to finish and could ship as is, even if it isn't pret
     shrank the menu and pushed it to the lower right (in release builds too); the background now scales itself.
 - [x] Pucks spin: contacts with walls, players and pucks turn sliding into spin (cosmetic, in the simulation so
   rollback stays in sync; tune with `puck_spin_grip` / `puck_spin_damp` in PlayerSettings).
-- [ ] **Play the full loop locally and list what's broken or missing**: main menu → lobby (join, team pick, ready)
+- [x] **Play the full loop locally and list what's broken or missing**: main menu → lobby (join, team pick, ready)
       → countdown → match → goal → overtime → game over → back to lobby / main menu, with 2, 3 and 4 players and
       mixed keyboard/gamepads. Put the list here and fix the blockers.
+      *08.11, local and over Remote Play Together: the only finding was that the lobby had no pause menu and no
+      way to leave or remove a player. Fixed (`43bd180`): Start/Esc opens a lobby pause menu (Resume, Remove
+      Player, Main Menu), and the match now starts when every team player holds both magnets until their red and
+      blue bars meet.*
 - [x] Pause menu in local matches: resume / back to lobby / main menu.
       *`scenes/pause_menu.gd`: any player opens/closes it with Start / Esc during countdown and play (not after
       the game over, where Start is rematch), any pad navigates. Buttons are released on resume, so the
@@ -73,10 +79,11 @@ Goal: the game works start to finish and could ship as is, even if it isn't pret
 - [x] Gamepads in menus: A confirms and B goes back on every pad (`ui_accept`/`ui_cancel` had only keys,
       so the game couldn't be started with a pad alone).
 - [x] Keyboard/mouse parts that show up as joypads (e.g. a Keychron's media keys) can't join as players.
-- [ ] **Feel-tuning pass** (rollback-plan phase B open item): speed, accel, magnet force, mass ratio,
+- [x] **Feel-tuning pass** (rollback-plan phase B open item): speed, accel, magnet force, mass ratio,
       wall bounce/friction. Playtest locally. Keep `tests/sim_test.gd` green after every tuning change.
       *08.11: `wall_bounce` and `body_bounce` 0 → 0.3, feels better (test `test_puck_bounce`). They also apply to
-      players, but the fast steering (`accell` 6000) hides it. Split into puck-only values if that changes.*
+      players, but the fast steering (`accell` 6000) hides it. Split into puck-only values if that changes.
+      Good enough for now, revisit after more playtests.*
 - [x] Gamepad hot-plugging and disconnects during a match don't break the game.
       *A disconnected pad lets go of everything (no drifting, no stuck magnet); replugged, it gets its device
       id back and continues as the same player. Tested with virtual pads, also while paused.*
@@ -97,7 +104,8 @@ Sound list, sources and music direction: `planning/audio-plan.md`.
 
 ## Week 4 (16.–22.11): tutorial + presentation
 - [ ] Controls / how-to-play screen (keyboard + gamepad glyphs, the existing `assets/icons`), reachable from the
-      main menu and the lobby. Short hint text in the lobby: join, pick a team, ready up.
+      main menu and the lobby. Short hint text in the lobby: join, pick a team, ready up, hold both magnets to
+      start, Start/Esc for the menu.
 - [ ] Tutorial: what magnets, polarity and the pulse do, ideally playable (a short guided practice on the rink)
       rather than only text. Timebox it; the how-to-play screen is the fallback.
 - [ ] Store: update screenshots/trailer if the game looks noticeably different now.

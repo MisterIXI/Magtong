@@ -1,6 +1,8 @@
 # Magtong: Audio Plan (Week 2)
 
 Shopping list for the 1.0 sounds and music. Tick items off when a file is picked and in `Magtong/assets/sounds/`.
+*Status 08.11: menu sounds (`UiSounds`, `139ce60`) and the first gameplay/lobby sounds (`MapSounds`, `7260eec`)
+are in, all from Kenney packs. What's ticked below is in the game; which file is in `assets/sounds/LICENSES.md`.*
 Every file gets a line in `assets/sounds/LICENSES.md` (source, author, license).
 
 General rules for SFX:
@@ -12,34 +14,37 @@ General rules for SFX:
 Kenney packs: `~/Applications/kenney-asset-launcher/Audio/` (all CC0, no credit required, but credit Kenney anyway).
 
 ## Gameplay
-- [ ] **Puck hits player**: a short plastic "thock" like air hockey. 3–4 variants, louder and brighter at
+- [x] **Puck hits player**: a short plastic "thock" like air hockey. 3–4 variants, louder and brighter at
       higher impact speed (pick a soft and a hard set, choose by speed).
 - [ ] **Puck hits wall**: sharper, harder "clack" with a bit of rattle than the player hit.
+      *For now the player-hit sounds at a higher pitch (`WALL_HIT_PITCH`); an own wall sound is still open.*
 - [ ] **Magnet on**: short electric charge-up "zzhm".
-- [ ] **Magnet loop**: quiet, low hum while the magnet is held. Plus and minus at slightly different pitches.
+- [x] **Magnet loop**: quiet, low hum while the magnet is held. Plus and minus at slightly different pitches.
       Must loop seamlessly.
 - [ ] **Magnet off**: quick power-down "zip".
 - [ ] **Polarity switch** (`polarity_changed`): a click plus a small zap, like a relay switching.
 - [ ] **Pulse** (`pulse_emitted`): bassy "whoomp" shockwave with some electric crackle on top.
 - [ ] **Goal**: big synth stinger or horn, the loudest sound in the game.
-- [ ] **Countdown**: three short beeps, then a higher, longer "go".
+- [x] **Countdown**: three short beeps, then a higher, longer "go". *(one beep file, "go" is pitched up)*
 - [ ] **Last 10 seconds**: soft tick each second (or reuse the countdown beep, quieter).
-- [ ] **Match end**: arena-style buzzer.
+- [x] **Match end**: arena-style buzzer. *(placeholder `scroll_004`, not really a buzzer yet)*
 
 ## Lobby
-- [ ] **Player joins**: a soft "pop".
+- [x] **Player joins**: a soft "pop".
 - [ ] **Team pick**: a swoosh or slide.
-- [ ] **Ready**: a rising chime. **Unready**: the same chime falling (or pitched down).
-- [ ] **Everyone ready**: a short fanfare / confirmation jingle.
+- [x] **Ready**: a rising chime. **Unready**: the same chime falling (or pitched down).
+- [ ] **Start bars** (hold both magnets to start, `start_hold_plus/minus`): a rising tone while a player's bars
+      fill (pitch follows the fill), a click when that player's bars meet.
+- [ ] **Everyone confirmed / match starts**: a short fanfare / confirmation jingle.
 
 ## Menu
-- [ ] **Move focus**: a soft tick.
-- [ ] **Confirm**: a click with a bit more weight.
-- [ ] **Back**: a lower, softer click.
+- [x] **Move focus**: a soft tick.
+- [x] **Confirm**: a click with a bit more weight.
+- [x] **Back**: a lower, softer click.
 - [ ] **Slider tick**: plays at the new volume while dragging the SFX slider (doubles as a volume preview).
-- [ ] **Error / not allowed** (e.g. can't start yet): a short buzz.
+- [x] **Error / not allowed** (e.g. can't start yet): a short buzz.
 
-## Online
+## Online (after 1.0)
 - [ ] **Connection lost**: a warning blip (pairs with the connection icon).
 - [ ] **Connection back**: the same blip rising.
 
