@@ -1,9 +1,33 @@
-# Magtong: Audio Plan (Week 2)
+# Magtong: Audio Plan
 
 Shopping list for the 1.0 sounds and music. Tick items off when a file is picked and in `Magtong/assets/sounds/`.
 *Status 08.11: menu sounds (`UiSounds`, `139ce60`) and the first gameplay/lobby sounds (`MapSounds`, `7260eec`)
 are in, all from Kenney packs. What's ticked below is in the game; which file is in `assets/sounds/LICENSES.md`.*
 Every file gets a line in `assets/sounds/LICENSES.md` (source, author, license).
+
+## Audio direction (decided 14.11)
+**Flash-era / Newgrounds electronic, but soft.** It matches the visuals (flat vector art, full simple colors,
+browser games of the 2005–2015 era). Electronic sound effects (hum, zaps, synth blips) and electronic music;
+electro swing at most as a flavor on top (beat and bass first, short brass hits, no long clarinet/brass
+melodies: that's where it tips into "circus music").
+
+Not the arcade sports broadcast (Rocket League, Windjammers: crowd, horn, announcer), that's why the air horn
+sticks out. Playful/tactile (Overcooked) is the fallback direction if this doesn't work.
+
+**Soft, not sharp** (the most important rule, personal taste):
+- No shrill highs: little energy around 2–5 kHz. Rounded waveforms (sine, triangle, filtered pulse) instead of
+  raw square waves. Crunchy/saturated is fine, painful is not.
+- No instant hard attacks on frequent sounds; a few ms of attack.
+- jsfxr/Bfxr/ChipTone: sine or triangle, low-pass filter down, a bit of attack, lower base pitch.
+- A gentle high-shelf cut / low-pass on the whole SFX bus ties sounds from different packs into one family.
+
+References to listen to (gameplay videos, watch scoring moments, hits, menus):
+- Flash/Newgrounds electronic: Geometry Dash, Castle Crashers, N++, Hokra / Videoball (closest visually).
+- For hit feel only: Lethal League Blaze (punchy hits with hit-stop).
+- Music source: the Newgrounds audio portal (many tracks free with credit, check each license).
+
+Process: listen to the references, then try 2–3 candidates per sound in a real match (swap the constant in
+`MapSounds`) instead of picking from the file browser.
 
 General rules for SFX:
 - Short, punchy, dry (no reverb tail), so many sounds at once stay clear.
@@ -79,9 +103,9 @@ Worth a listen for gameplay too (or as placeholders until your own sounds exist)
 - Your own recordings: plastic objects on a table for the puck hits (phone recording + a bit of EQ).
 
 ## Music
-Direction: electro swing as the brand sound (matches the trailer), with matches kept tighter and adaptive so
-the same track doesn't wear out.
-- [ ] **Menu/lobby theme**: electro swing, the main "this is Magtong" track. Loops cleanly.
+Direction: soft flash-era electronic (see "Audio direction"), electro swing only as a flavor. Matches kept
+tighter and adaptive so the same track doesn't wear out. The trailer track (electro swing) stays for the trailer.
+- [ ] **Menu/lobby theme**: the main "this is Magtong" track. Loops cleanly.
 - [ ] **Match loop as stems** (drums, bass, melody, high-energy layer) in the same style. Play them with
       `AudioStreamSynchronized` and fade layers in by game state: base at kickoff, full in the last 30 s or on a
       tied score. Only driven by score/clock from the visuals, so rollback can't affect it.
