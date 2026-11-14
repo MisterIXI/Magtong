@@ -38,28 +38,28 @@ func _process(_delta: float) -> void:
 func hide_all() -> void:
 	start_menu.hide()
 	settings_menu.hide()
-	if curr_mm_bg != null:
+	if is_instance_valid(curr_mm_bg):
 		curr_mm_bg.queue_free()
+	curr_mm_bg = null
 
 
 func switch_to_menu(menu: Control) -> void:
 	if current_menu != null:
 		current_menu.hide()
-	if curr_mm_bg == null:
-		spawn_mm_background()
+	spawn_mm_background()
 	previous_menu = current_menu
 	current_menu = menu
 	current_menu.show()
 	if current_menu == start_menu:
-		spawn_mm_background()
 		if start_entry_focus != null:
 			start_entry_focus.call_deferred("grab_focus")
 	elif current_menu == settings_menu:
 		if settings_entry_focus != null:
 			settings_entry_focus.call_deferred("grab_focus")
 
+## Spawns the background unless one is already running (there is only ever one).
 func spawn_mm_background() -> void:
-	if mm_background != null:
+	if mm_background != null and not is_instance_valid(curr_mm_bg):
 		var mm_bg = mm_background.instantiate()
 		add_child(mm_bg)
 		move_child(mm_bg, -1)

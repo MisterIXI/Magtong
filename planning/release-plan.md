@@ -97,10 +97,13 @@ Goal: the game works start to finish and could ship as is, even if it isn't pret
       `tools/run_headless.sh` (game in headless gamescope, no window on the desktop).
 
 ## Known bugs
-- [ ] **Main menu backgrounds stack** (found 09.11): every return to the main menu spawns more background players
-      on top of each other. Likely cause: `MainMenu.switch_to_menu(start_menu)` (`scenes/menu/main_menu.gd`)
-      calls `spawn_mm_background()` without freeing the old background, and twice when there is none
-      (once for `curr_mm_bg == null`, once for `start_menu`).
+- [x] **Main menu backgrounds stack** (found 09.11): every return to the main menu spawns more background players
+      on top of each other. Cause: `MainMenu.switch_to_menu(start_menu)` (`scenes/menu/main_menu.gd`)
+      called `spawn_mm_background()` without freeing the old background, and twice when there was none
+      (once for `curr_mm_bg == null`, once for `start_menu`); Settings → Back stacked one too.
+      *14.11: `spawn_mm_background()` only spawns when no background is running, `hide_all()` frees it and
+      clears the reference. Checked in the running game: one background after Settings and back and after two
+      trips through the lobby.*
 
 ## Week 3 (09.–15.11): polish
 Sound list, sources and music direction: `planning/audio-plan.md`.
