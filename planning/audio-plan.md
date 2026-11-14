@@ -20,6 +20,9 @@ sticks out. Playful/tactile (Overcooked) is the fallback direction if this doesn
 - No instant hard attacks on frequent sounds; a few ms of attack.
 - jsfxr/Bfxr/ChipTone: sine or triangle, low-pass filter down, a bit of attack, lower base pitch.
 - A gentle high-shelf cut / low-pass on the whole SFX bus ties sounds from different packs into one family.
+  *15.11: in as `SoftEQ` (EQ6 on the SFX bus, 3.2 kHz -5 dB, 10 kHz -9 dB), F10 toggles it in debug builds.
+  Stronger cuts sound muffled (behind a cloth / underwater); at these values the difference is barely
+  noticeable. **Revisit in final polish**: keep, tune, or drop it once all sounds are final.*
 
 References to listen to (gameplay videos, watch scoring moments, hits, menus):
 - Flash/Newgrounds electronic: Geometry Dash, Castle Crashers, N++, Hokra / Videoball (closest visually).
@@ -43,8 +46,9 @@ Kenney packs: `~/Applications/kenney-asset-launcher/Audio/` (all CC0, no credit 
 - [ ] **Puck hits wall**: sharper, harder "clack" with a bit of rattle than the player hit.
       *For now the player-hit sounds at a higher pitch (`WALL_HIT_PITCH`); an own wall sound is still open.*
 - ~~**Magnet on**~~: dropped (14.11), the hum starting is enough.
-- [x] **Magnet loop**: quiet, low hum while the magnet is held. Plus and minus at slightly different pitches.
+- [ ] **Magnet loop**: quiet, low hum while the magnet is held. Plus and minus at slightly different pitches.
       Must loop seamlessly.
+      *Playtest 15.11: the hum is annoying. Replace it with something less grating and turn it down.*
 - ~~**Magnet off**~~: dropped, the hum stopping is enough.
 - ~~**Plus ↔ minus while holding**~~: dropped, the hum already changes pitch.
 - [x] **Flip** (A: flips nearby pucks' polarity): a short hum sweep from low to high (the
@@ -53,7 +57,8 @@ Kenney packs: `~/Applications/kenney-asset-launcher/Audio/` (all CC0, no credit 
       *14.11: good enough for now, not perfect yet. Flip and Surge pressed together sound a bit odd.*
 - [x] **Goal**: big synth stinger or horn, the loudest sound in the game. *(air horn from Pixabay, like Rocket League; 14.11: out of place and too loud,
       lowered to -8 dB, maybe layer it or replace it, see the goal celebration)*
-- [x] **Countdown**: three short beeps, then a higher, longer "go". *(one beep file, "go" is pitched up)*
+- [ ] **Countdown**: three short beeps, then a higher, longer "go". *(one beep file, "go" is pitched up)*
+      *Playtest 15.11: use the team switch click for the countdown instead of the beep.*
 - [ ] **Last 10 seconds**: soft tick each second (or reuse the countdown beep, quieter). *(not in the game yet)*
 - [x] **Match end**: arena-style buzzer. *(placeholder `scroll_004`, not really a buzzer yet)*
 

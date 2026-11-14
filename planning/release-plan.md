@@ -108,6 +108,13 @@ Goal: the game works start to finish and could ship as is, even if it isn't pret
       *14.11: `spawn_mm_background()` only spawns when no background is running, `hide_all()` frees it and
       clears the reference. Checked in the running game: one background after Settings and back and after two
       trips through the lobby.*
+- [ ] **Popup doesn't trap focus** (online playtest 15.11): the disconnect popup in the menu is still open while
+      focus can move to the menu buttons behind it.
+- [ ] **No focus after closing a popup** (online playtest 15.11): after the popup closes, no menu control has
+      focus and a controller can't navigate anymore. Give focus back to the button that was focused before.
+- [ ] **Start-of-round corner bounces look wrong** (online playtest 15.11): a puck coming in at a downward angle
+      toward the goal sometimes bounces away from the goal instead. Check the corner segments/normals in the
+      custom physics (maybe a corner hit resolved against the wrong segment); reproduce in `sim_test.gd`.
 
 ## Week 3 (09.–15.11): polish
 Sound list, sources and music direction: `planning/audio-plan.md`.
@@ -132,6 +139,9 @@ Sound list, sources and music direction: `planning/audio-plan.md`.
         score number pop, the air horn, music ducking for a moment.
   - [ ] Tests: the `GOAL` phase and slow motion in `sim_test.gd`, `rollback_test.gd` stays green.
 - [ ] Other visual juice where it's cheap: hit effects, score/timer animations.
+- [ ] **Clearer Flip and Surge visuals** (playtest 15.11): both are hard to see, especially for someone watching
+      a stream. Needs a more direct, obvious effect (e.g. a ring/shockwave for Flip on the flipped pucks, a
+      strong glow/size pulse on the player for Surge). Views only.
 - [ ] **Team colors that aren't red and blue**: red/blue is also the magnet polarity (plus/minus), and playtesters
       mixed them up. Pick two team colors that can't be confused with the magnet colors (also check color
       blindness). Open decision: fixed team colors or adjustable (per team in the lobby, or a settings option);
@@ -182,9 +192,17 @@ Sound list, sources and music direction: `planning/audio-plan.md`.
       Leave. A host who leaves on purpose now shows "The host left" instead of "Lost the connection". Tested
       with two local instances over direct connect (client leaves lobby and match).*
 - [ ] Online UX states: connecting, host left, timed out, can't connect (direct connect without port forwarding).
+- [ ] **Can't rejoin a lobby you left** (Steam playtest 15.11): P1 hosts, P2 joins, P1 leaves (P2 now hosts?),
+      P1 joins P2 through Steam → P1 stays on "Connecting..." forever, also after restarting the game.
+      Probably stale lobby/peer state on one side; needs a timeout with an error message either way.
+- [ ] **Crash while connecting** (Steam playtest 15.11): while P1 is stuck on "Connecting...", P2 closes the game
+      → P1's game crashes without any message. Must fall back to the menu with "Lost the connection"/"Can't
+      connect".
 - [ ] More online tests: 2v2 (two machines with two local players each), a weaker connection, host on Windows and
       on Linux.
 - [ ] Store page: mention online play with friends (Steam invites), add the online multiplayer features/tags.
+- *First real online playtest over Steam (15.11, both of us hosted a few matches): very stable, no
+  disconnects, barely any rollbacks or visible lag. Bugs found are listed above and under Known bugs.*
 - `tests/rollback_test.gd` is now a release blocker, not just a determinism check.
 
 Still true from the "online after launch" days:
