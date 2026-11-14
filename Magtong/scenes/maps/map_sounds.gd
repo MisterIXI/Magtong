@@ -12,11 +12,16 @@ const PUCK_HITS: Array[AudioStream] = [
 	preload("res://assets/sounds/sfx/puck_hit_4.ogg"),
 ]
 const MAGNET_LOOP: AudioStream = preload("res://assets/sounds/sfx/magnet_loop.ogg")
+const MAGNET_ON: AudioStream = preload("res://assets/sounds/sfx/magnet_on.ogg")
+const MAGNET_OFF: AudioStream = preload("res://assets/sounds/sfx/magnet_off.ogg")
+const POLARITY_SWITCH: AudioStream = preload("res://assets/sounds/sfx/polarity_switch.ogg")
+const PULSE: AudioStream = preload("res://assets/sounds/sfx/pulse.ogg")
 const COUNTDOWN_BEEP: AudioStream = preload("res://assets/sounds/sfx/countdown_beep.ogg")
 const MATCH_END: AudioStream = preload("res://assets/sounds/sfx/match_end.ogg")
 const GOAL: AudioStream = preload("res://assets/sounds/sfx/goal_horn.mp3")
 const LOBBY_JOIN: AudioStream = preload("res://assets/sounds/ui/lobby_join.ogg")
 const LOBBY_READY: AudioStream = preload("res://assets/sounds/ui/lobby_ready.ogg")
+const TEAM_PICK: AudioStream = preload("res://assets/sounds/ui/team_pick.ogg")
 
 ## Puck hits below this speed (along the contact normal) are silent, e.g. a puck held against a wall.
 const HIT_MIN_SPEED: float = 40.0
@@ -27,6 +32,10 @@ const HIT_RANDOM_PITCH: float = 1.08
 const WALL_HIT_PITCH: float = 1.2
 const MAGNET_VOLUME_DB: float = -14.0
 const MAGNET_NEG_PITCH: float = 0.8
+## magnet on/off and polarity clicks happen on almost every button press, so they stay quiet
+const MAGNET_CLICK_VOLUME_DB: float = -12.0
+const PULSE_VOLUME_DB: float = -4.0
+const TEAM_PICK_VOLUME_DB: float = -6.0
 const GO_PITCH: float = 1.5
 const UNREADY_PITCH: float = 0.8
 ## the goal is the loudest sound in the game
@@ -37,6 +46,15 @@ var _hit_stream := AudioStreamRandomizer.new()
 var _hit_players: Array[AudioStreamPlayer] = []
 var _played_hit_tick: PackedInt32Array = PackedInt32Array()
 var _hums: Array[AudioStreamPlayer] = []
+var _magnet_on: AudioStreamPlayer
+var _magnet_off: AudioStreamPlayer
+var _polarity_switch: AudioStreamPlayer
+var _pulse: AudioStreamPlayer
+var _team_pick: AudioStreamPlayer
+# per player, rebuilt with the hums when the roster changes
+var _shown_polarity: PackedInt32Array = PackedInt32Array()
+var _shown_pulse_tick: PackedInt32Array = PackedInt32Array()
+var _shown_zone: PackedInt32Array = PackedInt32Array() # last team area played for, -1 = none yet
 var _beep: AudioStreamPlayer
 var _match_end: AudioStreamPlayer
 var _goal: AudioStreamPlayer
@@ -59,6 +77,11 @@ func _init(map: MapScript) -> void:
 	_match_end = _new_player(MATCH_END)
 	_goal = _new_player(GOAL)
 	_goal.volume_db = GOAL_VOLUME_DB
+	_magnet_on = _new_player(MAGNET_ON, MAGNET_CLICK_VOLUME_DB, 4)
+	_magnet_off = _new_player(MAGNET_OFF, MAGNET_CLICK_VOLUME_DB, 4)
+	_polarity_switch = _new_player(POLARITY_SWITCH, MAGNET_CLICK_VOLUME_DB, 4)
+	_pulse = _new_player(PULSE, PULSE_VOLUME_DB, 4)
+	_team_pick = _new_player(TEAM_PICK, TEAM_PICK_VOLUME_DB, 4)
 	_join = _new_player(LOBBY_JOIN)
 	_ready_sound = _new_player(LOBBY_READY)
 
@@ -67,6 +90,7 @@ func update(state: SimState) -> void:
 	if state.tick < _last_tick - Simulation.TICK_RATE:
 		# a new state (fresh lobby), not a rollback: the old hit ticks mean nothing anymore
 		_played_hit_tick.fill(-HIT_MIN_GAP_TICKS - 1)
+		_shown_pulse_tick.fill(-1)
 	_last_tick = state.tick
 	_update_pucks(state)
 	_update_magnets(state)
@@ -101,8 +125,13 @@ func _update_magnets(state: SimState) -> void:
 			var hum := _new_player(MAGNET_LOOP)
 			hum.volume_db = MAGNET_VOLUME_DB
 			_hums.append(hum)
+		# the current state counts as already heard, so a rebuilt roster doesn't click for everyone
+		_shown_polarity = state.polarity.duplicate()
+		_shown_pulse_tick = state.last_pulse_tick.duplicate()
+		_shown_zone = state.zone.duplicate()
 	for i in _hums.size():
 		var pol: Simulation.Polarity = state.polarity[i]
+		_update_magnet_clicks(state, i, pol)
 		var hum := _hums[i]
 		if pol == Simulation.Polarity.IDLE:
 			if hum.playing:
@@ -111,6 +140,22 @@ func _update_magnets(state: SimState) -> void:
 		hum.pitch_scale = MAGNET_NEG_PITCH if pol == Simulation.Polarity.NEG else 1.0
 		if not hum.playing:
 			hum.play()
+
+## On/off/switch clicks and the pulse. A rollback can change what the views saw for a remote player, at worst
+## that plays one extra click; a pulse only plays for a newer pulse tick.
+func _update_magnet_clicks(state: SimState, i: int, pol: Simulation.Polarity) -> void:
+	var shown: Simulation.Polarity = _shown_polarity[i]
+	if pol != shown:
+		if shown == Simulation.Polarity.IDLE:
+			_magnet_on.play()
+		elif pol == Simulation.Polarity.IDLE:
+			_magnet_off.play()
+		else:
+			_polarity_switch.play()
+		_shown_polarity[i] = pol
+	if state.last_pulse_tick[i] > _shown_pulse_tick[i]:
+		_shown_pulse_tick[i] = state.last_pulse_tick[i]
+		_pulse.play()
 
 func _update_match(state: SimState) -> void:
 	# only newer goals: a rollback can move last_goal_tick back, the sound must not play twice
@@ -139,6 +184,13 @@ func _update_lobby(state: SimState) -> void:
 			_play(_join, 1.0)
 		elif count == _shown_player_count and is_ready != _shown_ready:
 			_play(_ready_sound, 1.0 if is_ready else UNREADY_PITCH)
+	# team pick: entering a different team area (leaving one and stepping back in stays silent, so walking
+	# along the edge doesn't rattle)
+	for i in mini(count, _shown_zone.size()):
+		var zone := state.zone[i]
+		if zone >= 0 and zone != _shown_zone[i]:
+			_shown_zone[i] = zone
+			_team_pick.play()
 	_shown_player_count = count
 	_shown_ready = is_ready
 
@@ -146,9 +198,11 @@ func _play(player: AudioStreamPlayer, pitch: float) -> void:
 	player.pitch_scale = pitch
 	player.play()
 
-func _new_player(stream: AudioStream) -> AudioStreamPlayer:
+func _new_player(stream: AudioStream, volume_db: float = 0.0, polyphony: int = 1) -> AudioStreamPlayer:
 	var player := AudioStreamPlayer.new()
 	player.stream = stream
+	player.volume_db = volume_db
+	player.max_polyphony = polyphony
 	player.bus = &"SFX"
 	add_child(player)
 	return player

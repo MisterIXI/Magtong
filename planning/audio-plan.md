@@ -18,24 +18,25 @@ Kenney packs: `~/Applications/kenney-asset-launcher/Audio/` (all CC0, no credit 
       higher impact speed (pick a soft and a hard set, choose by speed).
 - [ ] **Puck hits wall**: sharper, harder "clack" with a bit of rattle than the player hit.
       *For now the player-hit sounds at a higher pitch (`WALL_HIT_PITCH`); an own wall sound is still open.*
-- [ ] **Magnet on**: short electric charge-up "zzhm".
+- [x] **Magnet on**: short electric charge-up "zzhm". *(14.11: a short click instead, quiet: it plays on almost every press)*
 - [x] **Magnet loop**: quiet, low hum while the magnet is held. Plus and minus at slightly different pitches.
       Must loop seamlessly.
-- [ ] **Magnet off**: quick power-down "zip".
-- [ ] **Polarity switch** (`polarity_changed`): a click plus a small zap, like a relay switching.
-- [ ] **Pulse** (`pulse_emitted`): bassy "whoomp" shockwave with some electric crackle on top.
-- [ ] **Goal**: big synth stinger or horn, the loudest sound in the game.
+- [x] **Magnet off**: quick power-down "zip". *(a short click too)*
+- [x] **Polarity switch** (`polarity_changed`): a click plus a small zap, like a relay switching. *(a click)*
+- [x] **Pulse** (`pulse_emitted`): bassy "whoomp" shockwave with some electric crackle on top. *(a short punchy click for now)*
+- [x] **Goal**: big synth stinger or horn, the loudest sound in the game. *(air horn from Pixabay, like Rocket League)*
 - [x] **Countdown**: three short beeps, then a higher, longer "go". *(one beep file, "go" is pitched up)*
-- [ ] **Last 10 seconds**: soft tick each second (or reuse the countdown beep, quieter).
+- [ ] **Last 10 seconds**: soft tick each second (or reuse the countdown beep, quieter). *(not in the game yet)*
 - [x] **Match end**: arena-style buzzer. *(placeholder `scroll_004`, not really a buzzer yet)*
 
 ## Lobby
 - [x] **Player joins**: a soft "pop".
-- [ ] **Team pick**: a swoosh or slide.
+- [x] **Team pick**: a swoosh or slide. *(a short switch click when a player steps into a different team area)*
 - [x] **Ready**: a rising chime. **Unready**: the same chime falling (or pitched down).
 - [ ] **Start bars** (hold both magnets to start, `start_hold_plus/minus`): a rising tone while a player's bars
       fill (pitch follows the fill), a click when that player's bars meet.
-- [ ] **Everyone confirmed / match starts**: a short fanfare / confirmation jingle.
+- ~~**Everyone confirmed / match starts**~~: not needed, the ready chime plays when everyone is in a team and
+      the countdown beeps follow the start right away.
 
 ## Menu
 - [x] **Move focus**: a soft tick.

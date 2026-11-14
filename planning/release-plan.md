@@ -110,10 +110,27 @@ Sound list, sources and music direction: `planning/audio-plan.md`.
 - [x] Rollback-safe gameplay sound: `MapSounds` reacts to state changes seen by the views, never from inside
       `Simulation.step` (`7260eec`: puck hits, magnet hum, countdown, match end, lobby join/ready).
 - [x] Menu sounds (`UiSounds` autoload), licenses in `assets/sounds/LICENSES.md`.
-- [ ] The remaining sounds from the audio plan (goal, pulse, polarity switch, magnet on/off, team pick, everyone
-      ready, last 10 seconds), then tick off the audio plan.
+- [ ] The remaining sounds from the audio plan, then tick off the audio plan.
+      *14.11: goal (air horn), pulse, polarity switch, magnet on/off, team pick are in. Open: last 10 seconds,
+      start bars, an own wall hit sound, a real match end buzzer.*
 - [ ] Music: menu/lobby theme and a match loop, licenses + credits.
-- [ ] Visual juice where it's cheap: goal and hit effects, screen shake, score/timer animations.
+- [ ] **Goal celebration** (like Rocket League, the climax of every round, worth more than "cheap juice"):
+      today a goal resets the field and starts the countdown in the same tick, so there's no moment at all.
+  - [ ] A `GOAL` phase in the simulation (~2 s) between the goal and the reset. The scoring puck leaves play,
+        everything else keeps moving. An overtime goal gets the same celebration, then game over.
+  - [ ] **Goal explosion that pushes the players**: a shockwave from the scoring puck that knocks nearby players
+        (and pucks) away, falling off with distance. In the simulation, so it's the same on every machine.
+  - [ ] **Slow motion** for the first ~0.8 s of the `GOAL` phase, easing back to normal speed: the simulation
+        steps with a smaller time step (e.g. 25%), stored in `SimState`. **Never `Engine.time_scale`**: that
+        changes the tick rate on one machine and breaks the online time sync. Ticks stay at 60/s.
+  - [ ] Views only: explosion effect in the scoring team's color, screen shake, short flash, "GOAL!" text,
+        score number pop, the air horn, music ducking for a moment.
+  - [ ] Tests: the `GOAL` phase and slow motion in `sim_test.gd`, `rollback_test.gd` stays green.
+- [ ] Other visual juice where it's cheap: hit effects, score/timer animations.
+- [ ] **Team colors that aren't red and blue**: red/blue is also the magnet polarity (plus/minus), and playtesters
+      mixed them up. Pick two team colors that can't be confused with the magnet colors (also check color
+      blindness). Open decision: fixed team colors or adjustable (per team in the lobby, or a settings option);
+      decide later. Touches the lobby team areas, skins/outlines, HUD score, "Team Red/Blue Wins!" text.
 - [ ] Credits screen (assets, music licenses, Godot, GodotSteam).
 - [ ] Windows icon with a 256×256 size.
 
