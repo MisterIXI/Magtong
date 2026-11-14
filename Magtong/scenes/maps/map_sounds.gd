@@ -14,7 +14,7 @@ const PUCK_HITS: Array[AudioStream] = [
 const MAGNET_LOOP: AudioStream = preload("res://assets/sounds/sfx/magnet_loop.ogg")
 const COUNTDOWN_BEEP: AudioStream = preload("res://assets/sounds/sfx/countdown_beep.ogg")
 const MATCH_END: AudioStream = preload("res://assets/sounds/sfx/match_end.ogg")
-const GOAL: AudioStream = preload("res://assets/sounds/sfx/goal.ogg")
+const GOAL: AudioStream = preload("res://assets/sounds/sfx/goal_horn.mp3")
 const LOBBY_JOIN: AudioStream = preload("res://assets/sounds/ui/lobby_join.ogg")
 const LOBBY_READY: AudioStream = preload("res://assets/sounds/ui/lobby_ready.ogg")
 
@@ -30,7 +30,7 @@ const MAGNET_NEG_PITCH: float = 0.8
 const GO_PITCH: float = 1.5
 const UNREADY_PITCH: float = 0.8
 ## the goal is the loudest sound in the game
-const GOAL_VOLUME_DB: float = 3.0
+const GOAL_VOLUME_DB: float = 0.0
 
 var map: MapScript
 var _hit_stream := AudioStreamRandomizer.new()
