@@ -41,9 +41,11 @@ const FLIP_PITCH_TO: float = 1.6
 const FLIP_VOLUME_DB: float = -4.0
 const FLIP_CLACK_VOLUME_DB: float = -8.0
 const TEAM_PICK_VOLUME_DB: float = -6.0
+## seconds; a player wobbling on the edge of a team area doesn't rattle the click
+const TEAM_PICK_MIN_GAP: float = 0.3
 ## The countdown uses the team pick click (playtest 15.11: softer than the old beep), "go" pitched up.
-const COUNTDOWN_VOLUME_DB: float = -4.0
-const GO_PITCH: float = 1.5
+const COUNTDOWN_VOLUME_DB: float = -3.0
+const GO_PITCH: float = 2.0
 const UNREADY_PITCH: float = 0.8
 ## the horn alone at full volume was too loud and stuck out (14.11)
 const GOAL_VOLUME_DB: float = -8.0
@@ -61,7 +63,8 @@ var _shown_flip_tick: PackedInt32Array = PackedInt32Array()
 var _shown_surge_tick: PackedInt32Array = PackedInt32Array()
 var _surge_start: PackedFloat64Array = PackedFloat64Array() # seconds, -1 = none
 var _flip_start: PackedFloat64Array = PackedFloat64Array()
-var _shown_zone: PackedInt32Array = PackedInt32Array() # last team area played for, -1 = none yet
+var _shown_zone: PackedInt32Array = PackedInt32Array() # team area each player was in last update, -1 = none
+var _team_pick_time: PackedFloat64Array = PackedFloat64Array() # seconds of the last click per player
 var _beep: AudioStreamPlayer
 var _match_end: AudioStreamPlayer
 var _goal: AudioStreamPlayer
@@ -138,6 +141,8 @@ func _update_magnets(state: SimState) -> void:
 		_flip_start.resize(_hums.size())
 		_flip_start.fill(-1.0)
 		_shown_zone = state.zone.duplicate()
+		_team_pick_time.resize(_hums.size())
+		_team_pick_time.fill(-TEAM_PICK_MIN_GAP)
 	var now := Time.get_ticks_msec() / 1000.0
 	for i in _hums.size():
 		_update_abilities(state, i, now)
@@ -209,13 +214,14 @@ func _update_lobby(state: SimState) -> void:
 			_play(_join, 1.0)
 		elif count == _shown_player_count and is_ready != _shown_ready:
 			_play(_ready_sound, 1.0 if is_ready else UNREADY_PITCH)
-	# team pick: entering a different team area (leaving one and stepping back in stays silent, so walking
-	# along the edge doesn't rattle)
+	# team pick: a click on every entry into a team area, at most one per TEAM_PICK_MIN_GAP per player
+	var now := Time.get_ticks_msec() / 1000.0
 	for i in mini(count, _shown_zone.size()):
 		var zone := state.zone[i]
-		if zone >= 0 and zone != _shown_zone[i]:
-			_shown_zone[i] = zone
+		if zone >= 0 and zone != _shown_zone[i] and now - _team_pick_time[i] >= TEAM_PICK_MIN_GAP:
+			_team_pick_time[i] = now
 			_team_pick.play()
+		_shown_zone[i] = zone
 	_shown_player_count = count
 	_shown_ready = is_ready
 

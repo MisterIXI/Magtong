@@ -59,13 +59,15 @@ Kenney packs: `~/Applications/kenney-asset-launcher/Audio/` (all CC0, no credit 
 - [x] **Goal**: big synth stinger or horn, the loudest sound in the game. *(air horn from Pixabay, like Rocket League; 14.11: out of place and too loud,
       lowered to -8 dB, maybe layer it or replace it, see the goal celebration)*
 - [x] **Countdown**: three short beeps, then a higher, longer "go". *(one beep file, "go" is pitched up)*
-      *Playtest 15.11: now the team pick click (`ui/team_pick.ogg`) instead of the beep, the old beep file is gone.*
+      *Playtest 15.11: now the team pick click (`ui/team_pick.ogg`) instead of the beep, the old beep file is gone.
+      "Go" at pitch 2.0 works for now but feels quieter; should become its own sound later.*
 - [ ] **Last 10 seconds**: soft tick each second (or reuse the countdown beep, quieter). *(not in the game yet)*
 - [x] **Match end**: arena-style buzzer. *(placeholder `scroll_004`, not really a buzzer yet)*
 
 ## Lobby
 - [x] **Player joins**: a soft "pop".
-- [x] **Team pick**: a swoosh or slide. *(a short switch click when a player steps into a different team area)*
+- [x] **Team pick**: a swoosh or slide. *(a short switch click on every entry into a team area,
+      at most one per 0.3 s per player; before 15.11 stepping back into the same area stayed silent)*
 - [x] **Ready**: a rising chime. **Unready**: the same chime falling (or pitched down).
 - [ ] **Start bars** (hold both magnets to start, `start_hold_plus/minus`): a rising tone while a player's bars
       fill (pitch follows the fill), a click when that player's bars meet.
