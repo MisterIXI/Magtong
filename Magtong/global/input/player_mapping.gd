@@ -8,8 +8,8 @@ var k_left: Key
 var k_right: Key
 var k_plus: Key
 var k_minus: Key
-var k_primary: Key
-var k_secondary: Key
+var k_flip: Key
+var k_surge: Key
 var k_menu: Key
 var k_aux_left: Key
 var k_aux_right: Key
@@ -20,8 +20,8 @@ var j_plus: JoyAxis
 var j_plus_b: JoyButton
 var j_minus: JoyAxis
 var j_minus_b: JoyButton
-var j_primary: JoyButton
-var j_secondary: JoyButton
+var j_flip: JoyButton
+var j_surge: JoyButton
 var j_menu: JoyButton
 var j_d_left: JoyButton
 var j_d_right: JoyButton
@@ -50,8 +50,8 @@ func set_gamepad_mapping1():
 	self.j_plus_b = JOY_BUTTON_LEFT_SHOULDER
 	self.j_minus = JOY_AXIS_TRIGGER_RIGHT
 	self.j_minus_b = JOY_BUTTON_RIGHT_SHOULDER
-	self.j_primary = JOY_BUTTON_A
-	self.j_secondary = JOY_BUTTON_B
+	self.j_flip = JOY_BUTTON_A
+	self.j_surge = JOY_BUTTON_B
 	self.j_menu = JOY_BUTTON_START
 	self.j_aux_left = JOY_BUTTON_DPAD_LEFT
 	self.j_aux_right = JOY_BUTTON_DPAD_RIGHT
@@ -66,8 +66,8 @@ func set_keyboard_mapping1():
 	self.k_right = KEY_D
 	self.k_plus = KEY_J
 	self.k_minus = KEY_K
-	self.k_primary = KEY_SPACE
-	self.k_secondary = KEY_L
+	self.k_flip = KEY_SPACE
+	self.k_surge = KEY_L
 	self.k_menu = KEY_ESCAPE
 	self.k_aux_left = KEY_U
 	self.k_aux_right = KEY_O
@@ -103,11 +103,11 @@ func check_input(event: InputEvent) -> InputInfo:
 		elif key_event.keycode == self.k_minus:
 			input.input_type = InputInfo.InputType.MINUS
 			input.axis_value = 1.0 if key_event.pressed else 0.0
-		elif key_event.keycode == self.k_primary:
-			input.input_type = InputInfo.InputType.PRIMARY
+		elif key_event.keycode == self.k_flip:
+			input.input_type = InputInfo.InputType.FLIP
 			input.is_pressed = key_event.pressed
-		elif key_event.keycode == self.k_secondary:
-			input.input_type = InputInfo.InputType.SECONDARY
+		elif key_event.keycode == self.k_surge:
+			input.input_type = InputInfo.InputType.SURGE
 			input.is_pressed = key_event.pressed
 		elif key_event.keycode == self.k_menu:
 			input.input_type = InputInfo.InputType.MENU
@@ -151,11 +151,11 @@ func check_input(event: InputEvent) -> InputInfo:
 		elif joy_event.button_index == self.j_minus_b:
 			input.input_type = InputInfo.InputType.MINUS
 			input.axis_value = 1.0 if joy_event.pressed else 0.0
-		elif joy_event.button_index == self.j_primary:
-			input.input_type = InputInfo.InputType.PRIMARY
+		elif joy_event.button_index == self.j_flip:
+			input.input_type = InputInfo.InputType.FLIP
 			input.is_pressed = joy_event.pressed
-		elif joy_event.button_index == self.j_secondary:
-			input.input_type = InputInfo.InputType.SECONDARY
+		elif joy_event.button_index == self.j_surge:
+			input.input_type = InputInfo.InputType.SURGE
 			input.is_pressed = joy_event.pressed
 		elif joy_event.button_index == self.j_menu:
 			input.input_type = InputInfo.InputType.MENU

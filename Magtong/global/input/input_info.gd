@@ -38,8 +38,8 @@ enum InputType{
 	PLUS = 3,
 	MINUS = 4,
 	# button inputs
-	PRIMARY = 5,
-	SECONDARY = 6,
+	FLIP = 5,
+	SURGE = 6,
 	MENU = 7,
 	# Auxiliary inputs
 	AUX_LEFT = 8,

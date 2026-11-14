@@ -23,11 +23,12 @@ Kenney packs: `~/Applications/kenney-asset-launcher/Audio/` (all CC0, no credit 
       Must loop seamlessly.
 - ~~**Magnet off**~~: dropped, the hum stopping is enough.
 - ~~**Plus ↔ minus while holding**~~: dropped, the hum already changes pitch.
-- [x] **Flip** (A, `_pulse` in the code: flips nearby pucks' polarity): a short hum sweep from low to high (the
+- [x] **Flip** (A: flips nearby pucks' polarity): a short hum sweep from low to high (the
       field reversing) plus a metallic clack (`flip_clack.ogg`). Mechanical/electrical, related to the hum.
-- [x] **Strength burst** (B, `_impulse`): the player's own hum spikes louder and higher for ~0.35 s.
-      *Names of both abilities are still open (14.11).*
-- [x] **Goal**: big synth stinger or horn, the loudest sound in the game. *(air horn from Pixabay, like Rocket League)*
+- [x] **Surge** (B: short burst of magnet strength): the player's own hum spikes louder and higher for ~0.35 s.
+      *14.11: good enough for now, not perfect yet. Flip and Surge pressed together sound a bit odd.*
+- [x] **Goal**: big synth stinger or horn, the loudest sound in the game. *(air horn from Pixabay, like Rocket League; 14.11: out of place and too loud,
+      lowered to -8 dB, maybe layer it or replace it, see the goal celebration)*
 - [x] **Countdown**: three short beeps, then a higher, longer "go". *(one beep file, "go" is pitched up)*
 - [ ] **Last 10 seconds**: soft tick each second (or reuse the countdown beep, quieter). *(not in the game yet)*
 - [x] **Match end**: arena-style buzzer. *(placeholder `scroll_004`, not really a buzzer yet)*
@@ -66,7 +67,7 @@ Worth a listen for gameplay too (or as placeholders until your own sounds exist)
 - Countdown: `Digital Audio` `tone*`, `twoTone*`, `threeTone*`
 - Magnet on/off: `Digital Audio` `phaserUp*` / `phaserDown*`; polarity switch: `Digital Audio` `zap*`
 - Magnet loop: `Sci-Fi Sounds` `forceField_*`, `engineCircular_*`
-- Pulse: `Sci-Fi Sounds` `lowFrequency_explosion_*`, `forceField_*`
+- Flip / Surge: `Sci-Fi Sounds` `lowFrequency_explosion_*`, `forceField_*`
 - Puck hits: `Impact Sounds` `impactPlate_light_*`, `impactGeneric_light_*`, `impactPlank_medium_*`
 - Goal / win stingers: `Music Jingles/Audio (Hit)`; announcer lines ("ready", "go", "winner", "tie"):
   `Synth Voice 1`, `Voiceover Pack Fighter`

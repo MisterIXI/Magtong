@@ -29,11 +29,11 @@ const HIT_RANDOM_PITCH: float = 1.08
 const WALL_HIT_PITCH: float = 1.2
 const MAGNET_VOLUME_DB: float = -14.0
 const MAGNET_NEG_PITCH: float = 0.8
-## Strength burst (`_impulse`): the player's hum jumps louder and higher, then falls back over BURST_TIME.
-const BURST_TIME: float = 0.35
-const BURST_DB: float = 10.0
-const BURST_PITCH: float = 0.6 # +60 % at the peak
-## Flip (`_pulse`, flips nearby pucks): a short hum sweep from low to high, like the field reversing, plus a
+## Surge (B): the player's hum jumps louder and higher, then falls back over SURGE_TIME.
+const SURGE_TIME: float = 0.35
+const SURGE_DB: float = 10.0
+const SURGE_PITCH: float = 0.6 # +60 % at the peak
+## Flip (A, flips nearby pucks): a short hum sweep from low to high, like the field reversing, plus a
 ## metallic clack. Works without a magnet held, so the sweep has its own player per magnet.
 const FLIP_TIME: float = 0.25
 const FLIP_PITCH_FROM: float = 0.5
@@ -43,8 +43,8 @@ const FLIP_CLACK_VOLUME_DB: float = -8.0
 const TEAM_PICK_VOLUME_DB: float = -6.0
 const GO_PITCH: float = 1.5
 const UNREADY_PITCH: float = 0.8
-## the goal is the loudest sound in the game
-const GOAL_VOLUME_DB: float = 0.0
+## the horn alone at full volume was too loud and stuck out (14.11)
+const GOAL_VOLUME_DB: float = -8.0
 
 var map: MapScript
 var _hit_stream := AudioStreamRandomizer.new()
@@ -55,9 +55,9 @@ var _flip_clack: AudioStreamPlayer
 var _team_pick: AudioStreamPlayer
 # per player, rebuilt with the hums when the roster changes
 var _sweeps: Array[AudioStreamPlayer] = []
-var _shown_pulse_tick: PackedInt32Array = PackedInt32Array()
-var _shown_ability_tick: PackedInt32Array = PackedInt32Array()
-var _burst_start: PackedFloat64Array = PackedFloat64Array() # seconds, -1 = none
+var _shown_flip_tick: PackedInt32Array = PackedInt32Array()
+var _shown_surge_tick: PackedInt32Array = PackedInt32Array()
+var _surge_start: PackedFloat64Array = PackedFloat64Array() # seconds, -1 = none
 var _flip_start: PackedFloat64Array = PackedFloat64Array()
 var _shown_zone: PackedInt32Array = PackedInt32Array() # last team area played for, -1 = none yet
 var _beep: AudioStreamPlayer
@@ -92,8 +92,8 @@ func update(state: SimState) -> void:
 	if state.tick < _last_tick - Simulation.TICK_RATE:
 		# a new state (fresh lobby), not a rollback: the old hit ticks mean nothing anymore
 		_played_hit_tick.fill(-HIT_MIN_GAP_TICKS - 1)
-		_shown_pulse_tick.fill(-1)
-		_shown_ability_tick.fill(-1)
+		_shown_flip_tick.fill(-1)
+		_shown_surge_tick.fill(-1)
 	_last_tick = state.tick
 	_update_pucks(state)
 	_update_magnets(state)
@@ -129,10 +129,10 @@ func _update_magnets(state: SimState) -> void:
 			_hums.append(_new_player(MAGNET_LOOP, MAGNET_VOLUME_DB))
 			_sweeps.append(_new_player(MAGNET_LOOP, FLIP_VOLUME_DB))
 		# the current state counts as already heard, so a rebuilt roster doesn't replay old abilities
-		_shown_pulse_tick = state.last_pulse_tick.duplicate()
-		_shown_ability_tick = state.last_ability_tick.duplicate()
-		_burst_start.resize(_hums.size())
-		_burst_start.fill(-1.0)
+		_shown_flip_tick = state.last_flip_tick.duplicate()
+		_shown_surge_tick = state.last_surge_tick.duplicate()
+		_surge_start.resize(_hums.size())
+		_surge_start.fill(-1.0)
 		_flip_start.resize(_hums.size())
 		_flip_start.fill(-1.0)
 		_shown_zone = state.zone.duplicate()
@@ -145,21 +145,21 @@ func _update_magnets(state: SimState) -> void:
 			if hum.playing:
 				hum.stop()
 			continue
-		var burst := _envelope(_burst_start[i], BURST_TIME, now)
-		hum.volume_db = MAGNET_VOLUME_DB + BURST_DB * burst
-		hum.pitch_scale = (MAGNET_NEG_PITCH if pol == Simulation.Polarity.NEG else 1.0) * (1.0 + BURST_PITCH * burst)
+		var surge := _envelope(_surge_start[i], SURGE_TIME, now)
+		hum.volume_db = MAGNET_VOLUME_DB + SURGE_DB * surge
+		hum.pitch_scale = (MAGNET_NEG_PITCH if pol == Simulation.Polarity.NEG else 1.0) * (1.0 + SURGE_PITCH * surge)
 		if not hum.playing:
 			hum.play()
 
-## Strength burst and flip. Each only plays for a newer tick than the last one played, so a rollback that shows
-## the same ability again doesn't repeat it.
+## Surge and flip. Each only plays for a newer tick than the last one played, so a rollback that shows
+## the same one again doesn't repeat it.
 func _update_abilities(state: SimState, i: int, now: float) -> void:
-	if state.last_ability_tick[i] > _shown_ability_tick[i]:
-		_shown_ability_tick[i] = state.last_ability_tick[i]
-		_burst_start[i] = now
+	if state.last_surge_tick[i] > _shown_surge_tick[i]:
+		_shown_surge_tick[i] = state.last_surge_tick[i]
+		_surge_start[i] = now
 	var sweep := _sweeps[i]
-	if state.last_pulse_tick[i] > _shown_pulse_tick[i]:
-		_shown_pulse_tick[i] = state.last_pulse_tick[i]
+	if state.last_flip_tick[i] > _shown_flip_tick[i]:
+		_shown_flip_tick[i] = state.last_flip_tick[i]
 		_flip_start[i] = now
 		sweep.play(randf() * MAGNET_LOOP.get_length() * 0.8)
 		_flip_clack.play()

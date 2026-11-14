@@ -22,7 +22,11 @@ with friends over the internet, audio from licensed/CC0 packs, the existing rink
 **Simple bots only if they fit before the release candidate**, otherwise they're the first post-launch update.
 Store page is already live as "Coming soon".
 
-Order of work: **finish the game → polish → tutorial → bots.** Each step ends with a playable exported build.
+Order of work: **finish the game → polish → tutorial → bots.**
+
+**Names (14.11):** the two abilities are **Flip** (A / Space: flips the polarity of nearby pucks) and **Surge**
+(B / L: a short burst of magnet strength, only with a magnet held). Used everywhere: code, UI, tutorial, store.
+"Pulse" is gone, it fit both. Each step ends with a playable exported build.
 
 ---
 
@@ -139,14 +143,14 @@ Sound list, sources and music direction: `planning/audio-plan.md`.
 - [ ] Controls / how-to-play screen (keyboard + gamepad glyphs, the existing `assets/icons`), reachable from the
       main menu and the lobby. Short hint text in the lobby: join, pick a team, ready up, hold both magnets to
       start, Start/Esc for the menu.
-- [ ] Tutorial: what magnets, polarity and the pulse do, ideally playable (a short guided practice on the rink)
+- [ ] Tutorial: what magnets, polarity, Flip and Surge do, ideally playable (a short guided practice on the rink)
       rather than only text. Timebox it; the how-to-play screen is the fallback.
 - [ ] Store: update screenshots/trailer if the game looks noticeably different now.
 
 ## Week 4–5: bots (stretch, cut line)
 - [ ] **Decide on Mon 23.11**: if weeks 2–4 are done, timebox simple bots to 3 days, otherwise move them to the
       first post-launch update.
-- [ ] Simple scripted bots: chase the puck, pick the polarity that pulls it toward the opponent's goal, pulse when
+- [ ] Simple scripted bots: chase the puck, pick the polarity that pulls it toward the opponent's goal, flip when
       close. They read `SimState` and produce `SimInput` like a player, so they also fill empty slots online later.
 - [ ] Bots selectable in the lobby (add bot / remove bot), so a single player can try the game.
 

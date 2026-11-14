@@ -4,8 +4,8 @@ class_name PlayerBody
 ## mirrors the state and turns state changes into signals for the visuals.
 
 signal polarity_changed(new_pol: Simulation.Polarity)
-signal pulse_emitted(pulse_position: Vector2)
-signal impulse_emitted(pulse_position: Vector2, pol: Simulation.Polarity)
+signal flipped(flip_position: Vector2)
+signal surged(surge_position: Vector2, pol: Simulation.Polarity)
 signal setup_completed(player_body: PlayerBody)
 
 @export var player_skin: Sprite2D
@@ -16,8 +16,8 @@ var is_in_lobby: bool = false
 var mm: MatchManager
 var map: MapScript
 var _skin: int = -1
-var _last_pulse_tick: int = -1
-var _last_ability_tick: int = -1
+var _last_flip_tick: int = -1
+var _last_surge_tick: int = -1
 var _last_reset_tick: int = -2 # so the first update always resets the interpolation
 var _start_bars: StartHoldBars # lobby only
 
@@ -47,12 +47,12 @@ func update_from_sim(sim_state: SimState, body: int, player: int) -> void:
 		state = new_pol
 		polarity_changed.emit(state)
 	# only newer ticks, a rollback can move these back and the effect must not play again
-	if sim_state.last_pulse_tick[player] > _last_pulse_tick:
-		_last_pulse_tick = sim_state.last_pulse_tick[player]
-		pulse_emitted.emit(global_position)
-	if sim_state.last_ability_tick[player] > _last_ability_tick:
-		_last_ability_tick = sim_state.last_ability_tick[player]
-		impulse_emitted.emit(global_position, state)
+	if sim_state.last_flip_tick[player] > _last_flip_tick:
+		_last_flip_tick = sim_state.last_flip_tick[player]
+		flipped.emit(global_position)
+	if sim_state.last_surge_tick[player] > _last_surge_tick:
+		_last_surge_tick = sim_state.last_surge_tick[player]
+		surged.emit(global_position, state)
 	if _start_bars != null:
 		_update_start_bars(sim_state, player)
 

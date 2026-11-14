@@ -115,6 +115,6 @@ texture = ExtResource("10_mioy0")
 [node name="FieldManager" type="Node2D" parent="."]
 
 [connection signal="polarity_changed" from="." to="Graphics" method="on_polarity_changed"]
-[connection signal="pulse_emitted" from="." to="Graphics" method="_on_player_body_pulse_emitted"]
+[connection signal="flipped" from="." to="Graphics" method="_on_player_body_flipped"]
 [connection signal="setup_completed" from="." to="Graphics" method="_on_player_body_setup_completed"]
-[connection signal="impulse_emitted" from="." to="Graphics" method="_on_player_impulse_emitted"]
+[connection signal="surged" from="." to="Graphics" method="_on_player_body_surged"]

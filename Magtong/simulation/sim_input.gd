@@ -8,8 +8,8 @@ const AXIS_MAX: int = 127
 # button bits
 const PLUS: int = 1 << 0
 const MINUS: int = 1 << 1
-const PRIMARY: int = 1 << 2
-const SECONDARY: int = 1 << 3
+const FLIP: int = 1 << 2
+const SURGE: int = 1 << 3
 const MENU: int = 1 << 4
 const AUX_LEFT: int = 1 << 5
 const AUX_RIGHT: int = 1 << 6

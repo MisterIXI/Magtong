@@ -53,7 +53,7 @@ func script_input(player: int, tick: int) -> int:
 		return SimInput.EMPTY
 	var h := hash(Vector2i(tick / 9, player * 7919))
 	var move := Vector2(((h & 0xFF) - 128) / 128.0, (((h >> 8) & 0xFF) - 128) / 128.0)
-	var buttons := (h >> 16) & (SimInput.PLUS | SimInput.MINUS | SimInput.PRIMARY | SimInput.SECONDARY)
+	var buttons := (h >> 16) & (SimInput.PLUS | SimInput.MINUS | SimInput.FLIP | SimInput.SURGE)
 	return SimInput.encode(move, buttons)
 
 ## checksum of a straight simulation (no rollback) with the true inputs after the given tick

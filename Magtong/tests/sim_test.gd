@@ -56,7 +56,7 @@ func make_match(rink: RinkOutline) -> Array:
 func fake_input(t: int, p: int) -> int:
 	var h := hash(Vector2i(t / 7, p))
 	var move := Vector2(((h & 0xFF) - 128) / 128.0, (((h >> 8) & 0xFF) - 128) / 128.0)
-	var buttons := (h >> 16) & (SimInput.PLUS | SimInput.MINUS | SimInput.PRIMARY | SimInput.SECONDARY)
+	var buttons := (h >> 16) & (SimInput.PLUS | SimInput.MINUS | SimInput.FLIP | SimInput.SURGE)
 	return SimInput.encode(move, buttons)
 
 func inputs_for(t: int, count: int) -> PackedInt32Array:

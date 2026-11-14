@@ -12,7 +12,7 @@ var speed: float = 0.1
 var target_speed: float
 var mm: MatchManager
 var shader_tweener: Tween
-var pulse_tween: Tween
+var ring_tween: Tween
 @export var pol_shader_sprite: Sprite2D
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -56,38 +56,38 @@ func on_polarity_changed(new_pol):
 	shader_tweener.play()
 
 
-func _on_player_body_pulse_emitted(_pos: Vector2):
+func _on_player_body_flipped(_pos: Vector2):
 	# both are one_shot, so they will stop emitting by themselves
 	plus_burst_particles.emitting = true
 	minus_burst_particles.emitting = true
-	pulse_tweener()
+	ring_tweener()
 
 
-func _on_player_impulse_emitted(_pos: Vector2, _pol: Simulation.Polarity):
+func _on_player_body_surged(_pos: Vector2, _pol: Simulation.Polarity):
 	if _pol == Simulation.Polarity.POS:
 		plus_burst_particles.emitting = true
 	else:
 		minus_burst_particles.emitting = true
-	pulse_tweener()
+	ring_tweener()
 
 func _on_player_body_setup_completed(player_body:PlayerBody):
 	mm = player_body.mm
 
-func pulse_tweener():
-	if pulse_tween != null and pulse_tween.is_running():
-		pulse_tween.kill()
-	pulse_tween = create_tween()
-	pulse_tween.tween_method(
+func ring_tweener():
+	if ring_tween != null and ring_tween.is_running():
+		ring_tween.kill()
+	ring_tween = create_tween()
+	ring_tween.tween_method(
 		func(val): pol_shader_sprite.material.set_shader_parameter("size", val),
 		0.0,
 		0.5,
 		0.3
 	)
-	pulse_tween.parallel()
-	pulse_tween.tween_method(
+	ring_tween.parallel()
+	ring_tween.tween_method(
 		func(val): pol_shader_sprite.material.set_shader_parameter("thickness", val),
 		0.3,
 		-0.2,
 		0.3
 	)
-	pulse_tween.play()
+	ring_tween.play()
