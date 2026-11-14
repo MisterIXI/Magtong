@@ -15,7 +15,6 @@ Credit is not required, but Kenney goes into the credits screen anyway.
 | `ui/lobby_ready.ogg` | `select_004.ogg` | Interface Sounds |
 | `sfx/puck_hit_1..4.ogg` | `impactTin_medium_001..004.ogg` | Impact Sounds |
 | `sfx/magnet_loop.ogg` | `spaceEngine_002.ogg` | Sci-Fi Sounds |
-| `sfx/countdown_beep.ogg` | `switch_001.ogg` | Interface Sounds |
 | `sfx/match_end.ogg` | `scroll_004.ogg` | Interface Sounds |
 | `sfx/flip_clack.ogg` | `impactMetal_004.ogg` | Sci-Fi Sounds |
 | `ui/team_pick.ogg` | `switch7.ogg` | UI Pack |

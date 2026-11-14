@@ -13,7 +13,6 @@ const PUCK_HITS: Array[AudioStream] = [
 ]
 const MAGNET_LOOP: AudioStream = preload("res://assets/sounds/sfx/magnet_loop.ogg")
 const FLIP_CLACK: AudioStream = preload("res://assets/sounds/sfx/flip_clack.ogg")
-const COUNTDOWN_BEEP: AudioStream = preload("res://assets/sounds/sfx/countdown_beep.ogg")
 const MATCH_END: AudioStream = preload("res://assets/sounds/sfx/match_end.ogg")
 const GOAL: AudioStream = preload("res://assets/sounds/sfx/goal_horn.mp3")
 const LOBBY_JOIN: AudioStream = preload("res://assets/sounds/ui/lobby_join.ogg")
@@ -27,7 +26,8 @@ const HIT_FULL_SPEED: float = 800.0
 const HIT_MIN_GAP_TICKS: int = 6
 const HIT_RANDOM_PITCH: float = 1.08
 const WALL_HIT_PITCH: float = 1.2
-const MAGNET_VOLUME_DB: float = -14.0
+## playtest 15.11: the hum was annoying at -14 dB; a softer replacement is still open (audio plan)
+const MAGNET_VOLUME_DB: float = -20.0
 const MAGNET_NEG_PITCH: float = 0.8
 ## Surge (B): the player's hum jumps louder and higher, then falls back over SURGE_TIME.
 const SURGE_TIME: float = 0.35
@@ -41,6 +41,8 @@ const FLIP_PITCH_TO: float = 1.6
 const FLIP_VOLUME_DB: float = -4.0
 const FLIP_CLACK_VOLUME_DB: float = -8.0
 const TEAM_PICK_VOLUME_DB: float = -6.0
+## The countdown uses the team pick click (playtest 15.11: softer than the old beep), "go" pitched up.
+const COUNTDOWN_VOLUME_DB: float = -4.0
 const GO_PITCH: float = 1.5
 const UNREADY_PITCH: float = 0.8
 ## the horn alone at full volume was too loud and stuck out (14.11)
@@ -78,7 +80,7 @@ func _init(map: MapScript) -> void:
 	for stream in PUCK_HITS:
 		_hit_stream.add_stream(-1, stream)
 	_hit_stream.random_pitch = HIT_RANDOM_PITCH
-	_beep = _new_player(COUNTDOWN_BEEP)
+	_beep = _new_player(TEAM_PICK, COUNTDOWN_VOLUME_DB)
 	_match_end = _new_player(MATCH_END)
 	_goal = _new_player(GOAL)
 	_goal.volume_db = GOAL_VOLUME_DB

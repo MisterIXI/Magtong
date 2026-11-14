@@ -48,7 +48,8 @@ Kenney packs: `~/Applications/kenney-asset-launcher/Audio/` (all CC0, no credit 
 - ~~**Magnet on**~~: dropped (14.11), the hum starting is enough.
 - [ ] **Magnet loop**: quiet, low hum while the magnet is held. Plus and minus at slightly different pitches.
       Must loop seamlessly.
-      *Playtest 15.11: the hum is annoying. Replace it with something less grating and turn it down.*
+      *Playtest 15.11: the hum is annoying. Turned down from -14 to -20 dB; replacing it with something less
+      grating is still open.*
 - ~~**Magnet off**~~: dropped, the hum stopping is enough.
 - ~~**Plus ↔ minus while holding**~~: dropped, the hum already changes pitch.
 - [x] **Flip** (A: flips nearby pucks' polarity): a short hum sweep from low to high (the
@@ -57,8 +58,8 @@ Kenney packs: `~/Applications/kenney-asset-launcher/Audio/` (all CC0, no credit 
       *14.11: good enough for now, not perfect yet. Flip and Surge pressed together sound a bit odd.*
 - [x] **Goal**: big synth stinger or horn, the loudest sound in the game. *(air horn from Pixabay, like Rocket League; 14.11: out of place and too loud,
       lowered to -8 dB, maybe layer it or replace it, see the goal celebration)*
-- [ ] **Countdown**: three short beeps, then a higher, longer "go". *(one beep file, "go" is pitched up)*
-      *Playtest 15.11: use the team switch click for the countdown instead of the beep.*
+- [x] **Countdown**: three short beeps, then a higher, longer "go". *(one beep file, "go" is pitched up)*
+      *Playtest 15.11: now the team pick click (`ui/team_pick.ogg`) instead of the beep, the old beep file is gone.*
 - [ ] **Last 10 seconds**: soft tick each second (or reuse the countdown beep, quieter). *(not in the game yet)*
 - [x] **Match end**: arena-style buzzer. *(placeholder `scroll_004`, not really a buzzer yet)*
 
