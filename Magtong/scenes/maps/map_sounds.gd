@@ -12,10 +12,7 @@ const PUCK_HITS: Array[AudioStream] = [
 	preload("res://assets/sounds/sfx/puck_hit_4.ogg"),
 ]
 const MAGNET_LOOP: AudioStream = preload("res://assets/sounds/sfx/magnet_loop.ogg")
-const MAGNET_ON: AudioStream = preload("res://assets/sounds/sfx/magnet_on.ogg")
-const MAGNET_OFF: AudioStream = preload("res://assets/sounds/sfx/magnet_off.ogg")
-const POLARITY_SWITCH: AudioStream = preload("res://assets/sounds/sfx/polarity_switch.ogg")
-const PULSE: AudioStream = preload("res://assets/sounds/sfx/pulse.ogg")
+const FLIP_CLACK: AudioStream = preload("res://assets/sounds/sfx/flip_clack.ogg")
 const COUNTDOWN_BEEP: AudioStream = preload("res://assets/sounds/sfx/countdown_beep.ogg")
 const MATCH_END: AudioStream = preload("res://assets/sounds/sfx/match_end.ogg")
 const GOAL: AudioStream = preload("res://assets/sounds/sfx/goal_horn.mp3")
@@ -32,9 +29,17 @@ const HIT_RANDOM_PITCH: float = 1.08
 const WALL_HIT_PITCH: float = 1.2
 const MAGNET_VOLUME_DB: float = -14.0
 const MAGNET_NEG_PITCH: float = 0.8
-## magnet on/off and polarity clicks happen on almost every button press, so they stay quiet
-const MAGNET_CLICK_VOLUME_DB: float = -12.0
-const PULSE_VOLUME_DB: float = -4.0
+## Strength burst (`_impulse`): the player's hum jumps louder and higher, then falls back over BURST_TIME.
+const BURST_TIME: float = 0.35
+const BURST_DB: float = 10.0
+const BURST_PITCH: float = 0.6 # +60 % at the peak
+## Flip (`_pulse`, flips nearby pucks): a short hum sweep from low to high, like the field reversing, plus a
+## metallic clack. Works without a magnet held, so the sweep has its own player per magnet.
+const FLIP_TIME: float = 0.25
+const FLIP_PITCH_FROM: float = 0.5
+const FLIP_PITCH_TO: float = 1.6
+const FLIP_VOLUME_DB: float = -4.0
+const FLIP_CLACK_VOLUME_DB: float = -8.0
 const TEAM_PICK_VOLUME_DB: float = -6.0
 const GO_PITCH: float = 1.5
 const UNREADY_PITCH: float = 0.8
@@ -46,14 +51,14 @@ var _hit_stream := AudioStreamRandomizer.new()
 var _hit_players: Array[AudioStreamPlayer] = []
 var _played_hit_tick: PackedInt32Array = PackedInt32Array()
 var _hums: Array[AudioStreamPlayer] = []
-var _magnet_on: AudioStreamPlayer
-var _magnet_off: AudioStreamPlayer
-var _polarity_switch: AudioStreamPlayer
-var _pulse: AudioStreamPlayer
+var _flip_clack: AudioStreamPlayer
 var _team_pick: AudioStreamPlayer
 # per player, rebuilt with the hums when the roster changes
-var _shown_polarity: PackedInt32Array = PackedInt32Array()
+var _sweeps: Array[AudioStreamPlayer] = []
 var _shown_pulse_tick: PackedInt32Array = PackedInt32Array()
+var _shown_ability_tick: PackedInt32Array = PackedInt32Array()
+var _burst_start: PackedFloat64Array = PackedFloat64Array() # seconds, -1 = none
+var _flip_start: PackedFloat64Array = PackedFloat64Array()
 var _shown_zone: PackedInt32Array = PackedInt32Array() # last team area played for, -1 = none yet
 var _beep: AudioStreamPlayer
 var _match_end: AudioStreamPlayer
@@ -77,10 +82,7 @@ func _init(map: MapScript) -> void:
 	_match_end = _new_player(MATCH_END)
 	_goal = _new_player(GOAL)
 	_goal.volume_db = GOAL_VOLUME_DB
-	_magnet_on = _new_player(MAGNET_ON, MAGNET_CLICK_VOLUME_DB, 4)
-	_magnet_off = _new_player(MAGNET_OFF, MAGNET_CLICK_VOLUME_DB, 4)
-	_polarity_switch = _new_player(POLARITY_SWITCH, MAGNET_CLICK_VOLUME_DB, 4)
-	_pulse = _new_player(PULSE, PULSE_VOLUME_DB, 4)
+	_flip_clack = _new_player(FLIP_CLACK, FLIP_CLACK_VOLUME_DB, 4)
 	_team_pick = _new_player(TEAM_PICK, TEAM_PICK_VOLUME_DB, 4)
 	_join = _new_player(LOBBY_JOIN)
 	_ready_sound = _new_player(LOBBY_READY)
@@ -91,6 +93,7 @@ func update(state: SimState) -> void:
 		# a new state (fresh lobby), not a rollback: the old hit ticks mean nothing anymore
 		_played_hit_tick.fill(-HIT_MIN_GAP_TICKS - 1)
 		_shown_pulse_tick.fill(-1)
+		_shown_ability_tick.fill(-1)
 	_last_tick = state.tick
 	_update_pucks(state)
 	_update_magnets(state)
@@ -118,44 +121,64 @@ func _update_pucks(state: SimState) -> void:
 func _update_magnets(state: SimState) -> void:
 	if _hums.size() != map.players.size():
 		# lobby rebuilt with a different roster
-		for hum in _hums:
-			hum.queue_free()
+		for player in _hums + _sweeps:
+			player.queue_free()
 		_hums.clear()
+		_sweeps.clear()
 		for i in map.players.size():
-			var hum := _new_player(MAGNET_LOOP)
-			hum.volume_db = MAGNET_VOLUME_DB
-			_hums.append(hum)
-		# the current state counts as already heard, so a rebuilt roster doesn't click for everyone
-		_shown_polarity = state.polarity.duplicate()
+			_hums.append(_new_player(MAGNET_LOOP, MAGNET_VOLUME_DB))
+			_sweeps.append(_new_player(MAGNET_LOOP, FLIP_VOLUME_DB))
+		# the current state counts as already heard, so a rebuilt roster doesn't replay old abilities
 		_shown_pulse_tick = state.last_pulse_tick.duplicate()
+		_shown_ability_tick = state.last_ability_tick.duplicate()
+		_burst_start.resize(_hums.size())
+		_burst_start.fill(-1.0)
+		_flip_start.resize(_hums.size())
+		_flip_start.fill(-1.0)
 		_shown_zone = state.zone.duplicate()
+	var now := Time.get_ticks_msec() / 1000.0
 	for i in _hums.size():
+		_update_abilities(state, i, now)
 		var pol: Simulation.Polarity = state.polarity[i]
-		_update_magnet_clicks(state, i, pol)
 		var hum := _hums[i]
 		if pol == Simulation.Polarity.IDLE:
 			if hum.playing:
 				hum.stop()
 			continue
-		hum.pitch_scale = MAGNET_NEG_PITCH if pol == Simulation.Polarity.NEG else 1.0
+		var burst := _envelope(_burst_start[i], BURST_TIME, now)
+		hum.volume_db = MAGNET_VOLUME_DB + BURST_DB * burst
+		hum.pitch_scale = (MAGNET_NEG_PITCH if pol == Simulation.Polarity.NEG else 1.0) * (1.0 + BURST_PITCH * burst)
 		if not hum.playing:
 			hum.play()
 
-## On/off/switch clicks and the pulse. A rollback can change what the views saw for a remote player, at worst
-## that plays one extra click; a pulse only plays for a newer pulse tick.
-func _update_magnet_clicks(state: SimState, i: int, pol: Simulation.Polarity) -> void:
-	var shown: Simulation.Polarity = _shown_polarity[i]
-	if pol != shown:
-		if shown == Simulation.Polarity.IDLE:
-			_magnet_on.play()
-		elif pol == Simulation.Polarity.IDLE:
-			_magnet_off.play()
-		else:
-			_polarity_switch.play()
-		_shown_polarity[i] = pol
+## Strength burst and flip. Each only plays for a newer tick than the last one played, so a rollback that shows
+## the same ability again doesn't repeat it.
+func _update_abilities(state: SimState, i: int, now: float) -> void:
+	if state.last_ability_tick[i] > _shown_ability_tick[i]:
+		_shown_ability_tick[i] = state.last_ability_tick[i]
+		_burst_start[i] = now
+	var sweep := _sweeps[i]
 	if state.last_pulse_tick[i] > _shown_pulse_tick[i]:
 		_shown_pulse_tick[i] = state.last_pulse_tick[i]
-		_pulse.play()
+		_flip_start[i] = now
+		sweep.play(randf() * MAGNET_LOOP.get_length() * 0.8)
+		_flip_clack.play()
+	if sweep.playing:
+		var t := (now - _flip_start[i]) / FLIP_TIME
+		if t >= 1.0:
+			sweep.stop()
+		else:
+			sweep.pitch_scale = lerpf(FLIP_PITCH_FROM, FLIP_PITCH_TO, t)
+			sweep.volume_db = FLIP_VOLUME_DB + linear_to_db(1.0 - t)
+
+## 1 at start, falling to 0 after length seconds (quadratic ease out), 0 if it never started.
+func _envelope(start: float, length: float, now: float) -> float:
+	if start < 0.0:
+		return 0.0
+	var t := (now - start) / length
+	if t >= 1.0:
+		return 0.0
+	return (1.0 - t) * (1.0 - t)
 
 func _update_match(state: SimState) -> void:
 	# only newer goals: a rollback can move last_goal_tick back, the sound must not play twice

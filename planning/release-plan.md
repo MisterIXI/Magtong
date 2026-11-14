@@ -111,7 +111,8 @@ Sound list, sources and music direction: `planning/audio-plan.md`.
       `Simulation.step` (`7260eec`: puck hits, magnet hum, countdown, match end, lobby join/ready).
 - [x] Menu sounds (`UiSounds` autoload), licenses in `assets/sounds/LICENSES.md`.
 - [ ] The remaining sounds from the audio plan, then tick off the audio plan.
-      *14.11: goal (air horn), pulse, polarity switch, magnet on/off, team pick are in. Open: last 10 seconds,
+      *14.11: goal (air horn), flip (hum sweep + clack), strength burst (hum spike), team pick are in; magnet on/off
+      clicks dropped (the hum is enough). Open: last 10 seconds,
       start bars, an own wall hit sound, a real match end buzzer.*
 - [ ] Music: menu/lobby theme and a match loop, licenses + credits.
 - [ ] **Goal celebration** (like Rocket League, the climax of every round, worth more than "cheap juice"):

@@ -18,12 +18,15 @@ Kenney packs: `~/Applications/kenney-asset-launcher/Audio/` (all CC0, no credit 
       higher impact speed (pick a soft and a hard set, choose by speed).
 - [ ] **Puck hits wall**: sharper, harder "clack" with a bit of rattle than the player hit.
       *For now the player-hit sounds at a higher pitch (`WALL_HIT_PITCH`); an own wall sound is still open.*
-- [x] **Magnet on**: short electric charge-up "zzhm". *(14.11: a short click instead, quiet: it plays on almost every press)*
+- ~~**Magnet on**~~: dropped (14.11), the hum starting is enough.
 - [x] **Magnet loop**: quiet, low hum while the magnet is held. Plus and minus at slightly different pitches.
       Must loop seamlessly.
-- [x] **Magnet off**: quick power-down "zip". *(a short click too)*
-- [x] **Polarity switch** (`polarity_changed`): a click plus a small zap, like a relay switching. *(a click)*
-- [x] **Pulse** (`pulse_emitted`): bassy "whoomp" shockwave with some electric crackle on top. *(a short punchy click for now)*
+- ~~**Magnet off**~~: dropped, the hum stopping is enough.
+- ~~**Plus ↔ minus while holding**~~: dropped, the hum already changes pitch.
+- [x] **Flip** (A, `_pulse` in the code: flips nearby pucks' polarity): a short hum sweep from low to high (the
+      field reversing) plus a metallic clack (`flip_clack.ogg`). Mechanical/electrical, related to the hum.
+- [x] **Strength burst** (B, `_impulse`): the player's own hum spikes louder and higher for ~0.35 s.
+      *Names of both abilities are still open (14.11).*
 - [x] **Goal**: big synth stinger or horn, the loudest sound in the game. *(air horn from Pixabay, like Rocket League)*
 - [x] **Countdown**: three short beeps, then a higher, longer "go". *(one beep file, "go" is pitched up)*
 - [ ] **Last 10 seconds**: soft tick each second (or reuse the countdown beep, quieter). *(not in the game yet)*
