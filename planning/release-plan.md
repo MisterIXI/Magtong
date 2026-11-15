@@ -195,9 +195,17 @@ Sound list, sources and music direction: `planning/audio-plan.md`.
 - [ ] **Can't rejoin a lobby you left** (Steam playtest 15.11): P1 hosts, P2 joins, P1 leaves (P2 now hosts?),
       P1 joins P2 through Steam → P1 stays on "Connecting..." forever, also after restarting the game.
       Probably stale lobby/peer state on one side; needs a timeout with an error message either way.
+      *15.11: cause not confirmed (every leave path calls `leaveLobby`). Made robust instead: the host writes
+      its Steam id into the lobby data (`host`), a joiner whose lobby owner isn't that host gets "This game has
+      already ended"; everyone leaves when the host leaves the Steam lobby (`lobby_chat_update`); clients give
+      up after 10 s ("Could not connect to the host (timed out)", tested with direct connect). Steam lobby events
+      and menu messages now go to the F12 log. Retest with two Steam accounts.*
 - [ ] **Crash while connecting** (Steam playtest 15.11): while P1 is stuck on "Connecting...", P2 closes the game
       → P1's game crashes without any message. Must fall back to the menu with "Lost the connection"/"Can't
       connect".
+      *15.11: probably a crash inside GodotSteam's `SteamMultiplayerPeer` when the lobby owner leaves while it
+      connects. Can't fix that code, but the fixes above keep us out of that state (no joining an unhosted
+      lobby, 10 s connect timeout). Retest.*
 - [ ] More online tests: 2v2 (two machines with two local players each), a weaker connection, host on Windows and
       on Linux.
 - [ ] Store page: mention online play with friends (Steam invites), add the online multiplayer features/tags.

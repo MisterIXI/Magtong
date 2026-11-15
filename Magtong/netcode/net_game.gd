@@ -10,6 +10,8 @@ const DEFAULT_PORT: int = 24680
 const MAX_CLIENTS: int = 3
 const OFFLINE_PEER: int = 1
 const TIMEOUT_MS: int = 5000
+## a client that hasn't reached the host after this long gives up
+const CONNECT_TIMEOUT_MS: int = 10000
 const KEEPALIVE_MS: int = 250
 ## a peer this long silent shows the connection icon (a few keepalives missed)
 const SILENT_ICON_MS: int = 4 * KEEPALIVE_MS
@@ -45,6 +47,7 @@ var _sessions: Dictionary = {} # session id -> Callable(packet: Dictionary, now_
 var _last_heard: Dictionary = {} # peer id -> msec
 var _last_keepalive: int = 0
 var _was_connected: bool = false
+var _connect_started: int = 0 # msec
 var _outgoing: Array = [] # [send_at_ms, to, bytes, reliable], only used with NetDebug.net_lag_ms
 var _connection_icon: ConnectionIcon
 
@@ -95,6 +98,7 @@ func start_with_peer(peer: MultiplayerPeer, as_host: bool) -> void:
 	transport.peer_disconnected.connect(_on_peer_disconnected)
 	mode = Mode.HOST if as_host else Mode.CLIENT
 	_was_connected = as_host
+	_connect_started = Time.get_ticks_msec()
 
 func leave() -> void:
 	if transport != null:
@@ -134,9 +138,13 @@ func _physics_process(_delta):
 		if transport == null:
 			return # the message ended the session
 	_flush_outgoing(now)
-	if mode == Mode.CLIENT and not _was_connected and not transport.is_connecting() and not transport.is_connected_to_host():
-		_end("Could not connect to the host")
-		return
+	if mode == Mode.CLIENT and not _was_connected:
+		if not transport.is_connecting() and not transport.is_connected_to_host():
+			_end("Could not connect to the host")
+			return
+		if now - _connect_started > CONNECT_TIMEOUT_MS:
+			_end("Could not connect to the host (timed out)")
+			return
 	if now - _last_keepalive > KEEPALIVE_MS:
 		_last_keepalive = now
 		_send(0, {"type": "keepalive"}, false)

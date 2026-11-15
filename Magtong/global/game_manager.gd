@@ -107,6 +107,7 @@ func return_to_menu(message: String = "") -> void:
 		main_menu.switch_to_menu(main_menu.start_menu)
 		state_changed.emit(old_state, current_state)
 	if message != "":
+		print_message("Back to the menu: " + message)
 		main_menu.show_message(message)
 
 ## --host[=port] / --join=ip[:port] start an online session right away (testing, debug builds only)
