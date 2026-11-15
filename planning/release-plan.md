@@ -155,6 +155,9 @@ Sound list, sources and music direction: `planning/audio-plan.md`.
       blindness). Open decision: fixed team colors or adjustable (per team in the lobby, or a settings option);
       decide later. Touches the lobby team areas, skins/outlines, HUD score, "Team Red/Blue Wins!" text.
 - [ ] Credits screen (assets, music licenses, Godot, GodotSteam).
+- [ ] **Settings from the pause menu** (15.11): change sound volumes (and ideally all settings) during a match or
+      in the lobby, not only from the main menu. Probably reuse the whole settings menu. Online the pause menu
+      doesn't pause, so the settings must work while the match keeps running.
 - [ ] Windows icon with a 256×256 size.
 
 ## Week 4 (16.–22.11): tutorial + presentation
