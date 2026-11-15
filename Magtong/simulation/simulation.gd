@@ -19,11 +19,9 @@ const START_HOLD_TICKS: int = TICK_RATE
 const START_HOLD_DRAIN: int = 3
 const FALLOFF_SAMPLES: int = 256
 ## Goal celebration: the GOAL phase between a goal and the reset. The scoring puck leaves play, a shockwave
-## knocks everything else away, the players drift without control. The first GOAL_SLOWMO_TICKS run in slow
-## motion: the simulation steps with a smaller time step, the tick rate stays (online time sync).
+## knocks everything else away, the players drift without control. (Slow motion was tried and dropped
+## 15.11: without control it only made the knockback look wrong.)
 const GOAL_TICKS: int = 2 * TICK_RATE
-const GOAL_SLOWMO_TICKS: int = 48
-const GOAL_SLOWMO_SCALE: float = 0.25
 const GOAL_PUSH_RANGE: float = 450.0
 ## speed a body right next to the goal gets, falling off linearly to 0 at GOAL_PUSH_RANGE
 const GOAL_PUSH_SPEED: float = 1400.0
@@ -217,10 +215,9 @@ func step(state: SimState, inputs: PackedInt32Array) -> void:
 				_flip(state, i)
 			if pressed & SimInput.SURGE and state.surge_cd[i] == 0 and pol != Polarity.IDLE:
 				_surge(state, i)
-	var dt := DT * time_scale(state)
 	var frozen := state.goal_puck if state.phase == Phase.GOAL else -1
-	_apply_magnets(state, dt, frozen)
-	_integrate(state, dt, frozen)
+	_apply_magnets(state, frozen)
+	_integrate(state, frozen)
 	match mode:
 		Mode.LOBBY:
 			_update_zones(state)
@@ -245,17 +242,8 @@ func _choose_polarity(buttons: int, pressed: int, previous: Polarity) -> Polarit
 		return Polarity.NEG
 	return Polarity.IDLE
 
-## How fast the simulation runs this tick (1 = normal), the goal slow motion eases from GOAL_SLOWMO_SCALE back to 1.
-func time_scale(state: SimState) -> float:
-	if state.phase != Phase.GOAL:
-		return 1.0
-	var t := float(GOAL_TICKS - state.phase_ticks) / GOAL_SLOWMO_TICKS
-	if t >= 1.0:
-		return 1.0
-	return lerpf(GOAL_SLOWMO_SCALE, 1.0, t * t)
-
 ## frozen: a puck that is out of play (the scoring puck during the goal celebration), -1 = none
-func _apply_magnets(state: SimState, dt: float, frozen: int) -> void:
+func _apply_magnets(state: SimState, frozen: int) -> void:
 	var pos := state.pos
 	var vel := state.vel
 	for i in player_count:
@@ -274,7 +262,7 @@ func _apply_magnets(state: SimState, dt: float, frozen: int) -> void:
 			var is_repelling := (state.puck_plus[k] == 1) == (pol == Polarity.POS)
 			if not is_repelling:
 				force = -force
-			var dv := diff / dist * force * dt
+			var dv := diff / dist * force * DT
 			vel[k] += dv * inv_mass[k]
 			if settings.magnet_recoil:
 				vel[body] -= dv * inv_mass[body]
@@ -315,20 +303,20 @@ func _falloff(x: float) -> float:
 #endregion
 
 #region physics
-func _integrate(state: SimState, dt: float, frozen: int) -> void:
+func _integrate(state: SimState, frozen: int) -> void:
 	var pos := state.pos
 	var vel := state.vel
 	var spin := state.puck_spin
 	var body_count := puck_count + player_count
-	var damp := maxf(0.0, 1.0 - settings.linear_damp * dt)
+	var damp := maxf(0.0, 1.0 - settings.linear_damp * DT)
 	for b in body_count:
 		vel[b] = (vel[b] * damp).limit_length(settings.max_speed)
-	var spin_damp := maxf(0.0, 1.0 - settings.puck_spin_damp * dt)
+	var spin_damp := maxf(0.0, 1.0 - settings.puck_spin_damp * DT)
 	for k in puck_count:
 		spin[k] *= spin_damp
 	if frozen != -1:
 		vel[frozen] = Vector2.ZERO
-	var sub_dt := dt / SUBSTEPS
+	var sub_dt := DT / SUBSTEPS
 	for s in SUBSTEPS:
 		for b in body_count:
 			pos[b] += vel[b] * sub_dt
@@ -337,7 +325,7 @@ func _integrate(state: SimState, dt: float, frozen: int) -> void:
 		_collide_walls(state, pos, vel, spin, body_count, frozen)
 	var angle := state.puck_angle
 	for k in puck_count:
-		angle[k] = wrapf(angle[k] + spin[k] * dt, -PI, PI)
+		angle[k] = wrapf(angle[k] + spin[k] * DT, -PI, PI)
 	state.pos = pos
 	state.vel = vel
 	state.puck_spin = spin

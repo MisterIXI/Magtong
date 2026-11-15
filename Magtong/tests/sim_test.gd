@@ -216,19 +216,12 @@ func test_goal_celebration():
 	check(state.vel[keeper].length() > 300.0 and state.vel[keeper].x < 0.0, "the shockwave knocks the keeper away from the goal (v %s)" % state.vel[keeper])
 	var far := sim.player_body(2)
 	check(state.vel[far].length() < 1.0, "players far away aren't pushed")
-	check(is_equal_approx(sim.time_scale(state), Simulation.GOAL_SLOWMO_SCALE), "the celebration starts in slow motion")
 	var puck_pos := state.pos[0]
-	var keeper_pos := state.pos[keeper]
-	var keeper_speed := state.vel[keeper].length()
-	sim.step(state, PackedInt32Array())
-	var moved := state.pos[keeper].distance_to(keeper_pos)
-	check(moved < keeper_speed * Simulation.DT * 0.5, "slow motion: the keeper moves less than half its speed per tick (%.1f)" % moved)
 	# a player trying to run back doesn't get control during the celebration
 	var run := SimInput.encode(Vector2.RIGHT, 0)
-	for t in Simulation.GOAL_SLOWMO_TICKS:
+	for t in 10:
 		sim.step(state, PackedInt32Array([0, 0, 0, run]))
 	check(state.vel[keeper].x < 0.0, "no control during the goal celebration, the keeper keeps drifting")
-	check(is_equal_approx(sim.time_scale(state), 1.0), "back to normal speed after the slow motion")
 	check(state.pos[0] == puck_pos, "the scoring puck stays out of play")
 	check(state.scores[0] == 1, "the parked puck doesn't score again")
 	while state.phase == Simulation.Phase.GOAL:

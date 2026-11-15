@@ -115,6 +115,11 @@ Goal: the game works start to finish and could ship as is, even if it isn't pret
       *15.11: the menu message is modal now (full-screen click blocker, focus stays on its button, focus goes
       back to the button from before when it closes). "Connecting..." / "Creating Steam lobby..." got a Cancel
       button that leaves; a Steam answer arriving after Cancel is dropped. Tested headless with keys and mouse.*
+- [ ] **Head-on hits on the goal post bounce oddly** (15.11): a puck hitting the corner of the goal post nearly
+      head-on bounced in an unexpected direction. The post corners are the only end points that still count as
+      contacts (see the corner fix below), so check their normal there (maybe a hit on the post resolves
+      against the end point and a wall segment in the same substep). Reproduce in `sim_test.gd` like the
+      corner bounce.
 - [x] **Start-of-round corner bounces look wrong** (online playtest 15.11): a puck coming in at a downward angle
       toward the goal sometimes bounces away from the goal instead. Check the corner segments/normals in the
       custom physics (maybe a corner hit resolved against the wrong segment); reproduce in `sim_test.gd`.
@@ -140,7 +145,8 @@ Sound list, sources and music direction: `planning/audio-plan.md`.
         everything else keeps moving. An overtime goal gets the same celebration, then game over.
   - [x] **Goal explosion that pushes the players**: a shockwave from the scoring puck that knocks nearby players
         (and pucks) away, falling off with distance. In the simulation, so it's the same on every machine.
-  - [x] **Slow motion** for the first ~0.8 s of the `GOAL` phase, easing back to normal speed: the simulation
+  - ~~**Slow motion**~~ (dropped 15.11: players have no control during the celebration anyway, and the slowed
+        knockback looked wrong, like bodies speeding up in the corners) for the first ~0.8 s of the `GOAL` phase, easing back to normal speed: the simulation
         steps with a smaller time step (e.g. 25%), stored in `SimState`. **Never `Engine.time_scale`**: that
         changes the tick rate on one machine and breaks the online time sync. Ticks stay at 60/s.
   - [x] Views only: explosion effect in the scoring team's color, screen shake, short flash, "GOAL!" text,
@@ -192,6 +198,17 @@ Sound list, sources and music direction: `planning/audio-plan.md`.
 - [ ] Steamworks: depots for Windows + Linux, upload with SteamPipe, set the build live on `dev_beta`,
       test-install it from Steam on a clean machine.
       *Upload script `tools/steam_upload.sh` and notes in `planning/steam-upload.md` (08.11).*
+- [ ] **Re-check the Steamworks AI disclosure before submitting** (currently answered "no"). The question
+      ("Content Survey" → Generative AI): *"Does this game use generative artificial intelligence to generate
+      content for the game, either pre-rendered or live-generated? This includes the game itself, the store
+      page, and any Steam community assets or marketing materials."* Valve says AI tools for efficiency aren't
+      the focus, it's about content that ships and players consume (artwork, sound, narrative, localization).
+      What Claude made that ships: game code, including effects drawn in code (goal explosion, sparks, ring:
+      shapes from code, no generated images), and player-facing text (menu/error messages, "GOAL!", hints).
+      Not AI: sprites/art, sound effects (Kenney, Pixabay), music. Gray area is the code-drawn effects and the
+      UI text; read Valve's current guidance (the expanded section of the survey) and decide. If unsure, "yes"
+      with an exact description ("code and some UI text written with an AI coding assistant; all art, sound
+      and music are made by people") is the safe answer, a wrong "no" is the risk.
 - [ ] **Submit the build for review by ~Mon 30.11** (review can take several business days).
 
 ## Week 6 (30.11–08.12): launch
