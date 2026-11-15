@@ -14,14 +14,13 @@ var mm: MatchManager
 var shader_tweener: Tween
 var ring_tween: Tween
 var punch_tween: Tween
-## Flip and Surge show as a ripple of the distortion shader around the player (15.11: big drawn rings were
-## too intrusive). Surge is the heavier one and also punches the sprite.
-const FLIP_RIPPLE_TIME: float = 0.25
-const FLIP_RIPPLE_FORCE: float = 0.1
-const SURGE_RIPPLE_TIME: float = 0.4
-const SURGE_RIPPLE_FORCE: float = 0.16
-const RIPPLE_THICKNESS: float = 0.12
-const SURGE_PUNCH: float = 0.2
+## Flip and Surge look different (15.11): Flip zaps lines to the flipped pucks (FlipZap), Surge ripples the
+## distortion shader around the player and briefly grows the player sprite (the punch). Big drawn rings and a
+## strong distortion were tried and dropped: too intrusive, and a strong ripple makes the area unreadable.
+const SURGE_RIPPLE_TIME: float = 0.3
+const SURGE_RIPPLE_FORCE: float = 0.07
+const RIPPLE_THICKNESS: float = 0.1
+const SURGE_PUNCH: float = 0.1
 var _sprite_base_scale: Vector2
 ## the polarity color follows the magnet almost at once, so what you see is what pulls (playtest 15.11: the
 ## old 0.2 s fade made a player look plus while already pushing as minus)
@@ -70,11 +69,20 @@ func on_polarity_changed(new_pol):
 	shader_tweener.play()
 
 
-func _on_player_body_flipped(_pos: Vector2):
+func _on_player_body_flipped(pos: Vector2, puck_positions: PackedVector2Array, puck_plus: Array):
 	# both are one_shot, so they will stop emitting by themselves
 	plus_burst_particles.emitting = true
 	minus_burst_particles.emitting = true
-	ring_tweener(FLIP_RIPPLE_TIME, FLIP_RIPPLE_FORCE)
+	# the same range check as Simulation._flip, on the state that showed the flip
+	var targets := PackedVector2Array()
+	var plus := []
+	var range_sq := settings.flip_range * settings.flip_range
+	var to_sim := player.get_parent() as Node2D
+	for k in puck_positions.size():
+		if to_sim.to_local(puck_positions[k]).distance_squared_to(to_sim.to_local(pos)) < range_sq:
+			targets.append(puck_positions[k])
+			plus.append(puck_plus[k])
+	FlipZap.spawn(player, pos, targets, plus)
 
 
 func _on_player_body_surged(_pos: Vector2, _pol: Simulation.Polarity):

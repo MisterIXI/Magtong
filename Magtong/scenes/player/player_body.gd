@@ -4,7 +4,8 @@ class_name PlayerBody
 ## mirrors the state and turns state changes into signals for the visuals.
 
 signal polarity_changed(new_pol: Simulation.Polarity)
-signal flipped(flip_position: Vector2)
+## puck_positions (global) and puck_plus (new polarity) of every puck, the visuals pick the ones in flip range
+signal flipped(flip_position: Vector2, puck_positions: PackedVector2Array, puck_plus: Array)
 signal surged(surge_position: Vector2, pol: Simulation.Polarity)
 signal setup_completed(player_body: PlayerBody)
 
@@ -49,7 +50,14 @@ func update_from_sim(sim_state: SimState, body: int, player: int) -> void:
 	# only newer ticks, a rollback can move these back and the effect must not play again
 	if sim_state.last_flip_tick[player] > _last_flip_tick:
 		_last_flip_tick = sim_state.last_flip_tick[player]
-		flipped.emit(global_position)
+		var puck_count := body - player
+		var parent := get_parent() as Node2D
+		var positions := PackedVector2Array()
+		var plus := []
+		for k in puck_count:
+			positions.append(parent.to_global(sim_state.pos[k]))
+			plus.append(sim_state.puck_plus[k] == 1)
+		flipped.emit(parent.to_global(sim_state.pos[body]), positions, plus)
 	if sim_state.last_surge_tick[player] > _last_surge_tick:
 		_last_surge_tick = sim_state.last_surge_tick[player]
 		surged.emit(global_position, state)
