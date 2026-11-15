@@ -102,13 +102,13 @@ func _input(event: InputEvent) -> void:
 		UiSounds.play(UiSounds.Sound.CONFIRM)
 		open()
 
-## Lobby: until the match start is decided. Match: only during the countdown and the match, after the game
+## Lobby: until the match start is decided. Match: during the countdown, the match and a goal, after the game
 ## over Start means rematch (in the simulation).
 func _can_pause() -> bool:
 	if _in_lobby:
 		return map.state.start_tick == -1
 	var phase := map.state.phase
-	return phase == Simulation.Phase.COUNTDOWN or phase == Simulation.Phase.PLAYING
+	return phase == Simulation.Phase.COUNTDOWN or phase == Simulation.Phase.PLAYING or phase == Simulation.Phase.GOAL
 
 func _is_pause_button(event: InputEvent) -> bool:
 	if event.is_echo() or not event.is_pressed():

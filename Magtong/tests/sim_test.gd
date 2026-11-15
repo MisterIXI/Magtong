@@ -12,6 +12,9 @@ func _init():
 	test_corner_bounce()
 	test_goal_right()
 	test_goal_left()
+	test_goal_celebration()
+	test_overtime_goal()
+	test_goal_at_time_up()
 	test_divider()
 	test_lobby_zones()
 	test_input_encoding()
@@ -180,7 +183,91 @@ func shoot_puck_at_goal(dir: float) -> SimState:
 func test_goal_right():
 	var state := shoot_puck_at_goal(1.0)
 	check(state.scores[0] == 1 and state.scores[1] == 0, "puck in the right goal scores for team 1 (scores %s)" % state.scores)
-	check(state.phase == Simulation.Phase.COUNTDOWN, "goal resets into the countdown")
+	check(state.phase == Simulation.Phase.GOAL, "a goal starts the goal celebration")
+
+## Shoots into the right goal and steps until the goal happened, returns [sim, state, rink].
+func score_right_goal() -> Array:
+	var rink := make_rink()
+	var a: Array = make_match(rink)
+	var sim: Simulation = a[0]
+	var state: SimState = a[1]
+	for t in Simulation.COUNTDOWN_TICKS + 1:
+		sim.step(state, PackedInt32Array())
+	sim.teleport(state, sim.player_body(0), Vector2(-300, 230))
+	sim.teleport(state, sim.player_body(1), Vector2(-300, -230))
+	sim.teleport(state, sim.player_body(2), Vector2(-400, 0))
+	# team 2's keeper right next to the goal, in the way of the shockwave
+	sim.teleport(state, sim.player_body(3), Vector2(440, -140))
+	state.pos[0] = Vector2(300, 0)
+	state.vel[0] = Vector2(1500, 0)
+	for t in 60:
+		sim.step(state, PackedInt32Array())
+		if state.phase == Simulation.Phase.GOAL:
+			break
+	return [sim, state, rink]
+
+func test_goal_celebration():
+	var a := score_right_goal()
+	var sim: Simulation = a[0]
+	var state: SimState = a[1]
+	check(state.phase == Simulation.Phase.GOAL and state.scores[0] == 1, "the goal counts and starts the GOAL phase")
+	check(state.goal_puck == 0 and state.vel[0] == Vector2.ZERO, "the scoring puck stops")
+	var keeper := sim.player_body(3)
+	check(state.vel[keeper].length() > 300.0 and state.vel[keeper].x < 0.0, "the shockwave knocks the keeper away from the goal (v %s)" % state.vel[keeper])
+	var far := sim.player_body(2)
+	check(state.vel[far].length() < 1.0, "players far away aren't pushed")
+	check(is_equal_approx(sim.time_scale(state), Simulation.GOAL_SLOWMO_SCALE), "the celebration starts in slow motion")
+	var puck_pos := state.pos[0]
+	var keeper_pos := state.pos[keeper]
+	var keeper_speed := state.vel[keeper].length()
+	sim.step(state, PackedInt32Array())
+	var moved := state.pos[keeper].distance_to(keeper_pos)
+	check(moved < keeper_speed * Simulation.DT * 0.5, "slow motion: the keeper moves less than half its speed per tick (%.1f)" % moved)
+	# a player trying to run back doesn't get control during the celebration
+	var run := SimInput.encode(Vector2.RIGHT, 0)
+	for t in Simulation.GOAL_SLOWMO_TICKS:
+		sim.step(state, PackedInt32Array([0, 0, 0, run]))
+	check(state.vel[keeper].x < 0.0, "no control during the goal celebration, the keeper keeps drifting")
+	check(is_equal_approx(sim.time_scale(state), 1.0), "back to normal speed after the slow motion")
+	check(state.pos[0] == puck_pos, "the scoring puck stays out of play")
+	check(state.scores[0] == 1, "the parked puck doesn't score again")
+	while state.phase == Simulation.Phase.GOAL:
+		sim.step(state, PackedInt32Array())
+	check(state.phase == Simulation.Phase.COUNTDOWN and state.goal_puck == -1, "after the celebration the countdown starts")
+	check(state.pos[0].x < 100.0 and state.vel[0] == Vector2.ZERO, "the field is reset")
+	var replay := SimState.from_bytes(state.to_bytes())
+	check(replay.goal_puck == state.goal_puck, "goal_puck survives serialization")
+	a[2].free()
+
+func test_overtime_goal():
+	var rink := make_rink()
+	var a: Array = make_match(rink)
+	var sim: Simulation = a[0]
+	var state: SimState = a[1]
+	state.overtime = true
+	for t in Simulation.COUNTDOWN_TICKS + 1:
+		sim.step(state, PackedInt32Array())
+	for i in sim.player_count:
+		sim.teleport(state, sim.player_body(i), Vector2(-200 + i * 100, 230))
+	state.pos[0] = Vector2(300, 0)
+	state.vel[0] = Vector2(1500, 0)
+	for t in 60:
+		sim.step(state, PackedInt32Array())
+	check(state.phase == Simulation.Phase.GOAL, "an overtime goal gets the celebration too")
+	for t in Simulation.GOAL_TICKS:
+		sim.step(state, PackedInt32Array())
+	check(state.phase == Simulation.Phase.GAME_OVER and state.winner == 1, "then the overtime goal ends the game")
+	rink.free()
+
+func test_goal_at_time_up():
+	var a := score_right_goal()
+	var sim: Simulation = a[0]
+	var state: SimState = a[1]
+	state.match_ticks = 0 # the goal came in the last tick
+	for t in Simulation.GOAL_TICKS:
+		sim.step(state, PackedInt32Array())
+	check(state.phase == Simulation.Phase.GAME_OVER and state.winner == 1, "a goal in the last second: celebration, then the game ends")
+	a[2].free()
 
 func test_goal_left():
 	var state := shoot_puck_at_goal(-1.0)
