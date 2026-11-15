@@ -136,16 +136,20 @@ Sound list, sources and music direction: `planning/audio-plan.md`.
 - [ ] Music: menu/lobby theme and a match loop, licenses + credits.
 - [ ] **Goal celebration** (like Rocket League, the climax of every round, worth more than "cheap juice"):
       today a goal resets the field and starts the countdown in the same tick, so there's no moment at all.
-  - [ ] A `GOAL` phase in the simulation (~2 s) between the goal and the reset. The scoring puck leaves play,
+  - [x] A `GOAL` phase in the simulation (~2 s) between the goal and the reset. The scoring puck leaves play,
         everything else keeps moving. An overtime goal gets the same celebration, then game over.
-  - [ ] **Goal explosion that pushes the players**: a shockwave from the scoring puck that knocks nearby players
+  - [x] **Goal explosion that pushes the players**: a shockwave from the scoring puck that knocks nearby players
         (and pucks) away, falling off with distance. In the simulation, so it's the same on every machine.
-  - [ ] **Slow motion** for the first ~0.8 s of the `GOAL` phase, easing back to normal speed: the simulation
+  - [x] **Slow motion** for the first ~0.8 s of the `GOAL` phase, easing back to normal speed: the simulation
         steps with a smaller time step (e.g. 25%), stored in `SimState`. **Never `Engine.time_scale`**: that
         changes the tick rate on one machine and breaks the online time sync. Ticks stay at 60/s.
-  - [ ] Views only: explosion effect in the scoring team's color, screen shake, short flash, "GOAL!" text,
+  - [x] Views only: explosion effect in the scoring team's color, screen shake, short flash, "GOAL!" text,
         score number pop, the air horn, music ducking for a moment.
-  - [ ] Tests: the `GOAL` phase and slow motion in `sim_test.gd`, `rollback_test.gd` stays green.
+        *15.11: all in except music ducking (no music yet). `GoalEffects` (explosion ring in the team color,
+        sparks, flash, shake, guarded against rollback replays like the sounds), "GOAL!" in the countdown label
+        (driven by the phase ticks), score pop, the scoring puck is hidden. Players drift without control during
+        the celebration so the knockback stays visible. Tune the numbers after playing it.*
+  - [x] Tests: the `GOAL` phase and slow motion in `sim_test.gd`, `rollback_test.gd` stays green.
 - [ ] Other visual juice where it's cheap: hit effects, score/timer animations.
 - [ ] **Clearer Flip and Surge visuals** (playtest 15.11): both are hard to see, especially for someone watching
       a stream. Needs a more direct, obvious effect (e.g. a ring/shockwave for Flip on the flipped pucks, a

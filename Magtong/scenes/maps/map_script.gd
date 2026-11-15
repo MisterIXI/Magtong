@@ -33,11 +33,15 @@ var inputs_blocked: bool = false
 var _advantage: float = 0.0
 var _ticks_since_wait: int = 0
 var _sounds: MapSounds
+var _goal_effects: GoalEffects
 
 func _ready():
 	add_child(NetDebugOverlay.new(self))
 	_sounds = MapSounds.new(self)
 	add_child(_sounds)
+	# in simulation coordinates, like the pucks
+	_goal_effects = GoalEffects.new(self)
+	mp_root.add_child(_goal_effects)
 
 func _exit_tree():
 	if session_id != "":
@@ -228,6 +232,8 @@ func _update_views() -> void:
 		players[i].update_from_sim(state, sim.player_body(i), i)
 	if _sounds != null:
 		_sounds.update(state)
+	if _goal_effects != null:
+		_goal_effects.update(state)
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if event.is_pressed() and event.keycode == KEY_F3:

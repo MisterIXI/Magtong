@@ -14,6 +14,8 @@ func update_from_sim(sim_state: SimState, body: int) -> void:
 	if sim_state.reset_tick != _last_reset_tick:
 		_last_reset_tick = sim_state.reset_tick
 		reset_physics_interpolation()
+	# the scoring puck is out of play during the goal celebration, the explosion takes its place
+	visible = not (sim_state.phase == Simulation.Phase.GOAL and sim_state.goal_puck == body)
 	var plus := sim_state.puck_plus[body] == 1
 	if plus != is_plus_pol:
 		set_polarity(plus)
