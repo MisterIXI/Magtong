@@ -13,7 +13,16 @@ var target_speed: float
 var mm: MatchManager
 var shader_tweener: Tween
 var ring_tween: Tween
-var ability_rings: AbilityRings
+var punch_tween: Tween
+## Flip and Surge show as a ripple of the distortion shader around the player (15.11: big drawn rings were
+## too intrusive). Surge is the heavier one and also punches the sprite.
+const FLIP_RIPPLE_TIME: float = 0.25
+const FLIP_RIPPLE_FORCE: float = 0.1
+const SURGE_RIPPLE_TIME: float = 0.4
+const SURGE_RIPPLE_FORCE: float = 0.16
+const RIPPLE_THICKNESS: float = 0.12
+const SURGE_PUNCH: float = 0.2
+var _sprite_base_scale: Vector2
 ## the polarity color follows the magnet almost at once, so what you see is what pulls (playtest 15.11: the
 ## old 0.2 s fade made a player look plus while already pushing as minus)
 const POLARITY_FADE_TIME: float = 0.05
@@ -21,11 +30,7 @@ const POLARITY_FADE_TIME: float = 0.05
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	target_speed = settings.viz_idle_speed
-	# on the player, not on this scaled node, so the flip ring matches the real flip range
-	ability_rings = AbilityRings.new()
-	ability_rings.flip_range = settings.flip_range
-	ability_rings.punch_target = sprite
-	player.add_child.call_deferred(ability_rings)
+	_sprite_base_scale = sprite.scale
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -69,8 +74,7 @@ func _on_player_body_flipped(_pos: Vector2):
 	# both are one_shot, so they will stop emitting by themselves
 	plus_burst_particles.emitting = true
 	minus_burst_particles.emitting = true
-	ring_tweener()
-	ability_rings.play_flip()
+	ring_tweener(FLIP_RIPPLE_TIME, FLIP_RIPPLE_FORCE)
 
 
 func _on_player_body_surged(_pos: Vector2, _pol: Simulation.Polarity):
@@ -78,27 +82,30 @@ func _on_player_body_surged(_pos: Vector2, _pol: Simulation.Polarity):
 		plus_burst_particles.emitting = true
 	else:
 		minus_burst_particles.emitting = true
-	ring_tweener()
-	ability_rings.play_surge(_pol)
+	ring_tweener(SURGE_RIPPLE_TIME, SURGE_RIPPLE_FORCE)
+	_punch()
 
 func _on_player_body_setup_completed(player_body:PlayerBody):
 	mm = player_body.mm
 
-func ring_tweener():
+## A distortion ring runs from the player to the edge of the shader sprite, its push fading out on the way
+## (ends at force 0, so no ring stays behind).
+func ring_tweener(time: float, force: float):
 	if ring_tween != null and ring_tween.is_running():
 		ring_tween.kill()
+	var mat: ShaderMaterial = pol_shader_sprite.material
+	mat.set_shader_parameter("thickness", RIPPLE_THICKNESS)
 	ring_tween = create_tween()
-	ring_tween.tween_method(
-		func(val): pol_shader_sprite.material.set_shader_parameter("size", val),
-		0.0,
-		0.5,
-		0.3
-	)
+	ring_tween.tween_method(func(val): mat.set_shader_parameter("size", val), 0.05, 0.5, time) \
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	ring_tween.parallel()
-	ring_tween.tween_method(
-		func(val): pol_shader_sprite.material.set_shader_parameter("thickness", val),
-		0.3,
-		-0.2,
-		0.3
-	)
+	ring_tween.tween_method(func(val): mat.set_shader_parameter("force", val), force, 0.0, time) \
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	ring_tween.play()
+
+func _punch() -> void:
+	if punch_tween != null and punch_tween.is_running():
+		punch_tween.kill()
+	sprite.scale = _sprite_base_scale * (1.0 + SURGE_PUNCH)
+	punch_tween = create_tween()
+	punch_tween.tween_property(sprite, "scale", _sprite_base_scale, 0.3).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
