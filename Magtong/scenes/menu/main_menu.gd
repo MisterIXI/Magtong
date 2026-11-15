@@ -16,8 +16,26 @@ const TEST_MATCH_TIME: float = 15.0
 var curr_mm_bg: MMBackground
 var previous_menu: Control
 var current_menu: Control
+## full-screen, behind the message panel: no clicks on the menu while a message is open
+var _message_blocker: Control
+## focused before the message opened, gets the focus back when it closes
+var _focus_before_message: Control
+## the message has no OK ("Connecting..."), its button cancels instead
+var _message_cancels: bool = false
 
 func _ready() -> void:
+	_message_blocker = Control.new()
+	_message_blocker.name = "MessageBlocker"
+	_message_blocker.mouse_filter = Control.MOUSE_FILTER_STOP
+	_message_blocker.top_level = true # StartMenu has no size, so the blocker sizes itself to the screen
+	message_panel.add_sibling(_message_blocker)
+	message_panel.get_parent().move_child(_message_blocker, message_panel.get_index())
+	# the only control that can have focus while the message is open
+	var self_path := NodePath(".")
+	for side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]:
+		message_ok_button.set_focus_neighbor(side, self_path)
+	message_ok_button.focus_next = self_path
+	message_ok_button.focus_previous = self_path
 	hide_message()
 	host_steam_button.disabled = not SteamHandler.is_initialized
 	if NetDebug.dev_tools_enabled():
@@ -93,17 +111,44 @@ func _on_join_direct_pressed() -> void:
 	var address := address_edit.text.strip_edges()
 	GameManager.join_direct(address if address != "" else "127.0.0.1")
 
+## A modal message. Without the OK button ("Connecting...") the button cancels and leaves instead.
 func show_message(message: String, with_ok_button: bool = true) -> void:
+	if not message_panel.visible:
+		var focused := get_viewport().gui_get_focus_owner()
+		if focused != null and focused != message_ok_button:
+			_focus_before_message = focused
 	message_label.text = message
-	message_ok_button.visible = with_ok_button
+	_message_cancels = not with_ok_button
+	message_ok_button.text = "Okay" if with_ok_button else "Cancel"
 	message_panel.show()
+	_message_blocker.position = Vector2.ZERO
+	_message_blocker.size = get_viewport_rect().size
+	_message_blocker.show()
 	if with_ok_button:
 		# messages with an OK button are failures (could not host/connect, host left, ...)
 		UiSounds.play(UiSounds.Sound.ERROR)
-		message_ok_button.grab_focus.call_deferred()
+	message_ok_button.grab_focus.call_deferred()
 
 func hide_message() -> void:
+	var was_open := message_panel.visible
 	message_panel.hide()
+	_message_blocker.hide()
+	if was_open:
+		_restore_focus.call_deferred()
+
+func _restore_focus() -> void:
+	if message_panel.visible:
+		return
+	if is_instance_valid(_focus_before_message) and _focus_before_message.is_visible_in_tree():
+		_focus_before_message.grab_focus()
+	elif start_entry_focus != null and start_entry_focus.is_visible_in_tree():
+		start_entry_focus.grab_focus()
+	_focus_before_message = null
+
+func _on_message_button_pressed() -> void:
+	if _message_cancels:
+		GameManager.return_to_menu()
+	hide_message()
 
 
 func _on_quit_pressed() -> void:

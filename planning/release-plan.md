@@ -108,10 +108,13 @@ Goal: the game works start to finish and could ship as is, even if it isn't pret
       *14.11: `spawn_mm_background()` only spawns when no background is running, `hide_all()` frees it and
       clears the reference. Checked in the running game: one background after Settings and back and after two
       trips through the lobby.*
-- [ ] **Popup doesn't trap focus** (online playtest 15.11): the disconnect popup in the menu is still open while
+- [x] **Popup doesn't trap focus** (online playtest 15.11): the disconnect popup in the menu is still open while
       focus can move to the menu buttons behind it.
-- [ ] **No focus after closing a popup** (online playtest 15.11): after the popup closes, no menu control has
+- [x] **No focus after closing a popup** (online playtest 15.11): after the popup closes, no menu control has
       focus and a controller can't navigate anymore. Give focus back to the button that was focused before.
+      *15.11: the menu message is modal now (full-screen click blocker, focus stays on its button, focus goes
+      back to the button from before when it closes). "Connecting..." / "Creating Steam lobby..." got a Cancel
+      button that leaves; a Steam answer arriving after Cancel is dropped. Tested headless with keys and mouse.*
 - [ ] **Start-of-round corner bounces look wrong** (online playtest 15.11): a puck coming in at a downward angle
       toward the goal sometimes bounces away from the goal instead. Check the corner segments/normals in the
       custom physics (maybe a corner hit resolved against the wrong segment); reproduce in `sim_test.gd`.

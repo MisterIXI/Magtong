@@ -12,6 +12,8 @@ var steam_name: String = ""
 var is_initialized: bool = false
 var lobby_id: int = 0
 var _host_id: int = 0 # Steam id of the host of our lobby, 0 = none
+## a create/join is on its way; leave_lobby (e.g. Cancel on "Connecting...") clears it, so a late answer is dropped
+var _pending: bool = false
 
 func _ready():
 	initilize_steam()
@@ -47,12 +49,14 @@ func create_lobby() -> void:
 	if not is_initialized:
 		push_warning("Steam is not initialized")
 		return
+	_pending = true
 	Steam.createLobby(Steam.LOBBY_TYPE_FRIENDS_ONLY, MAX_LOBBY_MEMBERS)
 
 func join_lobby(new_lobby_id: int) -> void:
 	if not is_initialized:
 		push_warning("Steam is not initialized")
 		return
+	_pending = true
 	Steam.joinLobby(new_lobby_id)
 
 func open_invite_dialog() -> void:
@@ -65,8 +69,14 @@ func leave_lobby() -> void:
 		GameManager.print_message("Steam: left lobby %d" % lobby_id)
 		lobby_id = 0
 	_host_id = 0
+	_pending = false
 
 func _on_lobby_created(connect_result: int, new_lobby_id: int) -> void:
+	if not _pending:
+		if connect_result == Steam.RESULT_OK:
+			Steam.leaveLobby(new_lobby_id) # cancelled meanwhile
+		return
+	_pending = false
 	if connect_result != Steam.RESULT_OK:
 		GameManager.return_to_menu("Could not create the Steam lobby (%d)" % connect_result)
 		return
@@ -88,6 +98,10 @@ func _on_join_requested(new_lobby_id: int, _friend_id: int) -> void:
 	join_lobby(new_lobby_id)
 
 func _on_lobby_joined(new_lobby_id: int, _permissions: int, _locked: bool, response: int) -> void:
+	if not _pending and new_lobby_id != lobby_id:
+		if response == Steam.CHAT_ROOM_ENTER_RESPONSE_SUCCESS:
+			Steam.leaveLobby(new_lobby_id) # cancelled meanwhile
+		return
 	if response != Steam.CHAT_ROOM_ENTER_RESPONSE_SUCCESS:
 		GameManager.return_to_menu("Could not join the Steam lobby (%d)" % response)
 		return
@@ -95,6 +109,7 @@ func _on_lobby_joined(new_lobby_id: int, _permissions: int, _locked: bool, respo
 	var owner := Steam.getLobbyOwner(lobby_id)
 	if owner == steam_id:
 		return # we created it, _on_lobby_created handles the host side
+	_pending = false
 	var host := Steam.getLobbyData(lobby_id, LOBBY_HOST_KEY).to_int()
 	GameManager.print_message("Steam: joined lobby %d, owner %d, host %d" % [lobby_id, owner, host])
 	if host == 0 or owner != host:
