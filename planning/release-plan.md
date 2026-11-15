@@ -165,6 +165,8 @@ Sound list, sources and music direction: `planning/audio-plan.md`.
       intrusive, moving with the player), and so was a strong distortion for both (unreadable fast, and the
       two looked the same). Now distinct: Flip zaps lightning lines to the flipped pucks (`flip_zap.gd`),
       Surge keeps a moderate distortion ripple plus a +10 % sprite punch (`player_visuals.gd` constants).*
+      *Flip zap: good for now. Surge maybe still too much in a real match: check at the next playtest
+      (`SURGE_RIPPLE_FORCE`, `SURGE_PUNCH`).*
 - [ ] **Team colors that aren't red and blue**: red/blue is also the magnet polarity (plus/minus), and playtesters
       mixed them up. Pick two team colors that can't be confused with the magnet colors (also check color
       blindness). Open decision: fixed team colors or adjustable (per team in the lobby, or a settings option);
