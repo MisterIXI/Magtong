@@ -133,9 +133,22 @@ func print_message(message: String):
 	message_scrollbox.scroll_vertical = int(message_scrollbox.get_v_scroll_bar().max_value)
 
 func _input(event):
-	# F12 shows the message log (debug builds only)
-	if NetDebug.dev_tools_enabled() and event is InputEventKey and event.pressed and event.keycode == KEY_F12:
+	if not NetDebug.dev_tools_enabled() or not event is InputEventKey or not event.pressed or event.echo:
+		return
+	# F12 shows the message log, F10 switches the soft EQ on the SFX bus for comparing (debug builds only)
+	if event.keycode == KEY_F12:
 		toggle_message_panel()
+	elif event.keycode == KEY_F10:
+		toggle_soft_sfx_eq()
+
+## The SFX bus has a gentle high cut (SoftEQ in default_bus_layout.tres) so sounds from different packs aren't
+## sharp and sound like one family (audio plan: "soft, not sharp").
+func toggle_soft_sfx_eq() -> void:
+	var bus := AudioServer.get_bus_index(&"SFX")
+	var enabled := not AudioServer.is_bus_effect_enabled(bus, 0)
+	AudioServer.set_bus_effect_enabled(bus, 0, enabled)
+	print_message("Soft SFX EQ: %s" % ("on" if enabled else "off"))
+	UiSounds.play(UiSounds.Sound.CONFIRM)
 
 func toggle_message_panel():
 	message_panel.visible = not message_panel.visible

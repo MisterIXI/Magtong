@@ -6,12 +6,12 @@ class_name PlayerSettings
 @export var magnet_force: float = 100
 @export var magnet_dropoff: Curve
 @export var magnet_range: float = 50 
-@export var pulse_range: float = 150
+@export var flip_range: float = 150
 # category: controller
 @export_group("Controller")
 @export var speed: float = 50
 @export var accell: float = 50
-@export var pulse_cooldown: float = 1.0
+@export var flip_cooldown: float = 1.0
 # category: Physics (defaults match the old RigidBody2D setup)
 @export_group("Physics")
 @export var player_radius: float = 22.0
@@ -45,6 +45,6 @@ class_name PlayerSettings
 ]
 
 @export_category("Abilities")
-@export_group("Impulse")
-@export var impulse_cooldown: float = 1
-@export var impulse_mult: float = 1.0
+@export_group("Surge")
+@export var surge_cooldown: float = 1
+@export var surge_mult: float = 1.0

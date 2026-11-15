@@ -1,9 +1,36 @@
-# Magtong: Audio Plan (Week 2)
+# Magtong: Audio Plan
 
 Shopping list for the 1.0 sounds and music. Tick items off when a file is picked and in `Magtong/assets/sounds/`.
 *Status 08.11: menu sounds (`UiSounds`, `139ce60`) and the first gameplay/lobby sounds (`MapSounds`, `7260eec`)
 are in, all from Kenney packs. What's ticked below is in the game; which file is in `assets/sounds/LICENSES.md`.*
 Every file gets a line in `assets/sounds/LICENSES.md` (source, author, license).
+
+## Audio direction (decided 14.11)
+**Flash-era / Newgrounds electronic, but soft.** It matches the visuals (flat vector art, full simple colors,
+browser games of the 2005–2015 era). Electronic sound effects (hum, zaps, synth blips) and electronic music;
+electro swing at most as a flavor on top (beat and bass first, short brass hits, no long clarinet/brass
+melodies: that's where it tips into "circus music").
+
+Not the arcade sports broadcast (Rocket League, Windjammers: crowd, horn, announcer), that's why the air horn
+sticks out. Playful/tactile (Overcooked) is the fallback direction if this doesn't work.
+
+**Soft, not sharp** (the most important rule, personal taste):
+- No shrill highs: little energy around 2–5 kHz. Rounded waveforms (sine, triangle, filtered pulse) instead of
+  raw square waves. Crunchy/saturated is fine, painful is not.
+- No instant hard attacks on frequent sounds; a few ms of attack.
+- jsfxr/Bfxr/ChipTone: sine or triangle, low-pass filter down, a bit of attack, lower base pitch.
+- A gentle high-shelf cut / low-pass on the whole SFX bus ties sounds from different packs into one family.
+  *15.11: in as `SoftEQ` (EQ6 on the SFX bus, 3.2 kHz -5 dB, 10 kHz -9 dB), F10 toggles it in debug builds.
+  Stronger cuts sound muffled (behind a cloth / underwater); at these values the difference is barely
+  noticeable. **Revisit in final polish**: keep, tune, or drop it once all sounds are final.*
+
+References to listen to (gameplay videos, watch scoring moments, hits, menus):
+- Flash/Newgrounds electronic: Geometry Dash, Castle Crashers, N++, Hokra / Videoball (closest visually).
+- For hit feel only: Lethal League Blaze (punchy hits with hit-stop).
+- Music source: the Newgrounds audio portal (many tracks free with credit, check each license).
+
+Process: listen to the references, then try 2–3 candidates per sound in a real match (swap the constant in
+`MapSounds`) instead of picking from the file browser.
 
 General rules for SFX:
 - Short, punchy, dry (no reverb tail), so many sounds at once stay clear.
@@ -18,24 +45,34 @@ Kenney packs: `~/Applications/kenney-asset-launcher/Audio/` (all CC0, no credit 
       higher impact speed (pick a soft and a hard set, choose by speed).
 - [ ] **Puck hits wall**: sharper, harder "clack" with a bit of rattle than the player hit.
       *For now the player-hit sounds at a higher pitch (`WALL_HIT_PITCH`); an own wall sound is still open.*
-- [ ] **Magnet on**: short electric charge-up "zzhm".
-- [x] **Magnet loop**: quiet, low hum while the magnet is held. Plus and minus at slightly different pitches.
+- ~~**Magnet on**~~: dropped (14.11), the hum starting is enough.
+- [ ] **Magnet loop**: quiet, low hum while the magnet is held. Plus and minus at slightly different pitches.
       Must loop seamlessly.
-- [ ] **Magnet off**: quick power-down "zip".
-- [ ] **Polarity switch** (`polarity_changed`): a click plus a small zap, like a relay switching.
-- [ ] **Pulse** (`pulse_emitted`): bassy "whoomp" shockwave with some electric crackle on top.
-- [ ] **Goal**: big synth stinger or horn, the loudest sound in the game.
+      *Playtest 15.11: the hum is annoying. Turned down from -14 to -20 dB; replacing it with something less
+      grating is still open.*
+- ~~**Magnet off**~~: dropped, the hum stopping is enough.
+- ~~**Plus ↔ minus while holding**~~: dropped, the hum already changes pitch.
+- [x] **Flip** (A: flips nearby pucks' polarity): a short hum sweep from low to high (the
+      field reversing) plus a metallic clack (`flip_clack.ogg`). Mechanical/electrical, related to the hum.
+- [x] **Surge** (B: short burst of magnet strength): the player's own hum spikes louder and higher for ~0.35 s.
+      *14.11: good enough for now, not perfect yet. Flip and Surge pressed together sound a bit odd.*
+- [x] **Goal**: big synth stinger or horn, the loudest sound in the game. *(air horn from Pixabay, like Rocket League; 14.11: out of place and too loud,
+      lowered to -8 dB, maybe layer it or replace it, see the goal celebration)*
 - [x] **Countdown**: three short beeps, then a higher, longer "go". *(one beep file, "go" is pitched up)*
-- [ ] **Last 10 seconds**: soft tick each second (or reuse the countdown beep, quieter).
+      *Playtest 15.11: now the team pick click (`ui/team_pick.ogg`) instead of the beep, the old beep file is gone.
+      "Go" at pitch 2.0 works for now but feels quieter; should become its own sound later.*
+- [ ] **Last 10 seconds**: soft tick each second (or reuse the countdown beep, quieter). *(not in the game yet)*
 - [x] **Match end**: arena-style buzzer. *(placeholder `scroll_004`, not really a buzzer yet)*
 
 ## Lobby
 - [x] **Player joins**: a soft "pop".
-- [ ] **Team pick**: a swoosh or slide.
+- [x] **Team pick**: a swoosh or slide. *(a short switch click on every entry into a team area,
+      at most one per 0.3 s per player; before 15.11 stepping back into the same area stayed silent)*
 - [x] **Ready**: a rising chime. **Unready**: the same chime falling (or pitched down).
 - [ ] **Start bars** (hold both magnets to start, `start_hold_plus/minus`): a rising tone while a player's bars
       fill (pitch follows the fill), a click when that player's bars meet.
-- [ ] **Everyone confirmed / match starts**: a short fanfare / confirmation jingle.
+- ~~**Everyone confirmed / match starts**~~: not needed, the ready chime plays when everyone is in a team and
+      the countdown beeps follow the start right away.
 
 ## Menu
 - [x] **Move focus**: a soft tick.
@@ -62,7 +99,7 @@ Worth a listen for gameplay too (or as placeholders until your own sounds exist)
 - Countdown: `Digital Audio` `tone*`, `twoTone*`, `threeTone*`
 - Magnet on/off: `Digital Audio` `phaserUp*` / `phaserDown*`; polarity switch: `Digital Audio` `zap*`
 - Magnet loop: `Sci-Fi Sounds` `forceField_*`, `engineCircular_*`
-- Pulse: `Sci-Fi Sounds` `lowFrequency_explosion_*`, `forceField_*`
+- Flip / Surge: `Sci-Fi Sounds` `lowFrequency_explosion_*`, `forceField_*`
 - Puck hits: `Impact Sounds` `impactPlate_light_*`, `impactGeneric_light_*`, `impactPlank_medium_*`
 - Goal / win stingers: `Music Jingles/Audio (Hit)`; announcer lines ("ready", "go", "winner", "tie"):
   `Synth Voice 1`, `Voiceover Pack Fighter`
@@ -74,9 +111,9 @@ Worth a listen for gameplay too (or as placeholders until your own sounds exist)
 - Your own recordings: plastic objects on a table for the puck hits (phone recording + a bit of EQ).
 
 ## Music
-Direction: electro swing as the brand sound (matches the trailer), with matches kept tighter and adaptive so
-the same track doesn't wear out.
-- [ ] **Menu/lobby theme**: electro swing, the main "this is Magtong" track. Loops cleanly.
+Direction: soft flash-era electronic (see "Audio direction"), electro swing only as a flavor. Matches kept
+tighter and adaptive so the same track doesn't wear out. The trailer track (electro swing) stays for the trailer.
+- [ ] **Menu/lobby theme**: the main "this is Magtong" track. Loops cleanly.
 - [ ] **Match loop as stems** (drums, bass, melody, high-energy layer) in the same style. Play them with
       `AudioStreamSynchronized` and fade layers in by game state: base at kickoff, full in the last 30 s or on a
       tied score. Only driven by score/clock from the visuals, so rollback can't affect it.

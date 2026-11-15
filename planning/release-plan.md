@@ -22,7 +22,11 @@ with friends over the internet, audio from licensed/CC0 packs, the existing rink
 **Simple bots only if they fit before the release candidate**, otherwise they're the first post-launch update.
 Store page is already live as "Coming soon".
 
-Order of work: **finish the game → polish → tutorial → bots.** Each step ends with a playable exported build.
+Order of work: **finish the game → polish → tutorial → bots.**
+
+**Names (14.11):** the two abilities are **Flip** (A / Space: flips the polarity of nearby pucks) and **Surge**
+(B / L: a short burst of magnet strength, only with a magnet held). Used everywhere: code, UI, tutorial, store.
+"Pulse" is gone, it fit both. Each step ends with a playable exported build.
 
 ---
 
@@ -104,16 +108,44 @@ Goal: the game works start to finish and could ship as is, even if it isn't pret
       *14.11: `spawn_mm_background()` only spawns when no background is running, `hide_all()` frees it and
       clears the reference. Checked in the running game: one background after Settings and back and after two
       trips through the lobby.*
+- [ ] **Popup doesn't trap focus** (online playtest 15.11): the disconnect popup in the menu is still open while
+      focus can move to the menu buttons behind it.
+- [ ] **No focus after closing a popup** (online playtest 15.11): after the popup closes, no menu control has
+      focus and a controller can't navigate anymore. Give focus back to the button that was focused before.
+- [ ] **Start-of-round corner bounces look wrong** (online playtest 15.11): a puck coming in at a downward angle
+      toward the goal sometimes bounces away from the goal instead. Check the corner segments/normals in the
+      custom physics (maybe a corner hit resolved against the wrong segment); reproduce in `sim_test.gd`.
 
 ## Week 3 (09.–15.11): polish
 Sound list, sources and music direction: `planning/audio-plan.md`.
 - [x] Rollback-safe gameplay sound: `MapSounds` reacts to state changes seen by the views, never from inside
       `Simulation.step` (`7260eec`: puck hits, magnet hum, countdown, match end, lobby join/ready).
 - [x] Menu sounds (`UiSounds` autoload), licenses in `assets/sounds/LICENSES.md`.
-- [ ] The remaining sounds from the audio plan (goal, pulse, polarity switch, magnet on/off, team pick, everyone
-      ready, last 10 seconds), then tick off the audio plan.
+- [ ] The remaining sounds from the audio plan, then tick off the audio plan.
+      *14.11: goal (air horn), flip (hum sweep + clack), strength burst (hum spike), team pick are in; magnet on/off
+      clicks dropped (the hum is enough). Open: last 10 seconds,
+      start bars, an own wall hit sound, a real match end buzzer.*
 - [ ] Music: menu/lobby theme and a match loop, licenses + credits.
-- [ ] Visual juice where it's cheap: goal and hit effects, screen shake, score/timer animations.
+- [ ] **Goal celebration** (like Rocket League, the climax of every round, worth more than "cheap juice"):
+      today a goal resets the field and starts the countdown in the same tick, so there's no moment at all.
+  - [ ] A `GOAL` phase in the simulation (~2 s) between the goal and the reset. The scoring puck leaves play,
+        everything else keeps moving. An overtime goal gets the same celebration, then game over.
+  - [ ] **Goal explosion that pushes the players**: a shockwave from the scoring puck that knocks nearby players
+        (and pucks) away, falling off with distance. In the simulation, so it's the same on every machine.
+  - [ ] **Slow motion** for the first ~0.8 s of the `GOAL` phase, easing back to normal speed: the simulation
+        steps with a smaller time step (e.g. 25%), stored in `SimState`. **Never `Engine.time_scale`**: that
+        changes the tick rate on one machine and breaks the online time sync. Ticks stay at 60/s.
+  - [ ] Views only: explosion effect in the scoring team's color, screen shake, short flash, "GOAL!" text,
+        score number pop, the air horn, music ducking for a moment.
+  - [ ] Tests: the `GOAL` phase and slow motion in `sim_test.gd`, `rollback_test.gd` stays green.
+- [ ] Other visual juice where it's cheap: hit effects, score/timer animations.
+- [ ] **Clearer Flip and Surge visuals** (playtest 15.11): both are hard to see, especially for someone watching
+      a stream. Needs a more direct, obvious effect (e.g. a ring/shockwave for Flip on the flipped pucks, a
+      strong glow/size pulse on the player for Surge). Views only.
+- [ ] **Team colors that aren't red and blue**: red/blue is also the magnet polarity (plus/minus), and playtesters
+      mixed them up. Pick two team colors that can't be confused with the magnet colors (also check color
+      blindness). Open decision: fixed team colors or adjustable (per team in the lobby, or a settings option);
+      decide later. Touches the lobby team areas, skins/outlines, HUD score, "Team Red/Blue Wins!" text.
 - [ ] Credits screen (assets, music licenses, Godot, GodotSteam).
 - [ ] Windows icon with a 256×256 size.
 
@@ -121,14 +153,14 @@ Sound list, sources and music direction: `planning/audio-plan.md`.
 - [ ] Controls / how-to-play screen (keyboard + gamepad glyphs, the existing `assets/icons`), reachable from the
       main menu and the lobby. Short hint text in the lobby: join, pick a team, ready up, hold both magnets to
       start, Start/Esc for the menu.
-- [ ] Tutorial: what magnets, polarity and the pulse do, ideally playable (a short guided practice on the rink)
+- [ ] Tutorial: what magnets, polarity, Flip and Surge do, ideally playable (a short guided practice on the rink)
       rather than only text. Timebox it; the how-to-play screen is the fallback.
 - [ ] Store: update screenshots/trailer if the game looks noticeably different now.
 
 ## Week 4–5: bots (stretch, cut line)
 - [ ] **Decide on Mon 23.11**: if weeks 2–4 are done, timebox simple bots to 3 days, otherwise move them to the
       first post-launch update.
-- [ ] Simple scripted bots: chase the puck, pick the polarity that pulls it toward the opponent's goal, pulse when
+- [ ] Simple scripted bots: chase the puck, pick the polarity that pulls it toward the opponent's goal, flip when
       close. They read `SimState` and produce `SimInput` like a player, so they also fill empty slots online later.
 - [ ] Bots selectable in the lobby (add bot / remove bot), so a single player can try the game.
 
@@ -160,9 +192,17 @@ Sound list, sources and music direction: `planning/audio-plan.md`.
       Leave. A host who leaves on purpose now shows "The host left" instead of "Lost the connection". Tested
       with two local instances over direct connect (client leaves lobby and match).*
 - [ ] Online UX states: connecting, host left, timed out, can't connect (direct connect without port forwarding).
+- [ ] **Can't rejoin a lobby you left** (Steam playtest 15.11): P1 hosts, P2 joins, P1 leaves (P2 now hosts?),
+      P1 joins P2 through Steam → P1 stays on "Connecting..." forever, also after restarting the game.
+      Probably stale lobby/peer state on one side; needs a timeout with an error message either way.
+- [ ] **Crash while connecting** (Steam playtest 15.11): while P1 is stuck on "Connecting...", P2 closes the game
+      → P1's game crashes without any message. Must fall back to the menu with "Lost the connection"/"Can't
+      connect".
 - [ ] More online tests: 2v2 (two machines with two local players each), a weaker connection, host on Windows and
       on Linux.
 - [ ] Store page: mention online play with friends (Steam invites), add the online multiplayer features/tags.
+- *First real online playtest over Steam (15.11, both of us hosted a few matches): very stable, no
+  disconnects, barely any rollbacks or visible lag. Bugs found are listed above and under Known bugs.*
 - `tests/rollback_test.gd` is now a release blocker, not just a determinism check.
 
 Still true from the "online after launch" days:

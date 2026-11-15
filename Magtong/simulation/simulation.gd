@@ -49,15 +49,15 @@ var player_spawn_groups: Array[PackedVector2Array] = [] # [group][team - 1]
 var match_length_ticks: int = 0
 var skin_count: int = 1
 
-var pulse_cd_ticks: int
-var ability_cd_ticks: int
+var flip_cd_ticks: int
+var surge_cd_ticks: int
 var falloff: PackedFloat32Array = PackedFloat32Array()
 
 func _init(settings: PlayerSettings, mode: Mode = Mode.SANDBOX) -> void:
 	self.settings = settings
 	self.mode = mode
-	pulse_cd_ticks = roundi(settings.pulse_cooldown * TICK_RATE)
-	ability_cd_ticks = roundi(settings.impulse_cooldown * TICK_RATE)
+	flip_cd_ticks = roundi(settings.flip_cooldown * TICK_RATE)
+	surge_cd_ticks = roundi(settings.surge_cooldown * TICK_RATE)
 	# bake the curve, so the simulation only does plain arithmetic on fixed values
 	falloff.resize(FALLOFF_SAMPLES)
 	for i in FALLOFF_SAMPLES:
@@ -119,10 +119,10 @@ func add_player(state: SimState, pos: Vector2, team: int = 0, team_slot: int = 0
 	state.vel.append(Vector2.ZERO)
 	state.polarity.append(Polarity.IDLE)
 	state.prev_buttons.append(0)
-	state.pulse_cd.append(0)
-	state.ability_cd.append(0)
-	state.last_pulse_tick.append(-1)
-	state.last_ability_tick.append(-1)
+	state.flip_cd.append(0)
+	state.surge_cd.append(0)
+	state.last_flip_tick.append(-1)
+	state.last_surge_tick.append(-1)
 	state.zone.append(-1)
 	state.skin.append(skin)
 	state.start_hold_plus.append(0)
@@ -169,10 +169,10 @@ func step(state: SimState, inputs: PackedInt32Array) -> void:
 				state.skin[i] = posmod(state.skin[i] - 1, skin_count)
 			if pressed & SimInput.AUX_RIGHT:
 				state.skin[i] = posmod(state.skin[i] + 1, skin_count)
-		if state.pulse_cd[i] > 0:
-			state.pulse_cd[i] -= 1
-		if state.ability_cd[i] > 0:
-			state.ability_cd[i] -= 1
+		if state.flip_cd[i] > 0:
+			state.flip_cd[i] -= 1
+		if state.surge_cd[i] > 0:
+			state.surge_cd[i] -= 1
 		var target_vel := Vector2.ZERO
 		var pol := Polarity.IDLE
 		if controls_active:
@@ -181,10 +181,10 @@ func step(state: SimState, inputs: PackedInt32Array) -> void:
 		state.polarity[i] = pol
 		state.vel[body] = state.vel[body].move_toward(target_vel, settings.accell * DT)
 		if controls_active:
-			if pressed & SimInput.PRIMARY and state.pulse_cd[i] == 0:
-				_pulse(state, i)
-			if pressed & SimInput.SECONDARY and state.ability_cd[i] == 0 and pol != Polarity.IDLE:
-				_impulse(state, i)
+			if pressed & SimInput.FLIP and state.flip_cd[i] == 0:
+				_flip(state, i)
+			if pressed & SimInput.SURGE and state.surge_cd[i] == 0 and pol != Polarity.IDLE:
+				_surge(state, i)
 	_apply_magnets(state)
 	_integrate(state)
 	match mode:
@@ -234,20 +234,20 @@ func _apply_magnets(state: SimState) -> void:
 				vel[body] -= dv * inv_mass[body]
 	state.vel = vel
 
-func _pulse(state: SimState, player: int) -> void:
+func _flip(state: SimState, player: int) -> void:
 	var body := puck_count + player
-	state.pulse_cd[player] = pulse_cd_ticks
-	state.last_pulse_tick[player] = state.tick
-	var range_sq := settings.pulse_range * settings.pulse_range
+	state.flip_cd[player] = flip_cd_ticks
+	state.last_flip_tick[player] = state.tick
+	var range_sq := settings.flip_range * settings.flip_range
 	for k in puck_count:
 		if state.pos[k].distance_squared_to(state.pos[body]) < range_sq:
 			state.puck_plus[k] = 1 - state.puck_plus[k]
 
-func _impulse(state: SimState, player: int) -> void:
+func _surge(state: SimState, player: int) -> void:
 	var body := puck_count + player
 	var pol := state.polarity[player]
-	state.ability_cd[player] = ability_cd_ticks
-	state.last_ability_tick[player] = state.tick
+	state.surge_cd[player] = surge_cd_ticks
+	state.last_surge_tick[player] = state.tick
 	for k in puck_count:
 		var diff := state.pos[k] - state.pos[body]
 		var dist := diff.length()
@@ -255,7 +255,7 @@ func _impulse(state: SimState, player: int) -> void:
 			continue
 		var puck_pol := Polarity.POS if state.puck_plus[k] == 1 else Polarity.NEG
 		var mult := 1.0 if puck_pol == pol else -1.0
-		var force := _falloff(dist / settings.magnet_range) * settings.magnet_force * mult * settings.impulse_mult
+		var force := _falloff(dist / settings.magnet_range) * settings.magnet_force * mult * settings.surge_mult
 		state.vel[k] += diff / dist * force * inv_mass[k]
 
 func _falloff(x: float) -> float:

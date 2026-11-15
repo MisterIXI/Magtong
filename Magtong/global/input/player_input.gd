@@ -31,10 +31,10 @@ func execute_input(input_info: InputInfo) -> void:
 			_set_button(SimInput.PLUS, input_info.axis_value > 0.0)
 		InputInfo.InputType.MINUS:
 			_set_button(SimInput.MINUS, input_info.axis_value > 0.0)
-		InputInfo.InputType.PRIMARY:
-			_set_button(SimInput.PRIMARY, input_info.is_pressed)
-		InputInfo.InputType.SECONDARY:
-			_set_button(SimInput.SECONDARY, input_info.is_pressed)
+		InputInfo.InputType.FLIP:
+			_set_button(SimInput.FLIP, input_info.is_pressed)
+		InputInfo.InputType.SURGE:
+			_set_button(SimInput.SURGE, input_info.is_pressed)
 		InputInfo.InputType.MENU:
 			_set_button(SimInput.MENU, input_info.is_pressed)
 		InputInfo.InputType.AUX_LEFT:
