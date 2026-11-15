@@ -157,9 +157,12 @@ Sound list, sources and music direction: `planning/audio-plan.md`.
         the celebration so the knockback stays visible. Tune the numbers after playing it.*
   - [x] Tests: the `GOAL` phase and slow motion in `sim_test.gd`, `rollback_test.gd` stays green.
 - [ ] Other visual juice where it's cheap: hit effects, score/timer animations.
-- [ ] **Clearer Flip and Surge visuals** (playtest 15.11): both are hard to see, especially for someone watching
+- [x] **Clearer Flip and Surge visuals** (playtest 15.11): both are hard to see, especially for someone watching
       a stream. Needs a more direct, obvious effect (e.g. a ring/shockwave for Flip on the flipped pucks, a
       strong glow/size pulse on the player for Surge). Views only.
+      *15.11: `AbilityRings` (code-drawn): Flip snaps a plus/minus ring out to exactly the flip range, Surge a
+      thick shockwave in the player's color plus a punch of the sprite; flipped pucks pop with a white ring;
+      the player's polarity color now switches in 0.05 s instead of fading 0.2 s. Check on a stream/recording.*
 - [ ] **Team colors that aren't red and blue**: red/blue is also the magnet polarity (plus/minus), and playtesters
       mixed them up. Pick two team colors that can't be confused with the magnet colors (also check color
       blindness). Open decision: fixed team colors or adjustable (per team in the lobby, or a settings option);
