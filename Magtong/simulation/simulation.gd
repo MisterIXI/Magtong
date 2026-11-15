@@ -6,7 +6,7 @@ extends RefCounted
 ## This class only holds static data (geometry, body sizes, spawns), everything that changes is in SimState.
 
 enum Mode { SANDBOX, LOBBY, MATCH }
-enum Phase { NONE, COUNTDOWN, PLAYING, GAME_OVER }
+enum Phase { NONE, COUNTDOWN, PLAYING, GAME_OVER, GOAL }
 enum Polarity { IDLE, POS, NEG }
 
 const TICK_RATE: int = 60
@@ -18,6 +18,13 @@ const START_HOLD_TICKS: int = TICK_RATE
 ## how fast a released magnet's start bar empties again, in ticks per tick
 const START_HOLD_DRAIN: int = 3
 const FALLOFF_SAMPLES: int = 256
+## Goal celebration: the GOAL phase between a goal and the reset. The scoring puck leaves play, a shockwave
+## knocks everything else away, the players drift without control. (Slow motion was tried and dropped
+## 15.11: without control it only made the knockback look wrong.)
+const GOAL_TICKS: int = 2 * TICK_RATE
+const GOAL_PUSH_RANGE: float = 450.0
+## speed a body right next to the goal gets, falling off linearly to 0 at GOAL_PUSH_RANGE
+const GOAL_PUSH_SPEED: float = 1400.0
 
 var settings: PlayerSettings
 var mode: Mode
@@ -201,14 +208,16 @@ func step(state: SimState, inputs: PackedInt32Array) -> void:
 			target_vel = SimInput.get_move(input).limit_length(1.0) * settings.speed
 			pol = _choose_polarity(buttons, pressed, state.polarity[i])
 		state.polarity[i] = pol
-		state.vel[body] = state.vel[body].move_toward(target_vel, settings.accell * DT)
+		if state.phase != Phase.GOAL:
+			state.vel[body] = state.vel[body].move_toward(target_vel, settings.accell * DT)
 		if controls_active:
 			if pressed & SimInput.FLIP and state.flip_cd[i] == 0:
 				_flip(state, i)
 			if pressed & SimInput.SURGE and state.surge_cd[i] == 0 and pol != Polarity.IDLE:
 				_surge(state, i)
-	_apply_magnets(state)
-	_integrate(state)
+	var frozen := state.goal_puck if state.phase == Phase.GOAL else -1
+	_apply_magnets(state, frozen)
+	_integrate(state, frozen)
 	match mode:
 		Mode.LOBBY:
 			_update_zones(state)
@@ -233,7 +242,8 @@ func _choose_polarity(buttons: int, pressed: int, previous: Polarity) -> Polarit
 		return Polarity.NEG
 	return Polarity.IDLE
 
-func _apply_magnets(state: SimState) -> void:
+## frozen: a puck that is out of play (the scoring puck during the goal celebration), -1 = none
+func _apply_magnets(state: SimState, frozen: int) -> void:
 	var pos := state.pos
 	var vel := state.vel
 	for i in player_count:
@@ -242,6 +252,8 @@ func _apply_magnets(state: SimState) -> void:
 			continue
 		var body := puck_count + i
 		for k in puck_count:
+			if k == frozen:
+				continue
 			var diff := pos[k] - pos[body]
 			var dist := diff.length()
 			if dist <= 0.0:
@@ -291,7 +303,7 @@ func _falloff(x: float) -> float:
 #endregion
 
 #region physics
-func _integrate(state: SimState) -> void:
+func _integrate(state: SimState, frozen: int) -> void:
 	var pos := state.pos
 	var vel := state.vel
 	var spin := state.puck_spin
@@ -302,13 +314,15 @@ func _integrate(state: SimState) -> void:
 	var spin_damp := maxf(0.0, 1.0 - settings.puck_spin_damp * DT)
 	for k in puck_count:
 		spin[k] *= spin_damp
+	if frozen != -1:
+		vel[frozen] = Vector2.ZERO
 	var sub_dt := DT / SUBSTEPS
 	for s in SUBSTEPS:
 		for b in body_count:
 			pos[b] += vel[b] * sub_dt
-		_collide_bodies(state, pos, vel, spin, body_count)
+		_collide_bodies(state, pos, vel, spin, body_count, frozen)
 		# walls last, so they always win against body pushes
-		_collide_walls(state, pos, vel, spin, body_count)
+		_collide_walls(state, pos, vel, spin, body_count, frozen)
 	var angle := state.puck_angle
 	for k in puck_count:
 		angle[k] = wrapf(angle[k] + spin[k] * DT, -PI, PI)
@@ -345,9 +359,13 @@ func _record_hit(state: SimState, puck: int, speed: float, is_wall: bool) -> voi
 func _grip_spin(spin: PackedFloat32Array, puck: int, slip: float) -> void:
 	spin[puck] += settings.puck_spin_grip * slip / radius[puck]
 
-func _collide_bodies(state: SimState, pos: PackedVector2Array, vel: PackedVector2Array, spin: PackedFloat32Array, body_count: int) -> void:
+func _collide_bodies(state: SimState, pos: PackedVector2Array, vel: PackedVector2Array, spin: PackedFloat32Array, body_count: int, frozen: int) -> void:
 	for i in body_count:
+		if i == frozen:
+			continue
 		for j in range(i + 1, body_count):
+			if j == frozen:
+				continue
 			var r := radius[i] + radius[j]
 			var diff := pos[j] - pos[i]
 			var dist_sq := diff.length_squared()
@@ -383,8 +401,10 @@ func _collide_bodies(state: SimState, pos: PackedVector2Array, vel: PackedVector
 				if j < puck_count:
 					_record_hit(state, j, -vn, false)
 
-func _collide_walls(state: SimState, pos: PackedVector2Array, vel: PackedVector2Array, spin: PackedFloat32Array, body_count: int) -> void:
+func _collide_walls(state: SimState, pos: PackedVector2Array, vel: PackedVector2Array, spin: PackedFloat32Array, body_count: int, frozen: int) -> void:
 	for b in body_count:
+		if b == frozen:
+			continue
 		var is_player := b >= puck_count
 		var r := radius[b]
 		for s in seg_a.size():
@@ -498,26 +518,22 @@ func _step_match(state: SimState, menu_pressed: bool, back_pressed: bool) -> voi
 				state.overtime_ticks += 1
 			else:
 				state.match_ticks -= 1
-			var goal_team := _check_goals(state)
-			if goal_team != 0:
-				state.scores[goal_team - 1] += 1
-				state.last_goal_tick = state.tick
-				state.last_goal_team = goal_team
-				if state.overtime:
-					_game_over(state, goal_team)
-				else:
-					_reset_field(state)
-					_start_countdown(state)
+			var goal_puck := _check_goals(state)
+			if goal_puck != -1:
+				_start_goal(state, goal_puck)
 			elif not state.overtime and state.match_ticks <= 0:
-				var leader := _leading_team(state)
-				if leader == 0:
-					# tie, the next goal decides
-					state.overtime = true
-					state.overtime_ticks = 0
+				_end_regular_time(state)
+		Phase.GOAL:
+			state.phase_ticks -= 1
+			if state.phase_ticks <= 0:
+				state.goal_puck = -1
+				if state.overtime:
+					_game_over(state, state.last_goal_team)
+				elif state.match_ticks <= 0:
+					_end_regular_time(state)
+				else:
 					_reset_field(state)
 					_start_countdown(state)
-				else:
-					_game_over(state, leader)
 		Phase.GAME_OVER:
 			# MENU: rematch, BACK: everybody goes back to the lobby (the views leave the match on that)
 			if state.lobby_tick != -1:
@@ -527,17 +543,57 @@ func _step_match(state: SimState, menu_pressed: bool, back_pressed: bool) -> voi
 			elif menu_pressed:
 				start_match(state)
 
-## Returns the team that scored (the right goal counts for team 1, the left one for team 2), 0 if none.
+## Returns the puck that is in a goal, -1 if none.
 func _check_goals(state: SimState) -> int:
 	for k in puck_count:
-		var p := state.pos[k] - goal_center
-		if absf(p.y) >= goal_half_width:
-			continue
-		if p.x > goal_line_dist:
-			return 1
-		if p.x < -goal_line_dist:
-			return 2
+		if _goal_team(state, k) != 0:
+			return k
+	return -1
+
+## The team puck k scores for (the right goal counts for team 1, the left one for team 2), 0 if none.
+func _goal_team(state: SimState, k: int) -> int:
+	var p := state.pos[k] - goal_center
+	if absf(p.y) >= goal_half_width:
+		return 0
+	if p.x > goal_line_dist:
+		return 1
+	if p.x < -goal_line_dist:
+		return 2
 	return 0
+
+## Scores the goal and starts the celebration: the puck stops and leaves play, the shockwave pushes
+## every other body away from it.
+func _start_goal(state: SimState, goal_puck: int) -> void:
+	var team := _goal_team(state, goal_puck)
+	state.scores[team - 1] += 1
+	state.last_goal_tick = state.tick
+	state.last_goal_team = team
+	state.goal_puck = goal_puck
+	state.phase = Phase.GOAL
+	state.phase_ticks = GOAL_TICKS
+	var center := state.pos[goal_puck]
+	state.vel[goal_puck] = Vector2.ZERO
+	state.puck_spin[goal_puck] = 0.0
+	for b in puck_count + player_count:
+		if b == goal_puck:
+			continue
+		var diff := state.pos[b] - center
+		var dist := diff.length()
+		if dist >= GOAL_PUSH_RANGE:
+			continue
+		var dir := diff / dist if dist > 0.0 else Vector2.LEFT * signf(center.x - goal_center.x)
+		state.vel[b] += dir * GOAL_PUSH_SPEED * (1.0 - dist / GOAL_PUSH_RANGE)
+
+## Regular time is over: a leader wins, a tie goes to overtime (the next goal decides).
+func _end_regular_time(state: SimState) -> void:
+	var leader := _leading_team(state)
+	if leader == 0:
+		state.overtime = true
+		state.overtime_ticks = 0
+		_reset_field(state)
+		_start_countdown(state)
+	else:
+		_game_over(state, leader)
 
 func _leading_team(state: SimState) -> int:
 	if state.scores[0] > state.scores[1]:

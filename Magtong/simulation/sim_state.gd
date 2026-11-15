@@ -38,7 +38,7 @@ var start_hold_minus: PackedInt32Array = PackedInt32Array()
 
 # match
 var phase: int = Simulation.Phase.NONE
-var phase_ticks: int = 0 # ticks left in the countdown
+var phase_ticks: int = 0 # ticks left in the countdown or the goal celebration
 var match_ticks: int = 0 # ticks left of regular time
 var overtime: bool = false
 var overtime_ticks: int = 0
@@ -46,6 +46,7 @@ var scores: PackedInt32Array = PackedInt32Array([0, 0])
 var winner: int = -1 # 0 = tie, 1/2 = team
 var last_goal_tick: int = -1
 var last_goal_team: int = 0
+var goal_puck: int = -1 # the scoring puck during the GOAL phase, out of play
 var reset_tick: int = -1 # last tick bodies were teleported (views skip interpolation)
 
 # lobby
@@ -87,6 +88,7 @@ func copy() -> SimState:
 	c.winner = winner
 	c.last_goal_tick = last_goal_tick
 	c.last_goal_team = last_goal_team
+	c.goal_puck = goal_puck
 	c.reset_tick = reset_tick
 	c.start_tick = start_tick
 	c.lobby_tick = lobby_tick
@@ -106,7 +108,7 @@ const FIELDS: Array[StringName] = [
 	&"tick", &"rng", &"pos", &"vel", &"puck_plus", &"puck_angle", &"puck_spin", &"puck_hit_tick", &"puck_hit_speed", &"puck_hit_wall",
 	&"puck_wall_touch_tick", &"puck_body_touch_tick", &"polarity", &"prev_buttons", &"flip_cd", &"surge_cd",
 	&"last_flip_tick", &"last_surge_tick", &"zone", &"skin", &"start_hold_plus", &"start_hold_minus", &"phase", &"phase_ticks", &"match_ticks", &"overtime",
-	&"overtime_ticks", &"scores", &"winner", &"last_goal_tick", &"last_goal_team", &"reset_tick", &"start_tick",
+	&"overtime_ticks", &"scores", &"winner", &"last_goal_tick", &"last_goal_team", &"goal_puck", &"reset_tick", &"start_tick",
 	&"lobby_tick",
 ]
 
