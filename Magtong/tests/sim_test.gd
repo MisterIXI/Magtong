@@ -9,6 +9,7 @@ func _init():
 	test_determinism()
 	test_rollback_replay()
 	test_containment()
+	test_corner_bounce()
 	test_goal_right()
 	test_goal_left()
 	test_divider()
@@ -121,6 +122,42 @@ func test_containment():
 			if not inside_rink(rink, state.pos[b]):
 				escaped += 1
 	check(escaped == 0, "no body left the rink in 6000 ticks of max speed shots (escapes: %d)" % escaped)
+	rink.free()
+
+## Playtest 15.11: pucks hitting a rounded corner bounced back away from the goal. The end points between the
+## corner's short segments counted as contacts with sideways normals and ate the speed along the wall.
+## A glancing bounce off the arc must keep most of its speed along the wall (the old bug reversed it).
+func test_corner_bounce():
+	var rink := make_rink()
+	var arc_center := Vector2(rink.half_size.x - rink.corner_radius, rink.half_size.y - rink.corner_radius)
+	var worst := 1.0
+	var shots := 0
+	for deg in range(5, 86, 5):
+		for offset in range(-60, 61, 10):
+			var sim := Simulation.new(settings, Simulation.Mode.SANDBOX)
+			var state := SimState.new()
+			sim.set_rink(rink, Transform2D.IDENTITY, false)
+			# aim at a point on the bottom right arc, shifted sideways for different contact points
+			var dir := Vector2.from_angle(deg_to_rad(deg))
+			var target := arc_center + Vector2.from_angle(deg_to_rad(deg)) * (rink.corner_radius - 30.0)
+			sim.add_puck(state, target - dir * 250.0 + dir.orthogonal() * offset)
+			state.vel[0] = dir * 1500.0
+			for t in 60:
+				var before := state.vel[0]
+				sim.step(state, PackedInt32Array())
+				if state.puck_hit_tick[0] == state.tick and state.puck_hit_wall[0] == 1:
+					var normal := (arc_center - state.pos[0]).normalized()
+					if absf(normal.angle_to(Vector2(-1, -1))) < PI / 4 - 0.05:
+						# hit the arc itself, not the straight walls next to it
+						var tangent := normal.orthogonal()
+						var along_before := absf(before.dot(tangent))
+						# glancing shots only, steep ones have little speed along the wall to compare
+						if along_before > 0.3 * before.length():
+							shots += 1
+							worst = minf(worst, state.vel[0].dot(tangent) * signf(before.dot(tangent)) / along_before)
+					break
+	check(shots > 30, "corner bounce: enough shots hit the arc (%d)" % shots)
+	check(worst > 0.7, "a glancing bounce off a rounded corner keeps its speed along the wall (worst %.2f)" % worst)
 	rink.free()
 
 func shoot_puck_at_goal(dir: float) -> SimState:

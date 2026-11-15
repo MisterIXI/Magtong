@@ -115,9 +115,14 @@ Goal: the game works start to finish and could ship as is, even if it isn't pret
       *15.11: the menu message is modal now (full-screen click blocker, focus stays on its button, focus goes
       back to the button from before when it closes). "Connecting..." / "Creating Steam lobby..." got a Cancel
       button that leaves; a Steam answer arriving after Cancel is dropped. Tested headless with keys and mouse.*
-- [ ] **Start-of-round corner bounces look wrong** (online playtest 15.11): a puck coming in at a downward angle
+- [x] **Start-of-round corner bounces look wrong** (online playtest 15.11): a puck coming in at a downward angle
       toward the goal sometimes bounces away from the goal instead. Check the corner segments/normals in the
       custom physics (maybe a corner hit resolved against the wrong segment); reproduce in `sim_test.gd`.
+      *15.11: found with a clip: the rounded corners are 16 short segments, and the end points between them
+      counted as contacts. Inside the bowl of a corner such an end point gives an almost sideways normal, which
+      ate the speed along the wall: a fast puck reversed instead of sliding on toward the goal. End points of
+      corners the rink bends around are skipped now (goal posts keep theirs). `test_corner_bounce` in
+      `sim_test.gd` (old code: -1.02, new: 0.91 of the speed along the wall kept).*
 
 ## Week 3 (09.–15.11): polish
 Sound list, sources and music direction: `planning/audio-plan.md`.

@@ -27,6 +27,10 @@ var seg_a: PackedVector2Array = PackedVector2Array()
 var seg_b: PackedVector2Array = PackedVector2Array()
 var seg_normal: PackedVector2Array = PackedVector2Array() # inward normal of one sided walls, ZERO for two sided
 var seg_players_only: PackedByteArray = PackedByteArray()
+## 1 = no contact with this end point: it is a corner the rink bends around (like the steps of a rounded
+## corner), there the neighbouring segment gives the right normal and the end point would give a sideways one
+var seg_skip_a: PackedByteArray = PackedByteArray()
+var seg_skip_b: PackedByteArray = PackedByteArray()
 var goal_center: Vector2 = Vector2.ZERO
 var goal_line_dist: float = INF # distance of the goal lines from goal_center, INF = no goals
 var goal_half_width: float = 0.0
@@ -67,8 +71,10 @@ func _init(settings: PlayerSettings, mode: Mode = Mode.SANDBOX) -> void:
 ## to_sim: transform from the rink node into simulation space (only translation is supported for goals)
 func set_rink(rink: RinkOutline, to_sim: Transform2D, use_divider: bool) -> void:
 	var outline := rink.build_outline()
+	var first := seg_a.size()
 	for i in outline.size():
 		_add_segment(to_sim * outline[i], to_sim * outline[(i + 1) % outline.size()], true, false)
+	_mark_inner_corners(first, seg_a.size())
 	if use_divider and rink.has_divider:
 		var divider := rink.get_divider()
 		_add_segment(to_sim * divider[0], to_sim * divider[1], false, true)
@@ -87,6 +93,22 @@ func _add_segment(a: Vector2, b: Vector2, one_sided: bool, players_only: bool) -
 	var d := (b - a).normalized()
 	seg_normal.append(Vector2(-d.y, d.x) if one_sided else Vector2.ZERO)
 	seg_players_only.append(1 if players_only else 0)
+	seg_skip_a.append(0)
+	seg_skip_b.append(0)
+
+## The outline is a closed clockwise chain (y down): where it turns clockwise, the corner bends around the
+## inside like a bowl and the end points there never are the right contact. Only corners that stick out into
+## the rink (goal posts) keep their end point contacts.
+func _mark_inner_corners(first: int, end: int) -> void:
+	var n := end - first
+	for j in n:
+		var i := first + j
+		var next := first + (j + 1) % n
+		if seg_b[i] != seg_a[next]:
+			continue
+		if (seg_b[i] - seg_a[i]).cross(seg_b[next] - seg_a[next]) > 0.0:
+			seg_skip_b[i] = 1
+			seg_skip_a[next] = 1
 
 func add_team_area(rect: Rect2, team: int) -> void:
 	team_areas.append(rect)
@@ -370,7 +392,10 @@ func _collide_walls(state: SimState, pos: PackedVector2Array, vel: PackedVector2
 				continue
 			var a := seg_a[s]
 			var ab := seg_b[s] - a
-			var t := clampf((pos[b] - a).dot(ab) / ab.length_squared(), 0.0, 1.0)
+			var t_raw := (pos[b] - a).dot(ab) / ab.length_squared()
+			if (t_raw <= 0.0 and seg_skip_a[s] == 1) or (t_raw >= 1.0 and seg_skip_b[s] == 1):
+				continue # the neighbouring segment handles this contact
+			var t := clampf(t_raw, 0.0, 1.0)
 			var inward := seg_normal[s]
 			var side := (pos[b] - a).dot(inward)
 			var normal: Vector2
