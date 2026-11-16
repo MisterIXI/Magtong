@@ -36,6 +36,9 @@ func _ready():
 	if GameManager.test_match_time > 0.0 and not NetGame.is_online():
 		match_time = GameManager.test_match_time
 	ms.setup(self, match_time)
+	# the camera only applies its zoom when something about it changes: without this the lobby's view stayed
+	# until the first goal shake moved the camera (17.11). Deferred, the lobby is still leaving the tree.
+	$GameCamera.force_update_scroll.call_deferred()
 	add_child(PauseMenu.new(ms))
 	_set_score_labels(ms.state.scores)
 	if NetGame.mode == NetGame.Mode.HOST:

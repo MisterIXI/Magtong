@@ -125,6 +125,9 @@ Goal: the game works start to finish and could ship as is, even if it isn't pret
       3000. Flat walls don't care, their normal is the same everywhere. Corner contacts now rewind the body
       along its velocity to the first touch and take the normal there (`_end_point_rewind`).
       `test_goal_post_bounce` in `sim_test.gd` (old code: 71.4 degrees off, new: 0.0).*
+- [x] **Field zooms out at the first goal and stays there** (17.11): the match camera (zoom 0.75) never applied
+      itself, the screen kept the lobby camera's 0.875 until the goal shake moved the camera. The match camera
+      is 0.875 now (what every match so far looked like) and forces its update when the match starts.
 - [x] **Start-of-round corner bounces look wrong** (online playtest 15.11): a puck coming in at a downward angle
       toward the goal sometimes bounces away from the goal instead. Check the corner segments/normals in the
       custom physics (maybe a corner hit resolved against the wrong segment); reproduce in `sim_test.gd`.
