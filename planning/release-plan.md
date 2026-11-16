@@ -128,6 +128,7 @@ Goal: the game works start to finish and could ship as is, even if it isn't pret
 - [x] **Field zooms out at the first goal and stays there** (17.11): the match camera (zoom 0.75) never applied
       itself, the screen kept the lobby camera's 0.875 until the goal shake moved the camera. The match camera
       is 0.875 now (what every match so far looked like) and forces its update when the match starts.
+      Then zoomed out a bit further in the lobby and the match (match 0.8), so the score bar has room.
 - [x] **Start-of-round corner bounces look wrong** (online playtest 15.11): a puck coming in at a downward angle
       toward the goal sometimes bounces away from the goal instead. Check the corner segments/normals in the
       custom physics (maybe a corner hit resolved against the wrong segment); reproduce in `sim_test.gd`.
@@ -146,8 +147,9 @@ Sound list, sources and music direction: `planning/audio-plan.md`.
       *14.11: goal (air horn), flip (hum sweep + clack), strength burst (hum spike), team pick are in; magnet on/off
       clicks dropped (the hum is enough). Open: last 10 seconds,
       start bars, an own wall hit sound, a real match end buzzer.*
-- [ ] Music: menu/lobby theme and a match loop, licenses + credits.
-- [ ] **Goal celebration** (like Rocket League, the climax of every round, worth more than "cheap juice"):
+- [ ] Music: menu/lobby theme and a match loop, licenses + credits. Then duck it for a moment on a goal (the
+      last open part of the goal celebration).
+- [x] **Goal celebration** (like Rocket League, the climax of every round, worth more than "cheap juice"):
       today a goal resets the field and starts the countdown in the same tick, so there's no moment at all.
   - [x] A `GOAL` phase in the simulation (~2 s) between the goal and the reset. The scoring puck leaves play,
         everything else keeps moving. An overtime goal gets the same celebration, then game over.
