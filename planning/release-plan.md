@@ -175,7 +175,8 @@ Sound list, sources and music direction: `planning/audio-plan.md`.
 - [ ] **Settings from the pause menu** (15.11): change sound volumes (and ideally all settings) during a match or
       in the lobby, not only from the main menu. Probably reuse the whole settings menu. Online the pause menu
       doesn't pause, so the settings must work while the match keeps running.
-- [ ] Windows icon with a 256×256 size.
+- [x] Windows icon with a 256×256 size.
+      *16.11: `assets/icons/magtong.ico` rebuilt from `magtong_256.png` (256/128/64/48/32/16), the exe embeds all six.*
 
 ## Week 4 (16.–22.11): tutorial + presentation
 - [ ] Controls / how-to-play screen (keyboard + gamepad glyphs, the existing `assets/icons`), reachable from the
