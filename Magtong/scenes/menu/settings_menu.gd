@@ -1,6 +1,9 @@
 extends Control
 class_name SettingsMenu
-## Settings panel of the main menu. Shows the values of the Settings autoload and changes them.
+## Settings panel of the main menu and the pause menu. Shows the values of the Settings autoload and changes them.
+## The owner shows and hides it; the X button emits `closed`.
+
+signal closed
 
 @export var master_slider: HSlider
 @export var music_slider: HSlider
@@ -23,6 +26,22 @@ func _ready() -> void:
 		anti_aliasing_option.add_item(Settings.ANTI_ALIASING_NAMES[i], i)
 	anti_aliasing_option.select(Settings.get_anti_aliasing())
 	anti_aliasing_option.item_selected.connect(Settings.set_anti_aliasing)
+
+## Focus for gamepad / keyboard navigation when the panel opens.
+func focus_first() -> void:
+	master_slider.grab_focus.call_deferred()
+
+## Values may have changed elsewhere (the other instance), so refresh them when the panel opens.
+func refresh() -> void:
+	master_slider.set_value_no_signal(Settings.get_volume("Master"))
+	music_slider.set_value_no_signal(Settings.get_volume("Music"))
+	sfx_slider.set_value_no_signal(Settings.get_volume("SFX"))
+	window_mode_option.select(Settings.get_window_mode())
+	vsync_check.set_pressed_no_signal(Settings.get_vsync())
+	anti_aliasing_option.select(Settings.get_anti_aliasing())
+
+func close() -> void:
+	closed.emit()
 
 func _bind_volume(slider: HSlider, bus: String) -> void:
 	slider.min_value = 0.0

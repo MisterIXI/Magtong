@@ -172,9 +172,12 @@ Sound list, sources and music direction: `planning/audio-plan.md`.
       blindness). Open decision: fixed team colors or adjustable (per team in the lobby, or a settings option);
       decide later. Touches the lobby team areas, skins/outlines, HUD score, "Team Red/Blue Wins!" text.
 - [ ] Credits screen (assets, music licenses, Godot, GodotSteam).
-- [ ] **Settings from the pause menu** (15.11): change sound volumes (and ideally all settings) during a match or
+- [x] **Settings from the pause menu** (15.11): change sound volumes (and ideally all settings) during a match or
       in the lobby, not only from the main menu. Probably reuse the whole settings menu. Online the pause menu
       doesn't pause, so the settings must work while the match keeps running.
+      *16.11: the settings panel is its own scene (`scenes/menu/settings_menu.tscn`), used by the main menu and
+      the pause menu (Settings under Resume, lobby and match). B / Esc / Start or its X go back to the menu.
+      Tested headless in the lobby and the main menu; not yet in an online match.*
 - [x] Windows icon with a 256×256 size.
       *16.11: `assets/icons/magtong.ico` rebuilt from `magtong_256.png` (256/128/64/48/32/16), the exe embeds all six.*
 

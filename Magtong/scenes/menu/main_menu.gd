@@ -2,8 +2,7 @@ class_name MainMenu
 extends Control
 @export var start_menu: Control
 @export var start_entry_focus: Control
-@export var settings_menu: Control
-@export var settings_entry_focus: Control
+@export var settings_menu: SettingsMenu
 @export var mm_background: PackedScene
 @export var address_edit: LineEdit
 @export var host_steam_button: Button
@@ -37,6 +36,7 @@ func _ready() -> void:
 	message_ok_button.focus_next = self_path
 	message_ok_button.focus_previous = self_path
 	hide_message()
+	settings_menu.closed.connect(settings_close)
 	host_steam_button.disabled = not SteamHandler.is_initialized
 	if NetDebug.dev_tools_enabled():
 		_add_test_match_button()
@@ -72,8 +72,8 @@ func switch_to_menu(menu: Control) -> void:
 		if start_entry_focus != null:
 			start_entry_focus.call_deferred("grab_focus")
 	elif current_menu == settings_menu:
-		if settings_entry_focus != null:
-			settings_entry_focus.call_deferred("grab_focus")
+		settings_menu.refresh()
+		settings_menu.focus_first()
 
 ## Spawns the background unless one is already running (there is only ever one).
 func spawn_mm_background() -> void:

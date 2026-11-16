@@ -4,14 +4,17 @@ class_name PauseMenu
 ## or the match), and any local player can navigate, resume or leave (local players are trusted to behave).
 ## Local games pause the whole scene tree, so the simulation simply stops ticking. Online the game can't pause:
 ## it keeps running, and this machine's players send empty input while the menu is open.
-## Lobby: Resume, Remove Player (host / local game: a list of this machine's players, picking one takes it out of
+## Settings (both): the settings panel of the main menu; B / Esc / Start or its X go back to the menu. Online the
+## match keeps running behind it.
+## Lobby: Resume, Settings, Remove Player (host / local game: a list of this machine's players, picking one takes it out of
 ## the lobby, its next button press joins it again), Main Menu.
-## Match: Resume, Back to Lobby (host / local game, for everybody), Main Menu.
+## Match: Resume, Settings, Back to Lobby (host / local game, for everybody), Main Menu.
 ## A client gets "Leave" instead of Main Menu: the host then removes its players (lobby) or ends the match.
 
 const THEME: Theme = preload("res://scenes/menu/main_menu_theme.tres")
 const PANEL_STYLE: StyleBox = preload("res://resources/default_box.tres")
 const DIM_COLOR := Color(0, 0, 0, 0.55)
+const SETTINGS_SCENE: PackedScene = preload("res://scenes/menu/settings_menu.tscn")
 
 var map: MapScript
 var _resume_button: Button
@@ -22,6 +25,10 @@ var _remove_player: Callable
 var _main_box: VBoxContainer
 var _player_box: VBoxContainer
 var _remove_button: Button
+## the menu panel, hidden while the settings are open
+var _center: CenterContainer
+var _settings: SettingsMenu
+var _settings_button: Button
 
 ## remove_player: lobby only, (device: int) -> void.
 func _init(map: MapScript, in_lobby: bool = false, remove_player: Callable = Callable()) -> void:
@@ -44,12 +51,12 @@ func _build() -> void:
 	dim.color = DIM_COLOR
 	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
 	root.add_child(dim)
-	var center := CenterContainer.new()
-	center.set_anchors_preset(Control.PRESET_FULL_RECT)
-	root.add_child(center)
+	_center = CenterContainer.new()
+	_center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	root.add_child(_center)
 	var panel := PanelContainer.new()
 	panel.add_theme_stylebox_override(&"panel", PANEL_STYLE)
-	center.add_child(panel)
+	_center.add_child(panel)
 	var margin := MarginContainer.new()
 	for side in [&"margin_left", &"margin_right", &"margin_top", &"margin_bottom"]:
 		margin.add_theme_constant_override(side, 32)
@@ -58,6 +65,7 @@ func _build() -> void:
 	margin.add_child(stack)
 	_main_box = _add_box(stack, "Menu" if _online else "Paused")
 	_resume_button = _add_button(_main_box, "Resume", resume)
+	_settings_button = _add_button(_main_box, "Settings", _show_settings)
 	if _in_lobby and _remove_player.is_valid():
 		_remove_button = _add_button(_main_box, "Remove Player", _show_players)
 		_player_box = _add_box(stack, "Remove Player")
@@ -67,6 +75,11 @@ func _build() -> void:
 		_add_button(_main_box, "Back to Lobby", _leave.bind(NetGame.request_return_to_lobby))
 	var leave_text := "Leave" if not NetGame.is_authority() else "Main Menu"
 	_add_button(_main_box, leave_text, _leave.bind(GameManager.return_to_menu.bind("")))
+	# outside the themed root, so it looks like in the main menu
+	_settings = SETTINGS_SCENE.instantiate()
+	_settings.visible = false
+	_settings.closed.connect(_hide_settings)
+	add_child(_settings)
 
 func _add_box(parent: Control, title_text: String) -> VBoxContainer:
 	var box := VBoxContainer.new()
@@ -89,7 +102,11 @@ func _add_button(box: VBoxContainer, text: String, on_pressed: Callable) -> Butt
 
 func _input(event: InputEvent) -> void:
 	if visible:
-		if _player_box != null and _player_box.visible and event.is_action_pressed(&"ui_cancel"):
+		if _settings.visible and (event.is_action_pressed(&"ui_cancel") or _is_pause_button(event)):
+			get_viewport().set_input_as_handled()
+			UiSounds.play(UiSounds.Sound.BACK)
+			_hide_settings()
+		elif _player_box != null and _player_box.visible and event.is_action_pressed(&"ui_cancel"):
 			get_viewport().set_input_as_handled()
 			UiSounds.play(UiSounds.Sound.BACK)
 			_show_main(_remove_button)
@@ -127,10 +144,21 @@ func open() -> void:
 	_show_main(_resume_button)
 
 func _show_main(focus: Button) -> void:
+	_settings.visible = false
+	_center.visible = true
 	_main_box.visible = true
 	if _player_box != null:
 		_player_box.visible = false
 	focus.grab_focus.call_deferred()
+
+func _show_settings() -> void:
+	_center.visible = false
+	_settings.refresh()
+	_settings.visible = true
+	_settings.focus_first()
+
+func _hide_settings() -> void:
+	_show_main(_settings_button)
 
 ## One button per local player (sim order = roster order), plus Back.
 func _show_players() -> void:
@@ -159,6 +187,7 @@ func _on_remove_pressed(device: int) -> void:
 
 func resume() -> void:
 	visible = false
+	_settings.visible = false
 	if not _online:
 		get_tree().paused = false
 	map.inputs_blocked = false
