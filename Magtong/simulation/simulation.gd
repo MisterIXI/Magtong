@@ -430,7 +430,16 @@ func _collide_walls(state: SimState, pos: PackedVector2Array, vel: PackedVector2
 				if dist_sq >= r * r:
 					continue
 				var dist := sqrt(dist_sq)
-				if dist > 0.0:
+				var point_contact := t_raw <= 0.0 or t_raw >= 1.0
+				var rewind := _end_point_rewind(diff, vel[b], r) if point_contact else -1.0
+				if rewind >= 0.0:
+					# a fast body sinks deep into a corner (goal post) within one substep, and the normal from
+					# there points too far sideways: take it where the body first touched the corner instead
+					diff -= vel[b] * rewind
+					normal = diff / r
+					pos[b] -= vel[b] * rewind
+					dist = r
+				elif dist > 0.0:
 					normal = diff / dist
 				elif inward != Vector2.ZERO:
 					normal = inward
@@ -445,6 +454,18 @@ func _collide_walls(state: SimState, pos: PackedVector2Array, vel: PackedVector2
 				vel[b] -= normal * vn * (1.0 + settings.wall_bounce)
 				if not is_player:
 					_record_hit(state, b, -vn, true)
+## How far back in time (seconds, at most one substep) a body moving with vel touched a corner end point first,
+## diff = body center - end point, closer than r. -1 when it isn't moving into the corner or was already
+## touching it at the start of the substep (pushed in by other bodies, resting contact).
+func _end_point_rewind(diff: Vector2, vel: Vector2, r: float) -> float:
+	var dv := diff.dot(vel)
+	var vv := vel.length_squared()
+	if dv >= 0.0 or vv == 0.0:
+		return -1.0
+	# |diff - vel * s| = r, the positive root (diff is inside r, so there is exactly one)
+	var s := (dv + sqrt(dv * dv - vv * (diff.length_squared() - r * r))) / vv
+	return s if s <= DT / SUBSTEPS else -1.0
+
 #endregion
 
 #region game modes

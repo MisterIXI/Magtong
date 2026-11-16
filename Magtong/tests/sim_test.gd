@@ -10,6 +10,7 @@ func _init():
 	test_rollback_replay()
 	test_containment()
 	test_corner_bounce()
+	test_goal_post_bounce()
 	test_goal_right()
 	test_goal_left()
 	test_goal_celebration()
@@ -161,6 +162,39 @@ func test_corner_bounce():
 					break
 	check(shots > 30, "corner bounce: enough shots hit the arc (%d)" % shots)
 	check(worst > 0.7, "a glancing bounce off a rounded corner keeps its speed along the wall (worst %.2f)" % worst)
+	rink.free()
+
+## Playtest 15.11: a puck hitting a goal post nearly head-on bounced in an odd direction. A fast puck sank deep
+## into the post corner within one substep and the normal from there pointed too far sideways (up to 35 degrees
+## off at 2000 px/s). Straight shots at the post corner must bounce like off a point at the first touch.
+func test_goal_post_bounce():
+	var rink := make_rink()
+	var post := Vector2(rink.half_size.x, -rink.goal_half_width)
+	var r := settings.puck_radius
+	var worst := 0.0
+	var shots := 0
+	for speed: float in [600.0, 1200.0, 2000.0, 3000.0]:
+		for deg: float in [0.0, 3.0, -3.0]:
+			for k in range(1, 10):
+				var off := k * r / 10.0 # trajectory passes the corner on the goal mouth side
+				var sim := Simulation.new(settings, Simulation.Mode.SANDBOX)
+				var state := SimState.new()
+				sim.set_rink(rink, Transform2D.IDENTITY, false)
+				var dir := Vector2.from_angle(deg_to_rad(deg))
+				sim.add_puck(state, post - dir.orthogonal() * off - dir * 300.0)
+				state.vel[0] = dir * speed
+				# where it first touches the corner, and the bounce off that normal
+				var touch := post - dir * sqrt(r * r - off * off) - dir.orthogonal() * off
+				var n := (touch - post).normalized()
+				var ideal := dir - n * dir.dot(n) * (1.0 + settings.wall_bounce)
+				for t in 120:
+					sim.step(state, PackedInt32Array())
+					if state.puck_hit_tick[0] == state.tick:
+						shots += 1
+						worst = maxf(worst, rad_to_deg(absf(state.vel[0].angle_to(ideal))))
+						break
+	check(shots == 108, "goal post bounce: every shot hit the post (%d of 108)" % shots)
+	check(worst < 1.0, "a straight shot at the goal post bounces off the first touch point (worst %.1f degrees off)" % worst)
 	rink.free()
 
 func shoot_puck_at_goal(dir: float) -> SimState:

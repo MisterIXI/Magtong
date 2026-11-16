@@ -115,11 +115,16 @@ Goal: the game works start to finish and could ship as is, even if it isn't pret
       *15.11: the menu message is modal now (full-screen click blocker, focus stays on its button, focus goes
       back to the button from before when it closes). "Connecting..." / "Creating Steam lobby..." got a Cancel
       button that leaves; a Steam answer arriving after Cancel is dropped. Tested headless with keys and mouse.*
-- [ ] **Head-on hits on the goal post bounce oddly** (15.11): a puck hitting the corner of the goal post nearly
+- [x] **Head-on hits on the goal post bounce oddly** (15.11): a puck hitting the corner of the goal post nearly
       head-on bounced in an unexpected direction. The post corners are the only end points that still count as
       contacts (see the corner fix below), so check their normal there (maybe a hit on the post resolves
       against the end point and a wall segment in the same substep). Reproduce in `sim_test.gd` like the
       corner bounce.
+      *16.11: a fast puck sank deep into the post corner within one substep (8 px of its 16 px radius at
+      2000 px/s), and the normal from there pointed too far sideways: up to 35 degrees off at 2000 px/s, 71 at
+      3000. Flat walls don't care, their normal is the same everywhere. Corner contacts now rewind the body
+      along its velocity to the first touch and take the normal there (`_end_point_rewind`).
+      `test_goal_post_bounce` in `sim_test.gd` (old code: 71.4 degrees off, new: 0.0).*
 - [x] **Start-of-round corner bounces look wrong** (online playtest 15.11): a puck coming in at a downward angle
       toward the goal sometimes bounces away from the goal instead. Check the corner segments/normals in the
       custom physics (maybe a corner hit resolved against the wrong segment); reproduce in `sim_test.gd`.
