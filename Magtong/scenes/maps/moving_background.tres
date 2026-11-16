@@ -3,6 +3,7 @@
 [ext_resource type="Shader" uid="uid://kx1crdiabsen" path="res://assets/textures/shaders/moving_background.gdshader" id="1_balcx"]
 
 [sub_resource type="Gradient" id="Gradient_balcx"]
+colors = PackedColorArray(0.18, 0.18, 0.18, 1, 1, 1, 1, 1)
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_kl3na"]
 seed = 245

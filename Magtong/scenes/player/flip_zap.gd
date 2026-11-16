@@ -5,7 +5,7 @@ class_name FlipZap
 ## ripple). Global coordinates and top level, so the lines stay where the Flip happened; frees itself.
 
 const TIME: float = 0.22
-const JAGGED: float = 9.0 # how far the bolt zigzags off the straight line
+const JAGGED: float = 18.0 # how far the bolt zigzags off the straight line
 const SEGMENT_LENGTH: float = 18.0
 ## placeholder until the new colors are decided (release plan), same as the magnet colors
 const PLUS_COLOR := Color(1.0, 0.35, 0.3)
