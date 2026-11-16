@@ -1,7 +1,7 @@
 extends Node2D
 class_name StartHoldBars
-## Lobby hold-to-start bars below a player: red (plus magnet) fills from the left, blue (minus magnet) from the
-## right, they meet in the middle when both are full. Only shows the simulation's start_hold_* values.
+## Lobby hold-to-start bars below a player: blue (minus magnet, left trigger) fills from the left, red (plus
+## magnet, right trigger) from the right, they meet in the middle when both are full. Only shows the simulation's start_hold_* values.
 
 const PLUS_COLOR := Color(1, 0, 0) # pos_col of the magnet aura
 const MINUS_COLOR := Color(0, 0.35, 1) # neg_col, a bit lighter so it reads on the dark frame
@@ -32,8 +32,8 @@ func _draw() -> void:
 	var outer := Rect2(Vector2(-SIZE.x / 2.0, OFFSET_Y - SIZE.y / 2.0), SIZE)
 	draw_rect(outer.grow(BORDER), FULL_FRAME_COLOR if full else FRAME_COLOR)
 	var half := SIZE.x / 2.0
-	if plus > 0.0:
-		draw_rect(Rect2(outer.position, Vector2(half * plus, SIZE.y)), PLUS_COLOR)
 	if minus > 0.0:
-		var width := half * minus
-		draw_rect(Rect2(Vector2(outer.end.x - width, outer.position.y), Vector2(width, SIZE.y)), MINUS_COLOR)
+		draw_rect(Rect2(outer.position, Vector2(half * minus, SIZE.y)), MINUS_COLOR)
+	if plus > 0.0:
+		var width := half * plus
+		draw_rect(Rect2(Vector2(outer.end.x - width, outer.position.y), Vector2(width, SIZE.y)), PLUS_COLOR)

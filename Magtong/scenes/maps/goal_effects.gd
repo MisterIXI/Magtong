@@ -5,8 +5,6 @@ class_name GoalEffects
 ## rollback that shows the same goal again (or moves it by a tick) doesn't replay it. Runs in real time, the
 ## slow motion is in the simulation. Only MapScript creates this node, the main menu background stays calm.
 
-## placeholder until the new team colors (release plan); index = team - 1
-const TEAM_COLORS: Array[Color] = [Color(1.0, 0.3, 0.25), Color(0.3, 0.5, 1.0)]
 const EXPLOSION_TIME: float = 0.9
 const RING_MAX_RADIUS: float = 450.0 # Simulation.GOAL_PUSH_RANGE: the ring shows how far the shockwave reaches
 const SPARK_COUNT: int = 48
@@ -51,7 +49,7 @@ func update(state: SimState) -> void:
 func _play(at: Vector2, team: int) -> void:
 	position = at
 	reset_physics_interpolation() # jump to the goal, don't slide there from the last explosion
-	_color = TEAM_COLORS[clampi(team - 1, 0, TEAM_COLORS.size() - 1)]
+	_color = Teams.color(team)
 	_age = 0.0
 	_sparks.clear()
 	for i in SPARK_COUNT:

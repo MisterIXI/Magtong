@@ -14,7 +14,7 @@ color_ramp = SubResource("Gradient_balcx")
 seamless = true
 
 [sub_resource type="Gradient" id="Gradient_hhlt6"]
-colors = PackedColorArray(1, 0, 0, 1, 0, 0, 1, 1)
+colors = PackedColorArray(0, 0.39607844, 1, 1, 1, 0.12156863, 0.1254902, 1)
 
 [sub_resource type="GradientTexture1D" id="GradientTexture1D_wmn42"]
 gradient = SubResource("Gradient_hhlt6")

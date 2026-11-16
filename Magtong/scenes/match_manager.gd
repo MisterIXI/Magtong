@@ -12,8 +12,6 @@ const GAME_OVER_FONT_SIZE: int = 56
 const GAME_OVER_OUTLINE: int = 12
 const GOAL_FONT_SIZE: int = 200
 const GOAL_OUTLINE: int = 24
-## placeholder until the new team colors (release plan), index = team - 1
-const GOAL_TEXT_COLORS: Array[Color] = [Color(1.0, 0.35, 0.3), Color(0.35, 0.55, 1.0)]
 
 @export var overlay_left: Control
 @export var overlay_right: Control
@@ -87,7 +85,7 @@ func _update_scores(state: SimState) -> void:
 		if state.scores[team - 1] > _shown_scores[team - 1]:
 			_flash_overlay(overlay_left if team == 1 else overlay_right)
 			_pop_label(p1_score_label if team == 1 else p2_score_label)
-			GameManager.print_message("Team " + TEAM_NAMES[team - 1] + " scored after " + str((Time.get_ticks_msec() - _last_goal_time) / 1000) + " seconds!")
+			GameManager.print_message("Team " + Teams.NAMES[team - 1] + " scored after " + str((Time.get_ticks_msec() - _last_goal_time) / 1000) + " seconds!")
 			GameManager.print_message("Score: " + str(state.scores[0]) + " - " + str(state.scores[1]))
 	_shown_scores = state.scores.duplicate()
 	_set_score_labels(state.scores)
@@ -111,7 +109,7 @@ func _update_countdown(state: SimState) -> void:
 			countdown_node.show()
 			_set_countdown_text_size(GOAL_FONT_SIZE, GOAL_OUTLINE)
 			countdown_label.text = "GOAL!"
-			countdown_label.add_theme_color_override(&"font_color", GOAL_TEXT_COLORS[clampi(state.last_goal_team - 1, 0, 1)])
+			countdown_label.add_theme_color_override(&"font_color", Teams.color(state.last_goal_team))
 			var elapsed := float(Simulation.GOAL_TICKS - state.phase_ticks) / Simulation.TICK_RATE
 			# pops in with an overshoot, then fades out at the end
 			var pop := clampf(elapsed / 0.3, 0.0, 1.0)
@@ -144,12 +142,9 @@ func _flash_overlay(overlay: Control) -> void:
 	tween.tween_property(overlay, "modulate", Color(1,1,1,0),0.25)
 	tween.set_loops(3)
 
-## Team 1 plays red, team 2 blue (score bar, lobby areas).
-const TEAM_NAMES: PackedStringArray = ["Red", "Blue"]
-
 func _winner_text(winner: int) -> String:
 	if winner == 1 or winner == 2:
-		return "Team " + TEAM_NAMES[winner - 1] + " Wins!"
+		return "Team " + Teams.NAMES[winner - 1] + " Wins!"
 	return "It's a tie!"
 
 func _update_timer_label(time: float):

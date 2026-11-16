@@ -172,10 +172,18 @@ Sound list, sources and music direction: `planning/audio-plan.md`.
       Surge keeps a moderate distortion ripple plus a +10 % sprite punch (`player_visuals.gd` constants).*
       *Flip zap: good for now. Surge maybe still too much in a real match: check at the next playtest
       (`SURGE_RIPPLE_FORCE`, `SURGE_PUNCH`).*
-- [ ] **Team colors that aren't red and blue**: red/blue is also the magnet polarity (plus/minus), and playtesters
+- [x] **Team colors that aren't red and blue**: red/blue is also the magnet polarity (plus/minus), and playtesters
       mixed them up. Pick two team colors that can't be confused with the magnet colors (also check color
       blindness). Open decision: fixed team colors or adjustable (per team in the lobby, or a settings option);
       decide later. Touches the lobby team areas, skins/outlines, HUD score, "Team Red/Blue Wins!" text.
+      *16.11: fixed colors, **orange** (team 1, left, #FF8A00) and **cyan** (team 2, right, #00C8DC), chosen from
+      mockups with color blindness simulation. Colors and names in `global/teams.gd` (goal explosion, GOAL!
+      text, "Team Orange/Cyan Wins!"); goals and lobby areas in `map_default.tscn`, score bar in
+      `match_clock.svg`. The background fog keeps its own blue/red gradient. Caveat from the simulation:
+      for red-green color blindness orange is close to the red plus magnet, watch for that in playtests.*
+- [x] **Magnet controls swapped** (16.11): plus on the right (RT / RB, keyboard K), minus on the left (LT / LB,
+      keyboard J), more intuitive. The lobby start bars follow: minus fills from the left, plus from the right.
+      Update the how-to-play screen and store texts to match.
 - [ ] Credits screen (assets, music licenses, Godot, GodotSteam).
 - [x] **Settings from the pause menu** (15.11): change sound volumes (and ideally all settings) during a match or
       in the lobby, not only from the main menu. Probably reuse the whole settings menu. Online the pause menu

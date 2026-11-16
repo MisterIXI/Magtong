@@ -46,10 +46,11 @@ func _init(is_keyboard: bool):
 func set_gamepad_mapping1():
 	self.j_x_axis = JOY_AXIS_LEFT_X
 	self.j_y_axis = JOY_AXIS_LEFT_Y
-	self.j_plus = JOY_AXIS_TRIGGER_LEFT
-	self.j_plus_b = JOY_BUTTON_LEFT_SHOULDER
-	self.j_minus = JOY_AXIS_TRIGGER_RIGHT
-	self.j_minus_b = JOY_BUTTON_RIGHT_SHOULDER
+	# plus on the right, minus on the left (16.11)
+	self.j_plus = JOY_AXIS_TRIGGER_RIGHT
+	self.j_plus_b = JOY_BUTTON_RIGHT_SHOULDER
+	self.j_minus = JOY_AXIS_TRIGGER_LEFT
+	self.j_minus_b = JOY_BUTTON_LEFT_SHOULDER
 	self.j_flip = JOY_BUTTON_A
 	self.j_surge = JOY_BUTTON_B
 	self.j_menu = JOY_BUTTON_START
@@ -64,8 +65,8 @@ func set_keyboard_mapping1():
 	self.k_down = KEY_S
 	self.k_left = KEY_A
 	self.k_right = KEY_D
-	self.k_plus = KEY_J
-	self.k_minus = KEY_K
+	self.k_plus = KEY_K
+	self.k_minus = KEY_J
 	self.k_flip = KEY_SPACE
 	self.k_surge = KEY_L
 	self.k_menu = KEY_ESCAPE
