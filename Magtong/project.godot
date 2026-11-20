@@ -20,6 +20,10 @@ run/main_scene="uid://boymygteo4sj8"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://assets/textures/player_skins/player_character.png"
 
+[audio]
+
+buses/default_bus_layout="uid://croi6837p6udk"
+
 [autoload]
 
 Settings="*res://global/settings.gd"

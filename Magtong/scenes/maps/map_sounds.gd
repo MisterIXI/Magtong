@@ -12,7 +12,7 @@ const PUCK_HITS: Array[AudioStream] = [
 	preload("res://assets/sounds/sfx/puck_hit_4.ogg"),
 ]
 const MAGNET_LOOP: AudioStream = preload("res://assets/sounds/sfx/magnet_loop.ogg")
-const FLIP_CLACK: AudioStream = preload("res://assets/sounds/sfx/flip_clack.ogg")
+const FLIP_CLACK: AudioStream = preload("res://assets/sounds/sfx/dead.wav")
 const MATCH_END: AudioStream = preload("res://assets/sounds/sfx/match_end.ogg")
 const GOAL: AudioStream = preload("res://assets/sounds/sfx/goal_horn.mp3")
 const LOBBY_JOIN: AudioStream = preload("res://assets/sounds/ui/lobby_join.ogg")
@@ -38,7 +38,7 @@ const SURGE_PITCH: float = 0.6 # +60 % at the peak
 const FLIP_TIME: float = 0.25
 const FLIP_PITCH_FROM: float = 0.5
 const FLIP_PITCH_TO: float = 1.6
-const FLIP_VOLUME_DB: float = -4.0
+const FLIP_VOLUME_DB: float = -8.0
 const FLIP_CLACK_VOLUME_DB: float = -8.0
 const TEAM_PICK_VOLUME_DB: float = -6.0
 ## seconds; a player wobbling on the edge of a team area doesn't rattle the click
@@ -168,7 +168,7 @@ func _update_abilities(state: SimState, i: int, now: float) -> void:
 	if state.last_flip_tick[i] > _shown_flip_tick[i]:
 		_shown_flip_tick[i] = state.last_flip_tick[i]
 		_flip_start[i] = now
-		sweep.play(randf() * MAGNET_LOOP.get_length() * 0.8)
+		# sweep.play(randf() * MAGNET_LOOP.get_length() * 0.8)
 		_flip_clack.play()
 	if sweep.playing:
 		var t := (now - _flip_start[i]) / FLIP_TIME
