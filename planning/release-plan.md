@@ -177,6 +177,22 @@ Sound list, sources and music direction: `planning/audio-plan.md`.
       Surge keeps a moderate distortion ripple plus a +10 % sprite punch (`player_visuals.gd` constants).*
       *Flip zap: good for now. Surge maybe still too much in a real match: check at the next playtest
       (`SURGE_RIPPLE_FORCE`, `SURGE_PUNCH`).*
+  - [x] **Surge and Flip look, next pass** (18.11): first inspired by the skill animation of Diana in League of
+        Legends (https://www.youtube.com/watch?v=QHoX53V4T2s).
+        *18.11: the ripple stays where the Surge happened (own top level copy of the shader sprite), the ring is
+        tinted red/blue (`SURGE_TINT`, `SURGE_PLUS_COLOR`/`SURGE_MINUS_COLOR`, blended, not added: added red on
+        the green rink turns yellow) and wobbles slightly (`SURGE_WIGGLE`). Tried and dropped: round white arcs
+        on the ring, a full-screen and a local color invert (hard flash and faded).*
+        *20.11, new direction: Surge is global, so it stays a soft, fuzzy ripple; Flip has a hard range, so it
+        gets a crisp edge. Surge: longer (`SURGE_RIPPLE_TIME` 0.45) and dissolves (the ring widens and its tint
+        smears while force and tint ease out: `RIPPLE_END_THICKNESS`, `RIPPLE_END_BAND`). Dropped: burst lines
+        and swirling crescents (`sickle.png` kept in `assets/textures/effects/`, unused). Flip: an electric
+        ring at the exact flip range (`flip_ring.gd`): two see-through jagged loops in the plus/minus zap colors
+        over thin white cores, re-jagged every few frames (crackle), expands visibly (`EXPAND_TIME`), holds, fades in place;
+        shown on every Flip, also when no puck was in range. A crisp white shader ring with fill and glow was
+        tried first: too much halo, and the snap-out was too fast to see. Flip also punches the player sprite
+        (`FLIP_PUNCH`, a bit stronger than `SURGE_PUNCH`). The plus/minus burst particles were removed (they
+        cluttered the ring). Values tuned by hand in-game; done for now, recheck at the next playtest.*
 - [x] **Team colors that aren't red and blue**: red/blue is also the magnet polarity (plus/minus), and playtesters
       mixed them up. Pick two team colors that can't be confused with the magnet colors (also check color
       blindness). Open decision: fixed team colors or adjustable (per team in the lobby, or a settings option);
