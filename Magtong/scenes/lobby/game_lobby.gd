@@ -16,11 +16,16 @@ var team_max_size: int
 var puck_count: int
 var _starting: bool = false
 ## one line at the top: what to do next in the lobby
-var _hint: Label
-const HINT_JOIN := "Press any button on a gamepad or the keyboard to join"
-const HINT_TEAMS := "Walk into the orange or the cyan area to pick a team. Both teams need a player"
-const HINT_START := "Everyone hold both magnets to start  (LT + RT  /  J + K)"
-const HINT_MENU := "Start / Esc: menu and How to Play"
+## Line 1 is the next step, line 2 how to join and open the menu. "@name" is a glyph from assets/icons/prompts.
+var _hint: RichTextLabel
+var _hint_shown: Array = []
+const HINT_GLYPH_HEIGHT := 28
+const HINT_JOIN: Array[String] = ["Press any button on a gamepad or ", "@keyboard_space", " on the keyboard to join"]
+const HINT_TEAMS: Array[String] = ["Walk into the orange or the cyan area to pick a team. Both teams need a player"]
+const HINT_START: Array[String] = ["Everyone hold both magnets to start   ", "@xbox_lt", " ", "@xbox_rt",
+		"  /  ", "@keyboard_j", " ", "@keyboard_k"]
+const HINT_JOIN_MORE: Array[String] = ["Join: any gamepad button / ", "@keyboard_space", "      "]
+const HINT_MENU: Array[String] = ["Menu and How to Play: ", "@xbox_button_menu", " / ", "@keyboard_escape"]
 
 signal all_ready_changed(all_ready: bool)
 
@@ -57,7 +62,7 @@ func _on_lobby_reset(epoch: int, roster: Array, state_bytes: PackedByteArray):
 	current_map.rebuild_lobby(roster, state_bytes, epoch)
 
 ## Local lobby: takes a local player out of the lobby (pause menu "Remove Player"). The device is forgotten,
-## so its next button press joins it again.
+## so its next join press (any gamepad button / Space) joins it again.
 func remove_local_player(device: int) -> void:
 	var local_peer := NetGame.get_local_peer()
 	var roster := []
@@ -114,21 +119,40 @@ func _process(_delta):
 			_start_match(confirmed)
 
 func _add_hint() -> void:
-	_hint = Label.new()
+	_hint = RichTextLabel.new()
 	_hint.name = "LobbyHint"
-	_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_hint.set_anchors_preset(Control.PRESET_TOP_WIDE)
-	_hint.offset_top = 6
-	_hint.add_theme_font_size_override(&"font_size", 18)
+	_hint.fit_content = true
+	_hint.scroll_active = false
+	_hint.autowrap_mode = TextServer.AUTOWRAP_OFF
+	_hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_hint.add_theme_font_size_override(&"normal_font_size", 18)
 	_hint.add_theme_constant_override(&"outline_size", 6)
 	_hint.add_theme_color_override(&"font_outline_color", Color(0, 0, 0, 0.8))
 	$CanvasLayer.add_child(_hint)
+	_hint.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
+	_hint.offset_top = 4
 
 func _update_hint(is_ready: bool) -> void:
-	var text := HINT_START if is_ready else HINT_TEAMS
+	var step := HINT_START if is_ready else HINT_TEAMS
 	if NetGame.roster.is_empty():
-		text = HINT_JOIN
-	_hint.text = text + "\n" + HINT_MENU
+		step = HINT_JOIN
+	var footer: Array[String] = HINT_MENU if step == HINT_JOIN else HINT_JOIN_MORE + HINT_MENU
+	var lines := [step, footer]
+	if lines == _hint_shown:
+		return
+	_hint_shown = lines
+	_hint.clear()
+	_hint.push_paragraph(HORIZONTAL_ALIGNMENT_CENTER)
+	for i in lines.size():
+		if i > 0:
+			_hint.newline()
+		for part: String in lines[i]:
+			if part.begins_with("@"):
+				var glyph: Texture2D = load(HowToPlay.PROMPTS_DIR + part.substr(1) + ".svg")
+				_hint.add_image(glyph, 0, HINT_GLYPH_HEIGHT, Color.WHITE, INLINE_ALIGNMENT_CENTER)
+			else:
+				_hint.add_text(part)
+	_hint.pop()
 
 func _update_lobby_labels(team_sizes: PackedInt32Array):
 	for i in current_map.lobby_labels.size():

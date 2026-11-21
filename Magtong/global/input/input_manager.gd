@@ -6,6 +6,11 @@ var player_inputs: Dictionary = {} # maps device IDs to PlayerInputs
 var next_player_id: int = 1
 signal player_input_registered(player_input: PlayerInput)
 
+## the keyboard player joins the lobby with this key
+const JOIN_KEY: Key = KEY_SPACE
+## set by the pause menu while it's open: no joining from the menu
+var join_blocked: bool = false
+
 ## Joypads whose name contains one of these are parts of keyboards or mice (media keys, volume knobs), not
 ## gamepads. They must never join as a player.
 const NOT_GAMEPAD_NAMES: Array[String] = ["keyboard", "mouse", "system control", "consumer control"]
@@ -55,9 +60,20 @@ func _input(event: InputEvent) -> void:
 		var input = player_input.mapping.check_input(event)
 		if input:
 			player_input.execute_input(input)
-	# joypad motion is ignored for registration, so stick drift does not join players
-	elif GameManager.current_state == GameManager.State.LOBBY and event.is_pressed() and not event is InputEventJoypadMotion:
+	elif _is_join_press(event):
 		register_player(device_id)
+
+## Joining the lobby: any gamepad button, on the keyboard only Space (touching the keyboard for something else
+## shouldn't add a player). Never while the pause menu is open (join_blocked), also online where it doesn't pause.
+## Joypad motion never joins, so stick drift doesn't add players.
+func _is_join_press(event: InputEvent) -> bool:
+	if GameManager.current_state != GameManager.State.LOBBY or join_blocked:
+		return false
+	if not event.is_pressed() or event.is_echo():
+		return false
+	if event is InputEventKey:
+		return event.keycode == JOIN_KEY
+	return event is InputEventJoypadButton
 
 func register_player(device_id: int) -> PlayerInput:
 	var player_input = PlayerInput.new(device_id, next_player_id)
@@ -67,7 +83,7 @@ func register_player(device_id: int) -> PlayerInput:
 	player_input_registered.emit(player_input)
 	return player_input
 
-## Forget one local player (removed from the lobby). Its next button press registers it again.
+## Forget one local player (removed from the lobby). Its next join press registers it again.
 func unregister_player(device_id: int) -> void:
 	if player_inputs.has(device_id):
 		player_inputs[device_id].queue_free()

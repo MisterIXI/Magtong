@@ -7,7 +7,7 @@ class_name PauseMenu
 ## Settings and How to Play (both): the panels of the main menu; B / Esc / Start, the X or Back go back to the
 ## menu. Online the match keeps running behind them.
 ## Lobby: Resume, Settings, Remove Player (host / local game: a list of this machine's players, picking one takes it out of
-## the lobby, its next button press joins it again), Main Menu.
+## the lobby, its next join press (gamepad button / Space) joins it again), Main Menu.
 ## Match: Resume, Settings, Back to Lobby (host / local game, for everybody), Main Menu.
 ## A client gets "Leave" instead of Main Menu: the host then removes its players (lobby) or ends the match.
 
@@ -148,6 +148,7 @@ func _is_pause_button(event: InputEvent) -> bool:
 	return false
 
 func open() -> void:
+	InputManager.join_blocked = true
 	if not _online:
 		get_tree().paused = true
 	map.inputs_blocked = true
@@ -203,6 +204,7 @@ func _on_remove_pressed(device: int) -> void:
 	_show_main(_remove_button)
 
 func resume() -> void:
+	InputManager.join_blocked = false
 	visible = false
 	_settings.visible = false
 	_how_to_play.visible = false
@@ -212,6 +214,9 @@ func resume() -> void:
 	# the button that confirmed (A, Space, Start, ...) is a game button too, it must not act in the first tick
 	for player_input in InputManager.get_all_player_inputs():
 		player_input.release_buttons()
+
+func _exit_tree() -> void:
+	InputManager.join_blocked = false
 
 func _leave(leave: Callable) -> void:
 	resume()
