@@ -40,6 +40,7 @@ func _ready() -> void:
 		message_ok_button.set_focus_neighbor(side, self_path)
 	message_ok_button.focus_next = self_path
 	message_ok_button.focus_previous = self_path
+	message_panel.theme = UiTheme.window() # the look of the menu windows
 	hide_message()
 	settings_menu.closed.connect(settings_close)
 	_window_buttons[settings_menu] = settings_menu_button()

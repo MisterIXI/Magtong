@@ -34,8 +34,11 @@ func _ready():
 	InputManager.player_input_registered.connect(_on_player_input_registered)
 	NetGame.lobby_reset.connect(_on_lobby_reset)
 	_switch_map(0)
-	add_child(PauseMenu.new(current_map, true, remove_local_player))
+	var pause_menu := PauseMenu.new(current_map, true, remove_local_player)
+	add_child(pause_menu)
 	_add_hint()
+	# hidden while the menu is open (a local game pauses, so _process can't do this)
+	pause_menu.visibility_changed.connect(func(): _hint.visible = not pause_menu.visible)
 	if NetGame.is_authority():
 		NetGame.player_join_requested.connect(_on_player_join_requested)
 		NetGame.peer_hello.connect(_on_peer_hello)
@@ -133,7 +136,6 @@ func _add_hint() -> void:
 	_hint.offset_top = 4
 
 func _update_hint(is_ready: bool) -> void:
-	_hint.visible = not InputManager.join_blocked # hidden while the pause menu is open
 	var step := HINT_START if is_ready else HINT_TEAMS
 	if NetGame.roster.is_empty():
 		step = HINT_JOIN

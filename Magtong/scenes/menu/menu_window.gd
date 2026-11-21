@@ -1,12 +1,11 @@
 extends Control
 class_name MenuWindow
 ## Base of the menu windows (Settings, How to Play, Credits): the same dark panel, title, content area and Back
-## button everywhere, styled by resources/window_theme.tres. Subclasses fill `content` in _build_content().
+## button everywhere, styled by UiTheme.window(). Subclasses fill `content` in _build_content().
 ## The owner (main menu / pause menu) shows and hides it, handles B / Esc and listens to `closed`.
 
 signal closed
 
-const THEME: Theme = preload("res://resources/window_theme.tres")
 ## the panel's distance to the screen edges (1280x720 canvas)
 const PANEL_MARGIN := Vector2(140, 40)
 
@@ -22,7 +21,7 @@ func _init(window_title: String) -> void:
 	title = window_title
 
 func _ready() -> void:
-	theme = THEME
+	theme = UiTheme.window()
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	var panel := Panel.new()
 	add_child(panel)
@@ -62,6 +61,7 @@ func _ready() -> void:
 	back_button.pressed.connect(close)
 	stack.add_child(back_button)
 	for option in find_children("*", "OptionButton", true, false):
+		option.get_popup().theme = theme # the dropdown list is its own window, it doesn't inherit the theme
 		option.get_popup().popup_hide.connect(func(): _popup_closed_ms = Time.get_ticks_msec())
 	_wrap_focus.call_deferred()
 

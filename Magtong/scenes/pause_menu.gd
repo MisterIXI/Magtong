@@ -11,8 +11,6 @@ class_name PauseMenu
 ## Match: Resume, Settings, Back to Lobby (host / local game, for everybody), Main Menu.
 ## A client gets "Leave" instead of Main Menu: the host then removes its players (lobby) or ends the match.
 
-const THEME: Theme = preload("res://scenes/menu/main_menu_theme.tres")
-const PANEL_STYLE: StyleBox = preload("res://resources/default_box.tres")
 const DIM_COLOR := Color(0, 0, 0, 0.55)
 const SETTINGS_SCENE: PackedScene = preload("res://scenes/menu/settings_menu.tscn")
 
@@ -46,7 +44,7 @@ func _init(map: MapScript, in_lobby: bool = false, remove_player: Callable = Cal
 
 func _build() -> void:
 	var root := Control.new()
-	root.theme = THEME
+	root.theme = UiTheme.window() # the look of the menu windows
 	root.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(root)
 	var dim := ColorRect.new()
@@ -57,7 +55,6 @@ func _build() -> void:
 	_center.set_anchors_preset(Control.PRESET_FULL_RECT)
 	root.add_child(_center)
 	var panel := PanelContainer.new()
-	panel.add_theme_stylebox_override(&"panel", PANEL_STYLE)
 	_center.add_child(panel)
 	var margin := MarginContainer.new()
 	for side in [&"margin_left", &"margin_right", &"margin_top", &"margin_bottom"]:
