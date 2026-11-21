@@ -1,17 +1,13 @@
-extends Control
+extends MenuWindow
 class_name HowToPlay
-## How-to-play panel of the main menu and the pause menu: the rules in a few lines and the controls for gamepad
-## and keyboard (from PlayerMapping's defaults). Built in code, looks like the settings panel.
-## The owner shows and hides it; Back emits `closed` (B / Esc are handled by the owner, like the settings).
+## How-to-play window of the main menu and the pause menu: the rules in a few lines and the controls for gamepad
+## and keyboard (PlayerMapping's defaults).
 
-signal closed
-
-const PANEL_STYLE: StyleBox = preload("res://resources/default_box.tres")
 const GAMEPAD_ICON: Texture2D = preload("res://assets/icons/gamepad.svg")
 const KEYBOARD_ICON: Texture2D = preload("res://assets/icons/keyboard.svg")
 const PLUS_HEX := "#ff5a4d" # FlipZap.PLUS_COLOR, readable on the dark panel
 const MINUS_HEX := "#598cff" # FlipZap.MINUS_COLOR
-const ICON_SIZE := Vector2(32, 32)
+const ICON_SIZE := Vector2(28, 28)
 const TEXT_COLOR_DIM := Color(1, 1, 1, 0.75)
 
 const RULES: Array[String] = [
@@ -25,7 +21,7 @@ const RULES: Array[String] = [
 ## Button glyphs: Kenney "Input Prompts" (CC0), files in PROMPTS_DIR without the .svg. Face buttons are shown by
 ## position (face_button_south/east), Godot maps JOY_BUTTON_A/B by position on every controller.
 const PROMPTS_DIR := "res://assets/icons/prompts/"
-const GLYPH_SIZE := Vector2(36, 36)
+const GLYPH_SIZE := Vector2(32, 32)
 ## action, gamepad glyphs, keyboard glyphs ("/" = or)
 const CONTROLS: Array = [
 	["Move", ["xbox_stick_l"], ["keyboard_w", "keyboard_a", "keyboard_s", "keyboard_d"]],
@@ -37,61 +33,19 @@ const CONTROLS: Array = [
 	["Menu", ["xbox_button_menu"], ["keyboard_escape"]],
 ]
 
-var _back_button: Button
+func _init() -> void:
+	super("How to Play")
 
-func _ready() -> void:
-	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	var panel := Panel.new()
-	panel.add_theme_stylebox_override(&"panel", PANEL_STYLE)
-	add_child(panel)
-	panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	panel.offset_left = 140
-	panel.offset_top = 40
-	panel.offset_right = -140
-	panel.offset_bottom = -40
-	var margin := MarginContainer.new()
-	panel.add_child(margin)
-	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	for side in [&"margin_left", &"margin_right"]:
-		margin.add_theme_constant_override(side, 60)
-	for side in [&"margin_top", &"margin_bottom"]:
-		margin.add_theme_constant_override(side, 28)
-	var stack := VBoxContainer.new()
-	stack.add_theme_constant_override(&"separation", 16)
-	margin.add_child(stack)
-
-	var title := Label.new()
-	title.text = "How to Play"
-	title.theme_type_variation = &"HeaderLarge"
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	stack.add_child(title)
-
+func _build_content() -> void:
 	var rules := VBoxContainer.new()
-	rules.add_theme_constant_override(&"separation", 6)
-	stack.add_child(rules)
+	rules.add_theme_constant_override(&"separation", 4)
+	content.add_child(rules)
+	content.add_theme_constant_override(&"separation", 10)
 	for i in RULES.size():
 		var text := RULES[i] % [PLUS_HEX, MINUS_HEX] if i == 1 else RULES[i]
 		rules.add_child(_rich("•  " + text))
-
-	stack.add_child(HSeparator.new())
-	stack.add_child(_controls_grid())
-
-	var spacer := Control.new()
-	spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	stack.add_child(spacer)
-	_back_button = Button.new()
-	_back_button.text = "Back"
-	_back_button.custom_minimum_size = Vector2(240, 0)
-	_back_button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	_back_button.pressed.connect(close)
-	stack.add_child(_back_button)
-
-## Focus for gamepad / keyboard navigation when the panel opens.
-func focus_first() -> void:
-	_back_button.grab_focus.call_deferred()
-
-func close() -> void:
-	closed.emit()
+	content.add_child(HSeparator.new())
+	content.add_child(_controls_grid())
 
 func _controls_grid() -> GridContainer:
 	var grid := GridContainer.new()

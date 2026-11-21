@@ -1,18 +1,34 @@
-extends Control
+extends MenuWindow
 class_name SettingsMenu
-## Settings panel of the main menu and the pause menu. Shows the values of the Settings autoload and changes them.
-## The owner shows and hides it; the X button emits `closed`.
+## Settings window of the main menu and the pause menu. Shows the values of the Settings autoload and changes them.
 
-signal closed
+const CONTROL_WIDTH: float = 420.0
 
-@export var master_slider: HSlider
-@export var music_slider: HSlider
-@export var sfx_slider: HSlider
-@export var window_mode_option: OptionButton
-@export var vsync_check: CheckButton
-@export var anti_aliasing_option: OptionButton
+var master_slider: HSlider
+var music_slider: HSlider
+var sfx_slider: HSlider
+var window_mode_option: OptionButton
+var vsync_check: CheckButton
+var anti_aliasing_option: OptionButton
 
-func _ready() -> void:
+func _init() -> void:
+	super("Settings")
+
+func _build_content() -> void:
+	var grid := GridContainer.new()
+	grid.columns = 2
+	grid.add_theme_constant_override(&"h_separation", 50)
+	grid.add_theme_constant_override(&"v_separation", 26)
+	grid.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	grid.size_flags_vertical = Control.SIZE_EXPAND | Control.SIZE_SHRINK_CENTER
+	content.add_child(grid)
+	master_slider = _row(grid, "Master Volume", HSlider.new())
+	sfx_slider = _row(grid, "SFX Volume", HSlider.new())
+	music_slider = _row(grid, "Music Volume", HSlider.new())
+	window_mode_option = _row(grid, "Window Mode", OptionButton.new())
+	vsync_check = _row(grid, "VSync", CheckButton.new())
+	anti_aliasing_option = _row(grid, "Anti-Aliasing", OptionButton.new())
+
 	_bind_volume(master_slider, "Master")
 	_bind_volume(music_slider, "Music")
 	_bind_volume(sfx_slider, "SFX")
@@ -27,11 +43,10 @@ func _ready() -> void:
 	anti_aliasing_option.select(Settings.get_anti_aliasing())
 	anti_aliasing_option.item_selected.connect(Settings.set_anti_aliasing)
 
-## Focus for gamepad / keyboard navigation when the panel opens.
 func focus_first() -> void:
 	master_slider.grab_focus.call_deferred()
 
-## Values may have changed elsewhere (the other instance), so refresh them when the panel opens.
+## Values may have changed elsewhere (the other instance), so refresh them when the window opens.
 func refresh() -> void:
 	master_slider.set_value_no_signal(Settings.get_volume("Master"))
 	music_slider.set_value_no_signal(Settings.get_volume("Music"))
@@ -40,8 +55,17 @@ func refresh() -> void:
 	vsync_check.set_pressed_no_signal(Settings.get_vsync())
 	anti_aliasing_option.select(Settings.get_anti_aliasing())
 
-func close() -> void:
-	closed.emit()
+func _row(grid: GridContainer, text: String, control: Control) -> Control:
+	var label := Label.new()
+	label.text = text
+	grid.add_child(label)
+	control.custom_minimum_size.x = CONTROL_WIDTH
+	control.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	if control is CheckButton:
+		control.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+		control.custom_minimum_size.x = 0
+	grid.add_child(control)
+	return control
 
 func _bind_volume(slider: HSlider, bus: String) -> void:
 	slider.min_value = 0.0

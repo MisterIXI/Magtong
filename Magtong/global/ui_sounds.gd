@@ -2,7 +2,8 @@ extends Node
 ## Menu sounds (autoload UiSounds) on the SFX bus.
 ## Every button, slider and option button in the tree is hooked up automatically when it enters the tree:
 ## focus → move, press → confirm. Back and error are played by the menus themselves.
-## Set the meta "no_ui_sound" on a control to leave it out.
+## Set the meta "no_ui_sound" on a control to leave it out, "ui_sound_back" on a button that goes back (it then
+## sounds like B / Esc).
 
 enum Sound { MOVE, CONFIRM, BACK, ERROR }
 
@@ -67,7 +68,7 @@ func _on_node_added(node: Node) -> void:
 		node.pressed.connect(play.bind(Sound.CONFIRM))
 		node.item_selected.connect(func(_index: int): play(Sound.CONFIRM))
 	elif node is BaseButton:
-		node.pressed.connect(play.bind(Sound.CONFIRM))
+		node.pressed.connect(play.bind(Sound.BACK if node.has_meta(&"ui_sound_back") else Sound.CONFIRM))
 	elif node is Slider:
 		node.value_changed.connect(_on_slider_changed.bind(node))
 

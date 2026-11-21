@@ -133,6 +133,7 @@ func _add_hint() -> void:
 	_hint.offset_top = 4
 
 func _update_hint(is_ready: bool) -> void:
+	_hint.visible = not InputManager.join_blocked # hidden while the pause menu is open
 	var step := HINT_START if is_ready else HINT_TEAMS
 	if NetGame.roster.is_empty():
 		step = HINT_JOIN

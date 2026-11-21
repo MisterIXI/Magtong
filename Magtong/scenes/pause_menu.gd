@@ -99,8 +99,10 @@ func _add_box(parent: Control, title_text: String) -> VBoxContainer:
 	box.add_child(title)
 	return box
 
-func _add_button(box: VBoxContainer, text: String, on_pressed: Callable) -> Button:
+func _add_button(box: VBoxContainer, text: String, on_pressed: Callable, is_back: bool = false) -> Button:
 	var button := Button.new()
+	if is_back:
+		button.set_meta(&"ui_sound_back", true) # UiSounds: the same sound as B / Esc
 	button.text = text
 	button.custom_minimum_size = Vector2(320, 0)
 	button.pressed.connect(on_pressed)
@@ -194,7 +196,7 @@ func _show_players() -> void:
 		var button := _add_button(_player_box, "Player %d (%s)" % [i + 1, kind], _on_remove_pressed.bind(device))
 		if first == null:
 			first = button
-	var back := _add_button(_player_box, "Back", _show_main.bind(_remove_button))
+	var back := _add_button(_player_box, "Back", _show_main.bind(_remove_button), true)
 	_main_box.visible = false
 	_player_box.visible = true
 	(first if first != null else back).grab_focus.call_deferred()

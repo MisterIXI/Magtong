@@ -41,6 +41,7 @@ func _ready() -> void:
 	hide_message()
 	settings_menu.closed.connect(settings_close)
 	_add_how_to_play()
+	_wrap_menu_focus.call_deferred()
 	host_steam_button.disabled = not SteamHandler.is_initialized
 	if NetDebug.dev_tools_enabled():
 		_add_test_match_button()
@@ -103,6 +104,17 @@ func _back_to_start_menu() -> void:
 
 func settings_menu_button() -> Button:
 	return start_menu.get_node_or_null("VBoxContainer/Settings") as Button
+
+## Up on the first entry goes to the last one and down on the last to the first (only visible entries).
+func _wrap_menu_focus() -> void:
+	var entries: Array[Control] = []
+	for child in start_menu.get_node("VBoxContainer").get_children():
+		if child is Control and child.visible and child.focus_mode != Control.FOCUS_NONE:
+			entries.append(child)
+	if entries.size() < 2:
+		return
+	entries[0].focus_neighbor_top = entries[0].get_path_to(entries[-1])
+	entries[-1].focus_neighbor_bottom = entries[-1].get_path_to(entries[0])
 
 func _add_how_to_play() -> void:
 	how_to_play = HowToPlay.new()
