@@ -194,6 +194,7 @@ func _update_match(state: SimState) -> void:
 	elif state.last_goal_tick > _shown_goal_tick:
 		_shown_goal_tick = state.last_goal_tick
 		_play(_goal, 1.0)
+		Music.duck()
 	if state.phase == Simulation.Phase.COUNTDOWN:
 		var seconds := ceili(float(state.phase_ticks) / Simulation.TICK_RATE)
 		if _shown_phase != Simulation.Phase.COUNTDOWN or seconds != _shown_seconds:
@@ -204,11 +205,14 @@ func _update_match(state: SimState) -> void:
 			_play(_beep, GO_PITCH)
 		elif state.phase == Simulation.Phase.GAME_OVER:
 			_play(_match_end, 1.0)
+	if state.phase == Simulation.Phase.PLAYING:
+		Music.start_match() # the match loop kicks in on "go"; no-op while it's already playing
 	_shown_phase = state.phase
 
 func _update_lobby(state: SimState) -> void:
 	var count := map.players.size()
 	var is_ready := map.sim.is_lobby_ready(state)
+	Music.set_lobby_progress(is_ready, _start_hold_fill(state))
 	if _shown_player_count != -1:
 		if count > _shown_player_count:
 			_play(_join, 1.0)
@@ -224,6 +228,18 @@ func _update_lobby(state: SimState) -> void:
 		_shown_zone[i] = zone
 	_shown_player_count = count
 	_shown_ready = is_ready
+
+## How full the lobby start bars are, 0..1: the average over every team player's plus and minus bar.
+func _start_hold_fill(state: SimState) -> float:
+	var total := 0
+	var bars := 0
+	for i in mini(map.players.size(), state.zone.size()):
+		if state.zone[i] > 0:
+			total += state.start_hold_plus[i] + state.start_hold_minus[i]
+			bars += 2
+	if bars == 0:
+		return 0.0
+	return float(total) / (bars * Simulation.START_HOLD_TICKS)
 
 func _play(player: AudioStreamPlayer, pitch: float) -> void:
 	player.pitch_scale = pitch

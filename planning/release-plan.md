@@ -4,7 +4,7 @@
 The Steam release date (app 3044580) was probably left at 30.10.2026, and Steam wants a support ticket to move
 it. Steam never launches by itself: the build has to pass review and the release button has to be pressed by hand.
 So we move the date instead of crunching to it.
-**Target: release around Tue 08.12.2026.**
+**Target: release Thu 10.12.2026** (moved from 08.12 by hand in Steamworks, 21.11).
 
 **Scope change 01.11: 1.0 is local multiplayer only.** The first Steam playtest (31.10) never got through a round:
 both peers stalled forever after a short one-way packet loss (fixed in `c79a55d`, regression test
@@ -147,8 +147,19 @@ Sound list, sources and music direction: `planning/audio-plan.md`.
       *14.11: goal (air horn), flip (hum sweep + clack), strength burst (hum spike), team pick are in; magnet on/off
       clicks dropped (the hum is enough). Open: last 10 seconds,
       start bars, an own wall hit sound, a real match end buzzer.*
-- [ ] Music: menu/lobby theme and a match loop, licenses + credits. Then duck it for a moment on a goal (the
+  - [ ] **Replace the match end sound** (21.11: "horrible"). High priority of the open sounds.
+  - [ ] Replace the third countdown tick (lower priority).
+- [x] Music: menu/lobby theme and a match loop, licenses + credits. Then duck it for a moment on a goal (the
       last open part of the goal celebration).
+      *21.11: `Music` autoload (`global/music.gd`). Menu and lobby: Kenney's "Cheerful Annoyance" (CC0), it keeps
+      playing into the lobby at -5 dB, comes back up when everyone is in a team and swells +4 dB with the start
+      bars; entering a match fades it out over 1.5 s, the countdown is quiet, and the DnB match loop (AlesiaDavina,
+      Pixabay, 1:00–3:00 of the track, 128 BPM) kicks in hard on "go": the "lock in" moment. Goals duck the music
+      -12 dB for ~2 s. Levels from measured LUFS per file (`FILE_LUFS`/`TARGET_LUFS`). Source mp3 in
+      `assets/sounds/music/source/` (`.gdignore`, not exported). Music analysis tool: `~/Applications/essentia/analyze`.*
+  - [ ] Game over screen: match music quieter (back up on rematch).
+  - [ ] Content ID check for the match track before streamers/the trailer use it.
+  - [ ] Credits screen entry: "Music by AlesiaDavina from Pixabay", Kenney.
 - [x] **Goal celebration** (like Rocket League, the climax of every round, worth more than "cheap juice"):
       today a goal resets the field and starts the countdown in the same tick, so there's no moment at all.
   - [x] A `GOAL` phase in the simulation (~2 s) between the goal and the reset. The scoring puck leaves play,
@@ -167,6 +178,8 @@ Sound list, sources and music direction: `planning/audio-plan.md`.
         the celebration so the knockback stays visible. Tune the numbers after playing it.*
   - [x] Tests: the `GOAL` phase and slow motion in `sim_test.gd`, `rollback_test.gd` stays green.
 - [ ] Other visual juice where it's cheap: hit effects, score/timer animations.
+  - [ ] **Player outer ring glows in the magnet color** (21.11): the black outer ring of the player lights up red/blue
+        for the magnet force in use, another readable indicator of what a player is doing. Views only.
 - [x] **Clearer Flip and Surge visuals** (playtest 15.11): both are hard to see, especially for someone watching
       a stream. Needs a more direct, obvious effect (e.g. a ring/shockwave for Flip on the flipped pucks, a
       strong glow/size pulse on the player for Surge). Views only.
@@ -256,7 +269,7 @@ Sound list, sources and music direction: `planning/audio-plan.md`.
       and music are made by people") is the safe answer, a wrong "no" is the risk.
 - [ ] **Submit the build for review by ~Mon 30.11** (review can take several business days).
 
-## Week 6 (30.11–08.12): launch
+## Week 6 (30.11–10.12): launch
 - [ ] Set the build live on default, press Release on the target date.
 - [ ] Watch reviews/discussions for the first days; ship a hotfix build if needed.
 

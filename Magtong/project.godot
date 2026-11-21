@@ -33,6 +33,7 @@ ResourceManager="*res://global/resource_manager.tscn"
 NetGame="*res://netcode/net_game.gd"
 GameManager="*res://global/game_manager.tscn"
 SteamHandler="*res://global/steam/steam_handler.tscn"
+Music="*res://global/music.gd"
 
 [debug]
 
