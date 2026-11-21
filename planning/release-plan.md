@@ -6,6 +6,18 @@ it. Steam never launches by itself: the build has to pass review and the release
 So we move the date instead of crunching to it.
 **Target: release Thu 10.12.2026** (moved from 08.12 by hand in Steamworks, 21.11).
 
+**Status 21.11 (end of day) and schedule to 10.12:** done today: music, How to Play + lobby hints, credits, menu
+windows look. Next, in this order:
+1. Replace the match end sound (high priority), game over music quieter; small sounds only if quick.
+2. Store: new screenshots (orange/cyan teams, new effects, menus), text: swapped magnet controls, online with
+   friends. Content ID check for the match track.
+3. **Feature freeze Fri 27.11**, then the release candidate week: test matrix, Steam test session with a friend
+   (rejoin bug, crash while connecting, 2v2, keyboard guest over Remote Play), Steam Deck.
+4. **Decide about pushing the date around Sun 29.11** (after the friend test). An online blocker: hide online in
+   release builds (`NetDebug.online_enabled()`) or push. Missing content alone is no reason to push.
+5. **Submit for review by Mon 30.11 / Tue 01.12**: AI disclosure re-check (UI text written with Claude now
+   includes How to Play, lobby hints, credits), launch discount, publish prices, clean install from Steam.
+
 **Scope change 01.11: 1.0 is local multiplayer only.** The first Steam playtest (31.10) never got through a round:
 both peers stalled forever after a short one-way packet loss (fixed in `c79a55d`, regression test
 `test_one_way_loss`). The fix was quick, but the real bottleneck is testing online with real people over Steam, and
@@ -239,14 +251,28 @@ Sound list, sources and music direction: `planning/audio-plan.md`.
       lines (goal, + / − poles attract/repel, Flip and Surge) and a controls table with the gamepad and keyboard
       icons. "How to Play" button above Settings in the main menu and under Settings in the pause menu (lobby and
       match); Back / B / Esc close it. Lobby hint at the top (`GameLobby._update_hint`): join → pick a team →
-      hold both magnets, plus "Start / Esc: menu and How to Play". Button names are text, no glyph images yet.*
+      hold both magnets, plus "Start / Esc: menu and How to Play".*
+      *Later 21.11: Kenney "Input Prompts" glyphs (CC0, `assets/icons/prompts/`) in the table and the lobby hint
+      (rich text); Flip/Surge as position glyphs (south/east face button, fits every controller; triggers, stick
+      and menu are still Xbox glyphs, per-controller glyphs after launch). The keyboard joins the lobby with Space
+      only (gamepads: any button), nobody joins while the pause menu is open.*
+- [x] **Menu windows polish** (21.11): `MenuWindow` base (`scenes/menu/menu_window.gd`) for Settings, How to Play
+      and Credits: same panel, title, content and Back button. Look "Rink Green" (picked from three mockups) in
+      `global/ui_theme.gd`, also used by the pause menu and the main menu message box. Back buttons sound like
+      B / Esc; B with an open dropdown only closes the dropdown; up/down wrap in the main menu, the windows and
+      the pause menu. Settings lost its X button. The big main menu buttons are unchanged (user wants to adjust
+      them later).
 - [ ] Tutorial: what magnets, polarity, Flip and Surge do, ideally playable (a short guided practice on the rink)
       rather than only text. Timebox it; the how-to-play screen is the fallback.
+      *21.11 recommendation: ship the How to Play window + lobby hints as the tutorial for 1.0, a playable one
+      only if time is left after the release candidate work (it probably won't be).*
 - [ ] Store: update screenshots/trailer if the game looks noticeably different now.
 
 ## Week 4–5: bots (stretch, cut line)
 - [ ] **Decide on Mon 23.11**: if weeks 2–4 are done, timebox simple bots to 3 days, otherwise move them to the
       first post-launch update.
+      *21.11 recommendation: cut them to the first post-launch update (week 4 isn't done: store screenshots open,
+      tutorial = How to Play), the release date is now Thu 10.12.*
 - [ ] Simple scripted bots: chase the puck, pick the polarity that pulls it toward the opponent's goal, flip when
       close. They read `SimState` and produce `SimInput` like a player, so they also fill empty slots online later.
 - [ ] Bots selectable in the lobby (add bot / remove bot), so a single player can try the game.
