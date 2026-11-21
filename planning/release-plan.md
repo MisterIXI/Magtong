@@ -229,9 +229,14 @@ Sound list, sources and music direction: `planning/audio-plan.md`.
       *16.11: `assets/icons/magtong.ico` rebuilt from `magtong_256.png` (256/128/64/48/32/16), the exe embeds all six.*
 
 ## Week 4 (16.–22.11): tutorial + presentation
-- [ ] Controls / how-to-play screen (keyboard + gamepad glyphs, the existing `assets/icons`), reachable from the
+- [x] Controls / how-to-play screen (keyboard + gamepad glyphs, the existing `assets/icons`), reachable from the
       main menu and the lobby. Short hint text in the lobby: join, pick a team, ready up, hold both magnets to
       start, Start/Esc for the menu.
+      *21.11: `HowToPlay` panel (`scenes/menu/how_to_play.gd`, built in code, looks like the settings): three rule
+      lines (goal, + / − poles attract/repel, Flip and Surge) and a controls table with the gamepad and keyboard
+      icons. "How to Play" button above Settings in the main menu and under Settings in the pause menu (lobby and
+      match); Back / B / Esc close it. Lobby hint at the top (`GameLobby._update_hint`): join → pick a team →
+      hold both magnets, plus "Start / Esc: menu and How to Play". Button names are text, no glyph images yet.*
 - [ ] Tutorial: what magnets, polarity, Flip and Surge do, ideally playable (a short guided practice on the rink)
       rather than only text. Timebox it; the how-to-play screen is the fallback.
 - [ ] Store: update screenshots/trailer if the game looks noticeably different now.

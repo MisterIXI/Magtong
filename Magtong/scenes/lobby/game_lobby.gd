@@ -15,6 +15,12 @@ var team_count: int
 var team_max_size: int
 var puck_count: int
 var _starting: bool = false
+## one line at the top: what to do next in the lobby
+var _hint: Label
+const HINT_JOIN := "Press any button on a gamepad or the keyboard to join"
+const HINT_TEAMS := "Walk into the orange or the cyan area to pick a team. Both teams need a player"
+const HINT_START := "Everyone hold both magnets to start  (LT + RT  /  J + K)"
+const HINT_MENU := "Start / Esc: menu and How to Play"
 
 signal all_ready_changed(all_ready: bool)
 
@@ -24,6 +30,7 @@ func _ready():
 	NetGame.lobby_reset.connect(_on_lobby_reset)
 	_switch_map(0)
 	add_child(PauseMenu.new(current_map, true, remove_local_player))
+	_add_hint()
 	if NetGame.is_authority():
 		NetGame.player_join_requested.connect(_on_player_join_requested)
 		NetGame.peer_hello.connect(_on_peer_hello)
@@ -96,6 +103,7 @@ func _process(_delta):
 	var team_sizes := current_map.sim.lobby_team_sizes(current_map.state)
 	_update_lobby_labels(team_sizes)
 	var now_ready := current_map.sim.is_lobby_ready(current_map.state)
+	_update_hint(now_ready)
 	if now_ready != all_ready:
 		all_ready = now_ready
 		all_ready_changed.emit(all_ready)
@@ -104,6 +112,23 @@ func _process(_delta):
 		var confirmed := current_map.session.get_confirmed_state()
 		if confirmed != null and confirmed.start_tick != -1:
 			_start_match(confirmed)
+
+func _add_hint() -> void:
+	_hint = Label.new()
+	_hint.name = "LobbyHint"
+	_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_hint.set_anchors_preset(Control.PRESET_TOP_WIDE)
+	_hint.offset_top = 6
+	_hint.add_theme_font_size_override(&"font_size", 18)
+	_hint.add_theme_constant_override(&"outline_size", 6)
+	_hint.add_theme_color_override(&"font_outline_color", Color(0, 0, 0, 0.8))
+	$CanvasLayer.add_child(_hint)
+
+func _update_hint(is_ready: bool) -> void:
+	var text := HINT_START if is_ready else HINT_TEAMS
+	if NetGame.roster.is_empty():
+		text = HINT_JOIN
+	_hint.text = text + "\n" + HINT_MENU
 
 func _update_lobby_labels(team_sizes: PackedInt32Array):
 	for i in current_map.lobby_labels.size():

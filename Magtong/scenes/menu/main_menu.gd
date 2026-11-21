@@ -13,6 +13,9 @@ extends Control
 const TEST_MATCH_TIME: float = 15.0
 @export var start_local_button: Button
 var curr_mm_bg: MMBackground
+## built in code (_add_how_to_play), opened by the "How to Play" button above Settings
+var how_to_play: HowToPlay
+var _how_to_play_button: Button
 var previous_menu: Control
 var current_menu: Control
 ## full-screen, behind the message panel: no clicks on the menu while a message is open
@@ -37,6 +40,7 @@ func _ready() -> void:
 	message_ok_button.focus_previous = self_path
 	hide_message()
 	settings_menu.closed.connect(settings_close)
+	_add_how_to_play()
 	host_steam_button.disabled = not SteamHandler.is_initialized
 	if NetDebug.dev_tools_enabled():
 		_add_test_match_button()
@@ -49,13 +53,14 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	if Input.is_action_just_pressed("ui_cancel"):
-		if current_menu == settings_menu:
+		if current_menu == settings_menu or current_menu == how_to_play:
 			UiSounds.play(UiSounds.Sound.BACK)
-			switch_to_menu(start_menu)
+			_back_to_start_menu()
 		
 func hide_all() -> void:
 	start_menu.hide()
 	settings_menu.hide()
+	how_to_play.hide()
 	if is_instance_valid(curr_mm_bg):
 		curr_mm_bg.queue_free()
 	curr_mm_bg = null
@@ -74,6 +79,8 @@ func switch_to_menu(menu: Control) -> void:
 	elif current_menu == settings_menu:
 		settings_menu.refresh()
 		settings_menu.focus_first()
+	elif current_menu == how_to_play:
+		how_to_play.focus_first()
 
 ## Spawns the background unless one is already running (there is only ever one).
 func spawn_mm_background() -> void:
@@ -84,7 +91,35 @@ func spawn_mm_background() -> void:
 		curr_mm_bg = mm_bg as MMBackground
 
 func settings_close() -> void:
+	_back_to_start_menu()
+
+## Back from a sub panel: the start menu, with the focus on the button that opened the panel.
+func _back_to_start_menu() -> void:
+	var from := current_menu
 	switch_to_menu(start_menu)
+	var button: Control = _how_to_play_button if from == how_to_play else settings_menu_button()
+	if button != null:
+		button.grab_focus.call_deferred()
+
+func settings_menu_button() -> Button:
+	return start_menu.get_node_or_null("VBoxContainer/Settings") as Button
+
+func _add_how_to_play() -> void:
+	how_to_play = HowToPlay.new()
+	how_to_play.name = "HowToPlay"
+	how_to_play.closed.connect(_back_to_start_menu)
+	how_to_play.z_index = settings_menu.z_index # above the background, like the settings
+	settings_menu.add_sibling(how_to_play)
+	_how_to_play_button = Button.new()
+	_how_to_play_button.name = "HowToPlay"
+	_how_to_play_button.text = "How to Play"
+	var settings_button := settings_menu_button()
+	_how_to_play_button.theme = settings_button.theme
+	_how_to_play_button.pressed.connect(func():
+		if current_menu == start_menu:
+			switch_to_menu(how_to_play))
+	settings_button.add_sibling(_how_to_play_button)
+	settings_button.get_parent().move_child(_how_to_play_button, settings_button.get_index())
 
 func _on_settings_pressed() -> void:
 	if current_menu == start_menu:

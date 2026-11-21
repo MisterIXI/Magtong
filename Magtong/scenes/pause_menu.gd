@@ -4,8 +4,8 @@ class_name PauseMenu
 ## or the match), and any local player can navigate, resume or leave (local players are trusted to behave).
 ## Local games pause the whole scene tree, so the simulation simply stops ticking. Online the game can't pause:
 ## it keeps running, and this machine's players send empty input while the menu is open.
-## Settings (both): the settings panel of the main menu; B / Esc / Start or its X go back to the menu. Online the
-## match keeps running behind it.
+## Settings and How to Play (both): the panels of the main menu; B / Esc / Start, the X or Back go back to the
+## menu. Online the match keeps running behind them.
 ## Lobby: Resume, Settings, Remove Player (host / local game: a list of this machine's players, picking one takes it out of
 ## the lobby, its next button press joins it again), Main Menu.
 ## Match: Resume, Settings, Back to Lobby (host / local game, for everybody), Main Menu.
@@ -29,6 +29,8 @@ var _remove_button: Button
 var _center: CenterContainer
 var _settings: SettingsMenu
 var _settings_button: Button
+var _how_to_play: HowToPlay
+var _how_to_play_button: Button
 
 ## remove_player: lobby only, (device: int) -> void.
 func _init(map: MapScript, in_lobby: bool = false, remove_player: Callable = Callable()) -> void:
@@ -66,6 +68,7 @@ func _build() -> void:
 	_main_box = _add_box(stack, "Menu" if _online else "Paused")
 	_resume_button = _add_button(_main_box, "Resume", resume)
 	_settings_button = _add_button(_main_box, "Settings", _show_settings)
+	_how_to_play_button = _add_button(_main_box, "How to Play", _show_how_to_play)
 	if _in_lobby and _remove_player.is_valid():
 		_remove_button = _add_button(_main_box, "Remove Player", _show_players)
 		_player_box = _add_box(stack, "Remove Player")
@@ -80,6 +83,10 @@ func _build() -> void:
 	_settings.visible = false
 	_settings.closed.connect(_hide_settings)
 	add_child(_settings)
+	_how_to_play = HowToPlay.new()
+	_how_to_play.visible = false
+	_how_to_play.closed.connect(_show_main.bind(_how_to_play_button))
+	add_child(_how_to_play)
 
 func _add_box(parent: Control, title_text: String) -> VBoxContainer:
 	var box := VBoxContainer.new()
@@ -106,6 +113,10 @@ func _input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 			UiSounds.play(UiSounds.Sound.BACK)
 			_hide_settings()
+		elif _how_to_play.visible and (event.is_action_pressed(&"ui_cancel") or _is_pause_button(event)):
+			get_viewport().set_input_as_handled()
+			UiSounds.play(UiSounds.Sound.BACK)
+			_show_main(_how_to_play_button)
 		elif _player_box != null and _player_box.visible and event.is_action_pressed(&"ui_cancel"):
 			get_viewport().set_input_as_handled()
 			UiSounds.play(UiSounds.Sound.BACK)
@@ -145,6 +156,7 @@ func open() -> void:
 
 func _show_main(focus: Button) -> void:
 	_settings.visible = false
+	_how_to_play.visible = false
 	_center.visible = true
 	_main_box.visible = true
 	if _player_box != null:
@@ -156,6 +168,11 @@ func _show_settings() -> void:
 	_settings.refresh()
 	_settings.visible = true
 	_settings.focus_first()
+
+func _show_how_to_play() -> void:
+	_center.visible = false
+	_how_to_play.visible = true
+	_how_to_play.focus_first()
 
 func _hide_settings() -> void:
 	_show_main(_settings_button)
@@ -188,6 +205,7 @@ func _on_remove_pressed(device: int) -> void:
 func resume() -> void:
 	visible = false
 	_settings.visible = false
+	_how_to_play.visible = false
 	if not _online:
 		get_tree().paused = false
 	map.inputs_blocked = false
