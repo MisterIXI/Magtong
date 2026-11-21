@@ -22,7 +22,8 @@ const RULES: Array[String] = [
 	"[b]Flip[/b] switches the pole of every puck close to you. [b]Surge[/b] is a short, strong burst of the magnet "
 		+ "you're holding.",
 ]
-## Button glyphs: Kenney "Input Prompts" (CC0), files in PROMPTS_DIR without the .svg.
+## Button glyphs: Kenney "Input Prompts" (CC0), files in PROMPTS_DIR without the .svg. Face buttons are shown by
+## position (face_button_south/east), Godot maps JOY_BUTTON_A/B by position on every controller.
 const PROMPTS_DIR := "res://assets/icons/prompts/"
 const GLYPH_SIZE := Vector2(36, 36)
 ## action, gamepad glyphs, keyboard glyphs ("/" = or)
@@ -30,8 +31,8 @@ const CONTROLS: Array = [
 	["Move", ["xbox_stick_l"], ["keyboard_w", "keyboard_a", "keyboard_s", "keyboard_d"]],
 	["[color=%s]+[/color] magnet", ["xbox_rt", "/", "xbox_rb"], ["keyboard_k"]],
 	["[color=%s]−[/color] magnet", ["xbox_lt", "/", "xbox_lb"], ["keyboard_j"]],
-	["Flip", ["xbox_button_color_a"], ["keyboard_space"]],
-	["Surge (with a magnet held)", ["xbox_button_color_b"], ["keyboard_l"]],
+	["Flip", ["face_button_south"], ["keyboard_space"]],
+	["Surge (with a magnet held)", ["face_button_east"], ["keyboard_l"]],
 	["Change skin (lobby)", ["xbox_dpad_horizontal"], ["keyboard_u", "/", "keyboard_o"]],
 	["Menu", ["xbox_button_menu"], ["keyboard_escape"]],
 ]

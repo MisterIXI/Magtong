@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bax8ym8nvglm6"
-path="res://.godot/imported/xbox_button_color_b.svg-16590566effc661be3b282a140a2cb1f.ctex"
+uid="uid://ph2nyiupunxm"
+path="res://.godot/imported/face_button_south.svg-e7ba7360a726193dbf2da9d7f880704f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/icons/prompts/xbox_button_color_b.svg"
-dest_files=["res://.godot/imported/xbox_button_color_b.svg-16590566effc661be3b282a140a2cb1f.ctex"]
+source_file="res://assets/icons/prompts/face_button_south.svg"
+dest_files=["res://.godot/imported/face_button_south.svg-e7ba7360a726193dbf2da9d7f880704f.ctex"]
 
 [params]
 
