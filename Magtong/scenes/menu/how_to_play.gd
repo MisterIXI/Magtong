@@ -22,15 +22,18 @@ const RULES: Array[String] = [
 	"[b]Flip[/b] switches the pole of every puck close to you. [b]Surge[/b] is a short, strong burst of the magnet "
 		+ "you're holding.",
 ]
-## action, gamepad, keyboard
+## Button glyphs: Kenney "Input Prompts" (CC0), files in PROMPTS_DIR without the .svg.
+const PROMPTS_DIR := "res://assets/icons/prompts/"
+const GLYPH_SIZE := Vector2(36, 36)
+## action, gamepad glyphs, keyboard glyphs ("/" = or)
 const CONTROLS: Array = [
-	["Move", "Left stick", "W A S D"],
-	["[color=%s]+[/color] magnet", "RT / RB", "K"],
-	["[color=%s]−[/color] magnet", "LT / LB", "J"],
-	["Flip", "A", "Space"],
-	["Surge (with a magnet held)", "B", "L"],
-	["Change skin (lobby)", "D-pad ← / →", "U / O"],
-	["Menu", "Start", "Esc"],
+	["Move", ["xbox_stick_l"], ["keyboard_w", "keyboard_a", "keyboard_s", "keyboard_d"]],
+	["[color=%s]+[/color] magnet", ["xbox_rt", "/", "xbox_rb"], ["keyboard_k"]],
+	["[color=%s]−[/color] magnet", ["xbox_lt", "/", "xbox_lb"], ["keyboard_j"]],
+	["Flip", ["xbox_button_color_a"], ["keyboard_space"]],
+	["Surge (with a magnet held)", ["xbox_button_color_b"], ["keyboard_l"]],
+	["Change skin (lobby)", ["xbox_dpad_horizontal"], ["keyboard_u", "/", "keyboard_o"]],
+	["Menu", ["xbox_button_menu"], ["keyboard_escape"]],
 ]
 
 var _back_button: Button
@@ -93,7 +96,7 @@ func _controls_grid() -> GridContainer:
 	var grid := GridContainer.new()
 	grid.columns = 3
 	grid.add_theme_constant_override(&"h_separation", 48)
-	grid.add_theme_constant_override(&"v_separation", 4)
+	grid.add_theme_constant_override(&"v_separation", 0)
 	grid.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	grid.add_child(Control.new())
 	grid.add_child(_device_header(GAMEPAD_ICON, "Gamepad"))
@@ -103,9 +106,26 @@ func _controls_grid() -> GridContainer:
 		if action.contains("%s"):
 			action = action % (PLUS_HEX if action.contains("+") else MINUS_HEX)
 		grid.add_child(_rich(action, 0))
-		grid.add_child(_label(row[1]))
-		grid.add_child(_label(row[2]))
+		grid.add_child(_glyphs(row[1]))
+		grid.add_child(_glyphs(row[2]))
 	return grid
+
+func _glyphs(names: Array) -> HBoxContainer:
+	var box := HBoxContainer.new()
+	box.add_theme_constant_override(&"separation", 2)
+	for glyph_name: String in names:
+		if glyph_name == "/":
+			var slash := _label("/")
+			slash.add_theme_color_override(&"font_color", TEXT_COLOR_DIM)
+			box.add_child(slash)
+			continue
+		var rect := TextureRect.new()
+		rect.texture = load(PROMPTS_DIR + glyph_name + ".svg")
+		rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		rect.custom_minimum_size = GLYPH_SIZE
+		box.add_child(rect)
+	return box
 
 func _device_header(icon: Texture2D, text: String) -> HBoxContainer:
 	var box := HBoxContainer.new()
