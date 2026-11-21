@@ -159,7 +159,7 @@ Sound list, sources and music direction: `planning/audio-plan.md`.
       `assets/sounds/music/source/` (`.gdignore`, not exported). Music analysis tool: `~/Applications/essentia/analyze`.*
   - [ ] Game over screen: match music quieter (back up on rematch).
   - [ ] Content ID check for the match track before streamers/the trailer use it.
-  - [ ] Credits screen entry: "Music by AlesiaDavina from Pixabay", Kenney.
+  - [x] Credits screen entry: "Music by AlesiaDavina from Pixabay", Kenney.
 - [x] **Goal celebration** (like Rocket League, the climax of every round, worth more than "cheap juice"):
       today a goal resets the field and starts the countdown in the same tick, so there's no moment at all.
   - [x] A `GOAL` phase in the simulation (~2 s) between the goal and the reset. The scoring puck leaves play,
@@ -218,7 +218,10 @@ Sound list, sources and music direction: `planning/audio-plan.md`.
 - [x] **Magnet controls swapped** (16.11): plus on the right (RT / RB, keyboard K), minus on the left (LT / LB,
       keyboard J), more intuitive. The lobby start bars follow: minus fills from the left, plus from the right.
       Update the how-to-play screen and store texts to match.
-- [ ] Credits screen (assets, music licenses, Godot, GodotSteam).
+- [x] Credits screen (assets, music licenses, Godot, GodotSteam).
+      *21.11: `Credits` window (`scenes/menu/credits.gd`, main menu above Quit): developer, music, sound effects,
+      icons (game-icons.net is CC BY 3.0, so Delapouite is named), Godot and GodotSteam, then the license texts
+      (Godot's text and third-party list from `Engine`, GodotSteam's MIT). Up / down scroll.*
 - [x] **Settings from the pause menu** (15.11): change sound volumes (and ideally all settings) during a match or
       in the lobby, not only from the main menu. Probably reuse the whole settings menu. Online the pause menu
       doesn't pause, so the settings must work while the match keeps running.

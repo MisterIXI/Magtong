@@ -111,6 +111,8 @@ func _add_button(box: VBoxContainer, text: String, on_pressed: Callable, is_back
 
 func _input(event: InputEvent) -> void:
 	if visible:
+		if (_settings.visible and _settings.blocks_cancel()) or (_how_to_play.visible and _how_to_play.blocks_cancel()):
+			return # B / Esc closes the open dropdown
 		if _settings.visible and (event.is_action_pressed(&"ui_cancel") or _is_pause_button(event)):
 			get_viewport().set_input_as_handled()
 			UiSounds.play(UiSounds.Sound.BACK)
@@ -157,11 +159,16 @@ func open() -> void:
 	visible = true
 	_show_main(_resume_button)
 
+## Up / down wrap around in the menu's button list.
+func _wrap_box(box: VBoxContainer) -> void:
+	MenuWindow.wrap_focus(box.get_children())
+
 func _show_main(focus: Button) -> void:
 	_settings.visible = false
 	_how_to_play.visible = false
 	_center.visible = true
 	_main_box.visible = true
+	_wrap_box(_main_box)
 	if _player_box != null:
 		_player_box.visible = false
 	focus.grab_focus.call_deferred()
@@ -199,6 +206,7 @@ func _show_players() -> void:
 	var back := _add_button(_player_box, "Back", _show_main.bind(_remove_button), true)
 	_main_box.visible = false
 	_player_box.visible = true
+	_wrap_box(_player_box)
 	(first if first != null else back).grab_focus.call_deferred()
 
 func _on_remove_pressed(device: int) -> void:
